@@ -50,26 +50,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Actions\Actions.cs" />
-    <Compile Include="Actions\CDCRedirectAction.cs" />
-    <Compile Include="Actions\FormsAuthenticationAction.cs" />
-    <Compile Include="Actions\IAction.cs" />
-    <Compile Include="Actions\RedirectAction.cs" />
-    <Compile Include="Actions\SamlPrincipalAction.cs" />
-    <Compile Include="Bindings\BindingUtility.cs" />
-    <Compile Include="Bindings\HttpArtifactBindingBuilder.cs" />
-    <Compile Include="Bindings\HttpArtifactBindingConstants.cs" />
-    <Compile Include="Bindings\HttpArtifactBindingParser.cs" />
-    <Compile Include="Bindings\HttpPostBindingBuilder.cs" />
-    <Compile Include="Bindings\HttpPostBindingParser.cs" />
-    <Compile Include="Bindings\HttpRedirectBindingBuilder.cs" />
-    <Compile Include="Bindings\HttpRedirectBindingConstants.cs" />
-    <Compile Include="Bindings\HttpRedirectBindingParser.cs" />
-    <Compile Include="Bindings\HttpSoapBindingBuilder.cs" />
-    <Compile Include="Bindings\HttpSoapBindingParser.cs" />
-    <Compile Include="Bindings\SoapConstants.cs" />
-    <Compile Include="Config\ActionCollection.cs" />
-    <Compile Include="Config\ActionElement.cs" />
     <Compile Include="Config\AllowedAudienceUriCollection.cs" />
     <Compile Include="Config\AssertionProfileElement.cs" />
     <Compile Include="Config\AttributeElement.cs" />
@@ -106,7 +86,6 @@
     <Compile Include="Config\ServiceProviderEndpointCollection.cs" />
     <Compile Include="Config\ServiceProviderEndpointElement.cs" />
     <Compile Include="Config\CertificateElement.cs" />
-    <Compile Include="Config\WritableConfigurationElement.cs" />
     <Compile Include="ErrorMessages.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -321,6 +300,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Bindings\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

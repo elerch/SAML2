@@ -10,9 +10,6 @@ namespace SAML2.Config
         /// <summary>
         /// Gets the comparison.
         /// </summary>
-        public AuthenticationContextComparison Comparison
-        {
-            get { return (AuthenticationContextComparison)base["comparison"]; }
-        }
+        public AuthenticationContextComparison Comparison { get; set; }
     }
 }

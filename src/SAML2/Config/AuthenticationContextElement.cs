@@ -5,10 +5,8 @@ namespace SAML2.Config
     /// <summary>
     /// Authentication Context configuration element.
     /// </summary>
-    public class AuthenticationContextElement : WritableConfigurationElement, IConfigurationElementCollectionElement
+    public class AuthenticationContextElement : IConfigurationElementCollectionElement
     {
-        #region Attributes
-
         /// <summary>
         /// Gets or sets the context.
         /// </summary>

@@ -10,8 +10,13 @@ namespace SAML2.Config
     /// </summary>
     /// <typeparam name="TConfigurationElementType">The type of the configuration element type.</typeparam>
     public abstract class EnumerableConfigurationElementCollection<TConfigurationElementType> :
+<<<<<<< HEAD
 
         where TConfigurationElementType : ConfigurationElement, IConfigurationElementCollectionElement, new()
+=======
+        ICollection<TConfigurationElementType>
+        where TConfigurationElementType : IConfigurationElementCollectionElement, new()
+>>>>>>> f2f06402ec84b4fe54417fbd9c1215578dcc3952
     {
         /// <summary>
         /// Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.
