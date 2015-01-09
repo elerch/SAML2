@@ -5,7 +5,7 @@ namespace SAML2.Config
     /// <summary>
     /// Http Basic Authentication configuration element.
     /// </summary>
-    public class HttpAuthCredentialsElement : WritableConfigurationElement
+    public class HttpAuthCredentialsElement
     {
         #region Attributes
 
@@ -13,24 +13,13 @@ namespace SAML2.Config
         /// Gets or sets the username.
         /// </summary>
         /// <value>The username.</value>
-        [ConfigurationProperty("username")]
-        public string Username
-        {
-            get { return (string)base["username"]; }
-            set { base["username"] = value; }
-        }
+        public string Username { get; set; }
 
         /// <summary>
         /// Gets or sets the password.
         /// </summary>
         /// <value>The password.</value>
-        [ConfigurationProperty("password")]
-        public string Password
-        {
-            get { return (string)base["password"]; }
-            set { base["password"] = value; }
-        }
+        public string Password { get; set; }
 
-        #endregion
     }
 }

@@ -5,7 +5,7 @@ namespace SAML2.Config
     /// <summary>
     /// Common Domain Cookie configuration element.
     /// </summary>
-    public class CommonDomainCookieElement :     {
+    public class CommonDomainCookieElement {
         /// <summary>
         /// Gets or sets a value indicating whether Common Domain Cookie is enabled.
         /// </summary>

@@ -14,7 +14,7 @@ namespace SAML2.Config
     /// <summary>
     /// Identity Provider configuration collection.
     /// </summary>
-    [ConfigurationCollection(typeof(IdentityProviderElement), CollectionType = ConfigurationElementCollectionType.AddRemoveClearMap)]
+    //[ConfigurationCollection(typeof(IdentityProviderElement), CollectionType = ConfigurationElementCollectionType.AddRemoveClearMap)]
     public class IdentityProviderCollection : EnumerableConfigurationElementCollection<IdentityProviderElement>
     {
         /// <summary>
@@ -65,22 +65,16 @@ namespace SAML2.Config
             _fileSystemWatcher.Renamed += FileSystemWatcher_Renamed;
         }
 
-        #region Attributes
+        
 
         /// <summary>
         /// Gets or sets the encodings.
         /// </summary>
-        [ConfigurationProperty("encodings")]
-        public string Encodings
-        {
-            get { return (string)base["encodings"]; }
-            set { base["encodings"] = value; }
-        }
+          public string Encodings { get; set; }
 
         /// <summary>
         /// Gets or sets the metadata location.
         /// </summary>
-        [ConfigurationProperty("metadata")]
         public string MetadataLocation
         {
             get
@@ -105,14 +99,7 @@ namespace SAML2.Config
         /// <summary>
         /// Gets the selection URL to use for choosing identity providers if multiple are available and none are set as default.
         /// </summary>
-        [ConfigurationProperty("selectionUrl")]
-        public string SelectionUrl
-        {
-            get { return (string)base["selectionUrl"]; }
-        }
-
-        #endregion
-
+        public string SelectionUrl { get; set; }
         /// <summary>
         /// Refreshes this instance from metadata location.
         /// </summary>
