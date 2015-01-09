@@ -245,5 +245,9 @@ namespace SAML2
 
             return result;
         }
+
+        public class HttpContext
+        {
+        }
     }
 }

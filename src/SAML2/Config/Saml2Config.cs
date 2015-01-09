@@ -1,4 +1,6 @@
-﻿using System.Configuration;
+﻿using System;
+using System.Configuration;
+using System.Runtime.Serialization;
 
 namespace SAML2.Config
 {
@@ -11,6 +13,9 @@ namespace SAML2.Config
         /// The configuration
         /// </summary>
         private static Saml2Section _config;
+
+        public static object ConfigurationManager { get; private set; }
+
 
         /// <summary>
         /// Gets the config.
@@ -48,6 +53,26 @@ namespace SAML2.Config
             }
 
             _config.IdentityProviders.Refresh();
+        }
+    }
+
+    [Serializable]
+    internal class ConfigurationErrorsException : Exception
+    {
+        public ConfigurationErrorsException()
+        {
+        }
+
+        public ConfigurationErrorsException(string message) : base(message)
+        {
+        }
+
+        public ConfigurationErrorsException(string message, Exception innerException) : base(message, innerException)
+        {
+        }
+
+        protected ConfigurationErrorsException(SerializationInfo info, StreamingContext context) : base(info, context)
+        {
         }
     }
 }
