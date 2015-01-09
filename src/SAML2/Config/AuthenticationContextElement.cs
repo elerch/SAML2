@@ -13,36 +13,17 @@ namespace SAML2.Config
         /// Gets or sets the context.
         /// </summary>
         /// <value>The context.</value>
-        [ConfigurationProperty("context", IsKey = true, IsRequired = true)]
-        public string Context
-        {
-            get { return (string)base["context"]; }
-            set { base["context"] = value; }
-        }
+        public string Context { get; set; }
 
         /// <summary>
         /// Gets or sets the reference type.
         /// </summary>
         /// <value>The reference type.</value>
-        [ConfigurationProperty("referenceType", IsRequired = true)]
-        public string ReferenceType
-        {
-            get { return (string)base["referenceType"]; }
-            set { base["referenceType"] = value; }
-        }
-
-        #endregion
-
-        #region Implementation of IConfigurationElementCollectionElement
+        public string ReferenceType { get; set; }
 
         /// <summary>
         /// Gets the element key.
         /// </summary>
-        public object ElementKey
-        {
-            get { return Context; }
-        }
-
-        #endregion
+        public object ElementKey { get; set; }
     }
 }
