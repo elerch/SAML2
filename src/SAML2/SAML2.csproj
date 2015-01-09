@@ -130,7 +130,6 @@
     <Compile Include="Saml20LogoutRequest.cs" />
     <Compile Include="Saml20LogoutResponse.cs" />
     <Compile Include="Saml20MetadataDocument.cs" />
-    <Compile Include="Saml20MetadataFetcherModule.cs" />
     <Compile Include="Saml20NameFormat.cs" />
     <Compile Include="SamlActionType.cs" />
     <Compile Include="Schema\Core\Action.cs" />
