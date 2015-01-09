@@ -7,7 +7,6 @@ namespace SAML2.Config
     /// </summary>
     public class HttpAuthCredentialsElement
     {
-        #region Attributes
 
         /// <summary>
         /// Gets or sets the username.
