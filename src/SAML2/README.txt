@@ -18,3 +18,6 @@ License
 =======
 SAML2 is distrbuted under the Mozilla Public License 2.0 (MPL-2.0).
 
+Source
+======
+This code is sourced from etlerch's fork of the SAML2 project. Changeset c4e8a81f00f8 from https://saml2.codeplex.com/SourceControl/network/forks/etlerch/saml2
