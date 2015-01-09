@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<saml:Assertion ID="_d1de7ed60421036c03e6f02de1cd07bf" IssueInstant="2008-01-09T09:19:14.399Z" Version="2.0" xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><saml:Issuer>TokenService/Safewhere</saml:Issuer><ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+<ds:SignedInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+<ds:CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#" xmlns:ds="http://www.w3.org/2000/09/xmldsig#"/>
+<ds:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1" xmlns:ds="http://www.w3.org/2000/09/xmldsig#"/>
+<ds:Reference URI="#_d1de7ed60421036c03e6f02de1cd07bf" xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+<ds:Transforms xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+<ds:Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature" xmlns:ds="http://www.w3.org/2000/09/xmldsig#"/>
+<ds:Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#" xmlns:ds="http://www.w3.org/2000/09/xmldsig#"><ec:InclusiveNamespaces PrefixList="ds saml xs xsi" xmlns:ec="http://www.w3.org/2001/10/xml-exc-c14n#"/></ds:Transform>
+</ds:Transforms>
+<ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" xmlns:ds="http://www.w3.org/2000/09/xmldsig#"/>
+<ds:DigestValue xmlns:ds="http://www.w3.org/2000/09/xmldsig#">YLzS3uq2pgbiVJjrWduA1C+j9AY=</ds:DigestValue>
+</ds:Reference>
+</ds:SignedInfo>
+<ds:SignatureValue xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+Eh2FcS7004Eb/WvKF9emTv0/PxJCqGuCwQlBo9/QLeQfTDbFlnlDrFJiW2xLbgXIstCGc5PSRsJ+
+Pi6nrv5BnSPm/iEkeW0cRZQRYEQmKWuyfvqBSOYSQHiUQzC8UnNAsXFsIvvrvUfYLHZRn3vUOM0C
+cydHW+9+yxniGarvDjk=
+</ds:SignatureValue>
+<ds:KeyInfo><ds:X509Data><ds:X509Certificate>MIICMTCCAZqgAwIBAgIER4SOwjANBgkqhkiG9w0BAQUFADBdMQswCQYDVQQGEwJkazEQMA4GA1UE
+CBMHRGVubWFyazEMMAoGA1UEBxMDY3BoMQ4wDAYDVQQKEwV5eXl5eTEPMA0GA1UECxMGeHh4eHh4
+MQ0wCwYDVQQDEwRNciBYMB4XDTA4MDEwOTA5MDcxNFoXDTA5MDEwODA5MDcxNFowXTELMAkGA1UE
+BhMCZGsxEDAOBgNVBAgTB0Rlbm1hcmsxDDAKBgNVBAcTA2NwaDEOMAwGA1UEChMFeXl5eXkxDzAN
+BgNVBAsTBnh4eHh4eDENMAsGA1UEAxMETXIgWDCBnzANBgkqhkiG9w0BAQEFAAOBjQAwgYkCgYEA
+j7XCXy+IfAPkAV+fch90iwSG1RpIFq5ad5AFSh0mZaH31fsyL0tzq/Ff1YbKIQazAB+TV3xmBM1V
+0x8hurtKLSm6REbVkEOx1pNMaQFpAnt3R8PWQxvxOdgwgajTVBoZxEnxA8LFOnEFgkz7zSRGZ3wG
++2fp1Ix1M5sA0HWMeakCAwEAATANBgkqhkiG9w0BAQUFAAOBgQBR2DMGXgabLljYMmvsnv1KGADb
+zPEGGXJSqeeKWM7nKz1ckZL0bcQ1JVOqJPkPtSu1+B6s2/WNUz4cR26lXCLUZ2SP4G4tQckLidEb
+A/ZUMH/fm4O59yu8M/+BGQjSUpoTyPIZjBvDfZYipCxThNXgYWw5Ic+8X3oWPwHcia4z5A==</ds:X509Certificate></ds:X509Data></ds:KeyInfo></ds:Signature><saml:Subject><saml:SubjectConfirmation Method="urn:oasis:names:tc:SAML:2.0:cm:bearer"><saml:SubjectConfirmationData NotOnOrAfter="2008-12-21T11:45:00.000Z" Recipient="http://borger.dk/"/></saml:SubjectConfirmation></saml:Subject><saml:Conditions NotOnOrAfter="2008-12-21T11:45:00.000Z"><saml:AudienceRestriction><saml:Audience>urn:borger.dk:id</saml:Audience></saml:AudienceRestriction></saml:Conditions><saml:AuthnStatement AuthnInstant="2008-01-03T11:00:00.000Z" SessionIndex="1234567890"><saml:AuthnContext><saml:AuthnContextClassRef>urn:oasis:names:tc:SAML:2.0:ac:classes:X509</saml:AuthnContextClassRef></saml:AuthnContext></saml:AuthnStatement><saml:AttributeStatement><saml:Attribute FriendlyName="SurName" Name="urn:oid:2.5.4.4" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri"><saml:AttributeValue xsi:type="xs:string">Sørensen</saml:AttributeValue></saml:Attribute><saml:Attribute FriendlyName="CommonName" Name="urn:oid:2.5.4.3" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri"><saml:AttributeValue xsi:type="xs:string">Henrik Sørensen</saml:AttributeValue></saml:Attribute><saml:Attribute Name="urn:oid:0.9.2342.19200300.100.1.1" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri"><saml:AttributeValue xsi:type="xs:string">has</saml:AttributeValue></saml:Attribute><saml:Attribute FriendlyName="Email" Name="urn:oid:0.9.2342.19200300.100.1.3" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri"><saml:AttributeValue xsi:type="xs:string">has@safewhere.net</saml:AttributeValue></saml:Attribute></saml:AttributeStatement></saml:Assertion>

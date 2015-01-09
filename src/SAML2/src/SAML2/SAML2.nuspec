@@ -1,0 +1,16 @@
+﻿<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <title>$title$</title>
+    <authors>$author$</authors>
+    <owners>$author$</owners>
+    <licenseUrl>https://saml2.codeplex.com/license</licenseUrl>
+    <projectUrl>https://saml2.codeplex.com/</projectUrl>
+    <description>$description$</description>
+    <releaseNotes></releaseNotes>
+    <copyright>Copyright 2013</copyright>
+    <tags>SAML SSO</tags>
+  </metadata>
+</package>

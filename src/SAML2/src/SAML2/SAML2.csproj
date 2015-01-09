@@ -1,0 +1,362 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{75E5BAD2-A20C-43CC-B5C8-38004CEDBDFD}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SAML2</RootNamespace>
+    <AssemblyName>SAML2</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.IdentityModel" />
+    <Reference Include="System.IdentityModel.Selectors" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Actions\Actions.cs" />
+    <Compile Include="Actions\CDCRedirectAction.cs" />
+    <Compile Include="Actions\FormsAuthenticationAction.cs" />
+    <Compile Include="Actions\IAction.cs" />
+    <Compile Include="Actions\RedirectAction.cs" />
+    <Compile Include="Actions\SamlPrincipalAction.cs" />
+    <Compile Include="Bindings\BindingUtility.cs" />
+    <Compile Include="Bindings\HttpArtifactBindingBuilder.cs" />
+    <Compile Include="Bindings\HttpArtifactBindingConstants.cs" />
+    <Compile Include="Bindings\HttpArtifactBindingParser.cs" />
+    <Compile Include="Bindings\HttpPostBindingBuilder.cs" />
+    <Compile Include="Bindings\HttpPostBindingParser.cs" />
+    <Compile Include="Bindings\HttpRedirectBindingBuilder.cs" />
+    <Compile Include="Bindings\HttpRedirectBindingConstants.cs" />
+    <Compile Include="Bindings\HttpRedirectBindingParser.cs" />
+    <Compile Include="Bindings\HttpSoapBindingBuilder.cs" />
+    <Compile Include="Bindings\HttpSoapBindingParser.cs" />
+    <Compile Include="Bindings\SoapConstants.cs" />
+    <Compile Include="Config\ActionCollection.cs" />
+    <Compile Include="Config\ActionElement.cs" />
+    <Compile Include="Config\AllowedAudienceUriCollection.cs" />
+    <Compile Include="Config\AssertionProfileElement.cs" />
+    <Compile Include="Config\AttributeElement.cs" />
+    <Compile Include="Config\AudienceUriElement.cs" />
+    <Compile Include="Config\AuthenticationContextCollection.cs" />
+    <Compile Include="Config\AuthenticationContextComparison.cs" />
+    <Compile Include="Config\AuthenticationContextElement.cs" />
+    <Compile Include="Config\CertificateValidationCollection.cs" />
+    <Compile Include="Config\CertificateValidationElement.cs" />
+    <Compile Include="Config\CommonDomainCookieElement.cs" />
+    <Compile Include="Config\ContactElement.cs" />
+    <Compile Include="Config\ContactCollection.cs" />
+    <Compile Include="Config\BindingType.cs" />
+    <Compile Include="Config\ContactType.cs" />
+    <Compile Include="Config\HttpAuthCredentialsElement.cs" />
+    <Compile Include="Config\EndpointType.cs" />
+    <Compile Include="Config\EnumerableConfigurationElementCollection.cs" />
+    <Compile Include="Config\HttpAuthElement.cs" />
+    <Compile Include="Config\IConfigurationElementCollectionElement.cs" />
+    <Compile Include="Config\IdentityProviderEndpointElement.cs" />
+    <Compile Include="Config\IdentityProviderEndpointCollection.cs" />
+    <Compile Include="Config\IdentityProviderCollection.cs" />
+    <Compile Include="Config\IdentityProviderElement.cs" />
+    <Compile Include="Config\LoggingElement.cs" />
+    <Compile Include="Config\MetadataElement.cs" />
+    <Compile Include="Config\NameIdFormatCollection.cs" />
+    <Compile Include="Config\NameIdFormatElement.cs" />
+    <Compile Include="Config\OrganizationElement.cs" />
+    <Compile Include="Config\PersistentPseudonymElement.cs" />
+    <Compile Include="Config\RequestedAttributesCollection.cs" />
+    <Compile Include="Config\Saml2Config.cs" />
+    <Compile Include="Config\Saml2Section.cs" />
+    <Compile Include="Config\ServiceProviderElement.cs" />
+    <Compile Include="Config\ServiceProviderEndpointCollection.cs" />
+    <Compile Include="Config\ServiceProviderEndpointElement.cs" />
+    <Compile Include="Config\CertificateElement.cs" />
+    <Compile Include="Config\WritableConfigurationElement.cs" />
+    <Compile Include="ErrorMessages.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ErrorMessages.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Identity\IPersistentPseudonymMapper.cs" />
+    <Compile Include="Identity\ISaml20Identity.cs" />
+    <Compile Include="Identity\Saml20Identity.cs" />
+    <Compile Include="Identity\Saml20PrincipalCache.cs" />
+    <Compile Include="ISaml20IdpTokenAccessor.cs" />
+    <Compile Include="Logging\IInternalLogger.cs" />
+    <Compile Include="Logging\ILoggerFactory.cs" />
+    <Compile Include="Logging\LoggerProvider.cs" />
+    <Compile Include="Logging\NoLoggingInternalLogger.cs" />
+    <Compile Include="Logging\NoLoggingLoggerFactory.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Protocol\AbstractEndpointHandler.cs" />
+    <Compile Include="Protocol\CommonDomainCookie.cs" />
+    <Compile Include="Protocol\Pages\BasePage.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Protocol\Pages\ErrorPage.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Protocol\Pages\SelectIDP.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Protocol\Saml20AbstractEndpointHandler.cs" />
+    <Compile Include="Protocol\Saml20CDCIdpReturnPoint.cs" />
+    <Compile Include="Protocol\Saml20CDCReader.cs" />
+    <Compile Include="Protocol\Saml20LogoutHandler.cs" />
+    <Compile Include="Protocol\Saml20MetadataHandler.cs" />
+    <Compile Include="Protocol\Saml20SignonHandler.cs" />
+    <Compile Include="Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Saml20ArtifactResolve.cs" />
+    <Compile Include="Saml20ArtifactResponse.cs" />
+    <Compile Include="Saml20Assertion.cs" />
+    <Compile Include="Saml20AttributeQuery.cs" />
+    <Compile Include="Saml20AuthnRequest.cs" />
+    <Compile Include="Saml20Constants.cs" />
+    <Compile Include="Saml20EncryptedAssertion.cs" />
+    <Compile Include="Saml20Exception.cs" />
+    <Compile Include="Saml20FormatException.cs" />
+    <Compile Include="Saml20LogoutRequest.cs" />
+    <Compile Include="Saml20LogoutResponse.cs" />
+    <Compile Include="Saml20MetadataDocument.cs" />
+    <Compile Include="Saml20MetadataFetcherModule.cs" />
+    <Compile Include="Saml20NameFormat.cs" />
+    <Compile Include="SamlActionType.cs" />
+    <Compile Include="Schema\Core\Action.cs" />
+    <Compile Include="Schema\Core\Advice.cs" />
+    <Compile Include="Schema\Core\AdviceType.cs" />
+    <Compile Include="Schema\Core\Assertion.cs" />
+    <Compile Include="Schema\Core\AttributeStatement.cs" />
+    <Compile Include="Schema\Core\AudienceRestriction.cs" />
+    <Compile Include="Schema\Core\AuthnContext.cs" />
+    <Compile Include="Schema\Core\AuthnStatement.cs" />
+    <Compile Include="Schema\Core\AuthzDecisionStatement.cs" />
+    <Compile Include="Schema\Core\BaseIdAbstract.cs" />
+    <Compile Include="Schema\Core\ConditionAbstract.cs" />
+    <Compile Include="Schema\Core\Conditions.cs" />
+    <Compile Include="Schema\Core\DecisionType.cs" />
+    <Compile Include="Schema\Core\AuthnContextType.cs" />
+    <Compile Include="Schema\Core\Evidence.cs" />
+    <Compile Include="Schema\Core\EvidenceType.cs" />
+    <Compile Include="Schema\Core\KeyInfoConfirmationData.cs" />
+    <Compile Include="Schema\Core\NameId.cs" />
+    <Compile Include="Schema\Core\OneTimeUse.cs" />
+    <Compile Include="Schema\Core\ProxyRestriction.cs" />
+    <Compile Include="Schema\Core\SamlAttribute.cs" />
+    <Compile Include="Schema\Core\StatementAbstract.cs" />
+    <Compile Include="Schema\Core\Subject.cs" />
+    <Compile Include="Schema\Core\SubjectConfirmation.cs" />
+    <Compile Include="Schema\Core\SubjectConfirmationData.cs" />
+    <Compile Include="Schema\Core\SubjectLocality.cs" />
+    <Compile Include="Schema\Metadata\AdditionalMetadataLocation.cs" />
+    <Compile Include="Schema\Metadata\AffiliationDescriptor.cs" />
+    <Compile Include="Schema\Metadata\AttributeAuthorityDescriptor.cs" />
+    <Compile Include="Schema\Metadata\AttributeConsumingService.cs" />
+    <Compile Include="Schema\Metadata\AuthnAuthorityDescriptor.cs" />
+    <Compile Include="Schema\Metadata\Contact.cs" />
+    <Compile Include="Schema\Metadata\ContactType.cs" />
+    <Compile Include="Schema\Metadata\Endpoint.cs" />
+    <Compile Include="Schema\Metadata\EntitiesDescriptor.cs" />
+    <Compile Include="Schema\Metadata\EntityDescriptor.cs" />
+    <Compile Include="Schema\Metadata\KeyTypes.cs" />
+    <Compile Include="Schema\Metadata\Extensions.cs" />
+    <Compile Include="Schema\Metadata\IdpSsoDescriptor.cs" />
+    <Compile Include="Schema\Metadata\IndexedEndpoint.cs" />
+    <Compile Include="Schema\Metadata\KeyDescriptor.cs" />
+    <Compile Include="Schema\Metadata\LocalizedName.cs" />
+    <Compile Include="Schema\Metadata\LocalizedURI.cs" />
+    <Compile Include="Schema\Metadata\Organization.cs" />
+    <Compile Include="Schema\Metadata\PdpDescriptor.cs" />
+    <Compile Include="Schema\Metadata\RequestedAttribute.cs" />
+    <Compile Include="Schema\Metadata\RoleDescriptor.cs" />
+    <Compile Include="Schema\Metadata\SpSsoDescriptor.cs" />
+    <Compile Include="Schema\Metadata\SsoDescriptor.cs" />
+    <Compile Include="Schema\Protocol\ArtifactResolve.cs" />
+    <Compile Include="Schema\Protocol\ArtifactResponse.cs" />
+    <Compile Include="Schema\Protocol\AssertionIdRequest.cs" />
+    <Compile Include="Schema\Protocol\AttributeQuery.cs" />
+    <Compile Include="Schema\Protocol\AuthnContextComparisonType.cs" />
+    <Compile Include="Schema\Protocol\AuthnQuery.cs" />
+    <Compile Include="Schema\Protocol\AuthnRequest.cs" />
+    <Compile Include="Schema\Protocol\AuthzDecisionQuery.cs" />
+    <Compile Include="Schema\Protocol\EncryptedAssertion.cs" />
+    <Compile Include="Schema\Protocol\EncryptedElement.cs" />
+    <Compile Include="Schema\Protocol\AuthnContextType.cs" />
+    <Compile Include="Schema\Protocol\Extensions.cs" />
+    <Compile Include="Schema\Protocol\IdpEntry.cs" />
+    <Compile Include="Schema\Protocol\IdpList.cs" />
+    <Compile Include="Schema\Protocol\LogoutRequest.cs" />
+    <Compile Include="Schema\Protocol\LogoutResponse.cs" />
+    <Compile Include="Schema\Protocol\ManageNameIdRequest.cs" />
+    <Compile Include="Schema\Protocol\NameIdMappingRequest.cs" />
+    <Compile Include="Schema\Protocol\NameIdMappingResponse.cs" />
+    <Compile Include="Schema\Protocol\NameIdPolicy.cs" />
+    <Compile Include="Schema\Protocol\RequestAbstract.cs" />
+    <Compile Include="Schema\Protocol\RequestedAuthnContext.cs" />
+    <Compile Include="Schema\Protocol\Response.cs" />
+    <Compile Include="Schema\Protocol\Scoping.cs" />
+    <Compile Include="Schema\Protocol\Status.cs" />
+    <Compile Include="Schema\Protocol\StatusCode.cs" />
+    <Compile Include="Schema\Protocol\StatusDetail.cs" />
+    <Compile Include="Schema\Protocol\StatusResponse.cs" />
+    <Compile Include="Schema\Protocol\SubjectQueryAbstract.cs" />
+    <Compile Include="Schema\Protocol\Terminate.cs" />
+    <Compile Include="Schema\XEnc\AgreementMethod.cs" />
+    <Compile Include="Schema\XEnc\CipherData.cs" />
+    <Compile Include="Schema\XEnc\CipherReference.cs" />
+    <Compile Include="Schema\XEnc\Encrypted.cs" />
+    <Compile Include="Schema\XEnc\EncryptedData.cs" />
+    <Compile Include="Schema\XEnc\EncryptedKey.cs" />
+    <Compile Include="Schema\XEnc\EncryptionMethod.cs" />
+    <Compile Include="Schema\XEnc\EncryptionProperties.cs" />
+    <Compile Include="Schema\XEnc\EncryptionProperty.cs" />
+    <Compile Include="Schema\XEnc\ReferenceListType.cs" />
+    <Compile Include="Schema\XEnc\ReferenceList.cs" />
+    <Compile Include="Schema\XEnc\ReferenceType.cs" />
+    <Compile Include="Schema\XEnc\TransformsType.cs" />
+    <Compile Include="Schema\XmlDSig\CanonicalizationMethod.cs" />
+    <Compile Include="Schema\XmlDSig\DigestMethod.cs" />
+    <Compile Include="Schema\XmlDSig\DsaKeyValue.cs" />
+    <Compile Include="Schema\XmlDSig\KeyInfoItemType.cs" />
+    <Compile Include="Schema\XmlDSig\KeyInfo.cs" />
+    <Compile Include="Schema\XmlDSig\KeyValue.cs" />
+    <Compile Include="Schema\XmlDSig\Manifest.cs" />
+    <Compile Include="Schema\XmlDSig\ObjectType.cs" />
+    <Compile Include="Schema\XmlDSig\PgpData.cs" />
+    <Compile Include="Schema\XmlDSig\PgpItemType.cs" />
+    <Compile Include="Schema\XmlDSig\Reference.cs" />
+    <Compile Include="Schema\XmlDSig\RetrievalMethod.cs" />
+    <Compile Include="Schema\XmlDSig\RsaKeyValue.cs" />
+    <Compile Include="Schema\XmlDSig\Signature.cs" />
+    <Compile Include="Schema\XmlDSig\SignatureMethod.cs" />
+    <Compile Include="Schema\XmlDSig\SignatureProperties.cs" />
+    <Compile Include="Schema\XmlDSig\SignatureProperty.cs" />
+    <Compile Include="Schema\XmlDSig\SignatureValue.cs" />
+    <Compile Include="Schema\XmlDSig\SignedInfo.cs" />
+    <Compile Include="Schema\XmlDSig\SpkiData.cs" />
+    <Compile Include="Schema\XmlDSig\Transform.cs" />
+    <Compile Include="Schema\XmlDSig\Transforms.cs" />
+    <Compile Include="Schema\XmlDSig\X509Data.cs" />
+    <Compile Include="Schema\XmlDSig\X509IssuerSerial.cs" />
+    <Compile Include="Schema\XmlDSig\X509ItemType.cs" />
+    <Compile Include="Specification\DefaultCertificateSpecification.cs" />
+    <Compile Include="Specification\ICertificateSpecification.cs" />
+    <Compile Include="Specification\SelfIssuedCertificateSpecification.cs" />
+    <Compile Include="Specification\SpecificationFactory.cs" />
+    <Compile Include="TraceMessages.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>TraceMessages.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Utils\ArtifactUtil.cs" />
+    <Compile Include="Utils\IDPSelectionUtil.cs" />
+    <Compile Include="Utils\Saml20Utils.cs" />
+    <Compile Include="Utils\Serialization.cs" />
+    <Compile Include="Utils\TimeRestrictionValidation.cs" />
+    <Compile Include="Utils\XmlSignatureUtils.cs" />
+    <Compile Include="Validation\ISaml20AssertionValidator.cs" />
+    <Compile Include="Validation\ISaml20AttributeValidator.cs" />
+    <Compile Include="Validation\ISaml20NameIdValidator.cs" />
+    <Compile Include="Validation\ISaml20StatementValidator.cs" />
+    <Compile Include="Validation\ISaml20SubjectConfirmationDataValidator.cs" />
+    <Compile Include="Validation\ISaml20SubjectConfirmationValidator.cs" />
+    <Compile Include="Validation\ISaml20SubjectValidator.cs" />
+    <Compile Include="Validation\Saml20AssertionValidator.cs" />
+    <Compile Include="Validation\Saml20AttributeValidator.cs" />
+    <Compile Include="Validation\Saml20EncryptedElementValidator.cs" />
+    <Compile Include="Validation\Saml20KeyInfoValidator.cs" />
+    <Compile Include="Validation\Saml20NameIdValidator.cs" />
+    <Compile Include="Validation\Saml20StatementValidator.cs" />
+    <Compile Include="Validation\Saml20SubjectConfirmationDataValidator.cs" />
+    <Compile Include="Validation\Saml20SubjectConfirmationValidator.cs" />
+    <Compile Include="Validation\Saml20SubjectValidator.cs" />
+    <Compile Include="Validation\Saml20XmlAnyAttributeValidator.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="ErrorMessages.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ErrorMessages.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TraceMessages.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>TraceMessages.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <PropertyGroup>
+    <StyleCopMSBuildTargetsFile>..\packages\StyleCop.MSBuild.4.7.45.0\tools\StyleCop.targets</StyleCopMSBuildTargetsFile>
+  </PropertyGroup>
+  <Import Condition="Exists('$(StyleCopMSBuildTargetsFile)')" Project="$(StyleCopMSBuildTargetsFile)" />
+  <PropertyGroup>
+    <StyleCopMSBuildMessageMissing>Failed to import StyleCop.MSBuild targets from '$(StyleCopMSBuildTargetsFile)'. The StyleCop.MSBuild package was either missing or incomplete when the project was loaded. Ensure that the package is present and then restart the build. If you are using an IDE (e.g. Visual Studio), reload the project before restarting the build.</StyleCopMSBuildMessageMissing>
+    <StyleCopMSBuildMessagePresent>Failed to import StyleCop.MSBuild targets from '$(StyleCopMSBuildTargetsFile)'. The StyleCop.MSBuild package was either missing or incomplete when the project was loaded (but is now present). To fix this, restart the build. If you are using an IDE (e.g. Visual Studio), reload the project before restarting the build.</StyleCopMSBuildMessagePresent>
+    <StyleCopMSBuildMessageRestore>Failed to import StyleCop.MSBuild targets from '$(StyleCopMSBuildTargetsFile)'. The StyleCop.MSBuild package was either missing or incomplete when the project was loaded. To fix this, restore the package and then restart the build. If you are using an IDE (e.g. Visual Studio), you may need to reload the project before restarting the build. Note that regular NuGet package restore (during build) does not work with this package because the package needs to be present before the project is loaded. If this is an automated build (e.g. CI server), you may want to ensure that the build process restores the StyleCop.MSBuild package before the project is built.</StyleCopMSBuildMessageRestore>
+    <StyleCopMSBuildMessageRestored>Failed to import StyleCop.MSBuild targets from '$(StyleCopMSBuildTargetsFile)'. The StyleCop.MSBuild package was either missing or incomplete when the project was loaded (but is now present). To fix this, restart the build. If you are using an IDE (e.g. Visual Studio), reload the project before restarting the build. Note that when using regular NuGet package restore (during build) the package will not be available for the initial build because the package needs to be present before the project is loaded. If package restore executes successfully in the intitial build then the package will be available for subsequent builds. If this is an automated build (e.g. CI server), you may want to ensure that the build process restores the StyleCop.MSBuild package before the initial build.</StyleCopMSBuildMessageRestored>
+  </PropertyGroup>
+  <Target Name="StyleCopMSBuildTargetsNotFound">
+    <Warning Condition="!Exists('$(StyleCopMSBuildTargetsFile)') And $(RestorePackages)!=true And $(StyleCopTreatErrorsAsWarnings)!=false" Text="$(StyleCopMSBuildMessageMissing)" />
+    <Warning Condition="Exists('$(StyleCopMSBuildTargetsFile)')  And $(RestorePackages)!=true And $(StyleCopTreatErrorsAsWarnings)!=false" Text="$(StyleCopMSBuildMessagePresent)" />
+    <Warning Condition="!Exists('$(StyleCopMSBuildTargetsFile)') And $(RestorePackages)==true And $(StyleCopTreatErrorsAsWarnings)!=false" Text="$(StyleCopMSBuildMessageRestore)" />
+    <Warning Condition="Exists('$(StyleCopMSBuildTargetsFile)')  And $(RestorePackages)==true And $(StyleCopTreatErrorsAsWarnings)!=false" Text="$(StyleCopMSBuildMessageRestored)" />
+    <Error Condition="!Exists('$(StyleCopMSBuildTargetsFile)') And $(RestorePackages)!=true And $(StyleCopTreatErrorsAsWarnings)==false" Text="$(StyleCopMSBuildMessageMissing)" />
+    <Error Condition="Exists('$(StyleCopMSBuildTargetsFile)')  And $(RestorePackages)!=true And $(StyleCopTreatErrorsAsWarnings)==false" Text="$(StyleCopMSBuildMessagePresent)" />
+    <Error Condition="!Exists('$(StyleCopMSBuildTargetsFile)') And $(RestorePackages)==true And $(StyleCopTreatErrorsAsWarnings)==false" Text="$(StyleCopMSBuildMessageRestore)" />
+    <Error Condition="Exists('$(StyleCopMSBuildTargetsFile)')  And $(RestorePackages)==true And $(StyleCopTreatErrorsAsWarnings)==false" Text="$(StyleCopMSBuildMessageRestored)" />
+  </Target>
+  <PropertyGroup>
+    <PrepareForBuildDependsOn Condition="!Exists('$(StyleCopMSBuildTargetsFile)')">StyleCopMSBuildTargetsNotFound;$(PrepareForBuildDependsOn)</PrepareForBuildDependsOn>
+  </PropertyGroup>
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+</Project>

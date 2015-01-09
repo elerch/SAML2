@@ -1,0 +1,178 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{39FE8EA4-860C-4A15-A09C-B5B9EEF8CFA2}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SAML2.Tests</RootNamespace>
+    <AssemblyName>SAML2.Tests</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="nunit.framework">
+      <HintPath>..\packages\NUnit.2.6.2\lib\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Saml20EncryptedAssertionTests.cs" />
+    <Compile Include="Utils\ArtifactUtilTests.cs" />
+    <Compile Include="AssertionUtil.cs" />
+    <Compile Include="Bindings\HttpRedirectBindingBuilderTests.cs" />
+    <Compile Include="EncryptedAssertionUtil.cs" />
+    <Compile Include="PingCompatibilityTest.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Bindings\HttpRedirectBindingParserTests.cs" />
+    <Compile Include="Saml20AssertionTests.cs" />
+    <Compile Include="Saml20MetadataDocumentTests.cs" />
+    <Compile Include="Utils\Saml20UtilsTests.cs" />
+    <Compile Include="Utils\XmlSignatureUtilsTest.cs" />
+    <Compile Include="Validation\Saml20SubjectConfirmationDataValidatorTests.cs" />
+    <Compile Include="Validation\Saml20SubjectConfirmationValidatorTests.cs" />
+    <Compile Include="Validation\Saml20AssertionValidatorTests.cs" />
+    <Compile Include="SignatureTest.cs" />
+    <Compile Include="Validation\Saml20NameIdValidatorTests.cs" />
+    <Compile Include="Validation\Saml20StatementValidatorTests.cs" />
+    <Compile Include="Validation\Saml20SubjectValidatorTests.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Assertions\EncryptedAssertion_01">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Assertions\EncryptedAssertion_02">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Assertions\EncryptedAssertion_03">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Assertions\EncryptedAssertion_04">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Assertions\EncryptedAssertion_05">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Assertions\EvilSaml2Assertion_01">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Assertions\EvilSaml2Assertion_02">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Assertions\EvilSaml2Assertion_03">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Assertions\fobs-assertion2">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Assertions\InvalidDKSaml2Assertion_01">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Assertions\Saml2Assertion_01">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Assertions\Saml2Assertion_02">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Assertions\Saml2assertion_03">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Certificates\pingcertificate.crt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Certificates\SafewhereTest_SFS.pfx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Certificates\sts_dev_certificate.pfx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Assertions\Assertions.txt" />
+    <Content Include="Protocol\MetadataDocs\FOBS\tfobs-demo-idp-metadata.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Protocol\MetadataDocs\metadata-ADLER-no-XML-declaration.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Protocol\MetadataDocs\metadata-ADLER.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Protocol\MetadataDocs\metadata-HAIKU.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SAML2\SAML2.csproj">
+      <Project>{75E5BAD2-A20C-43CC-B5C8-38004CEDBDFD}</Project>
+      <Name>SAML2</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <PropertyGroup>
+    <StyleCopMSBuildTargetsFile>..\packages\StyleCop.MSBuild.4.7.45.0\tools\StyleCop.targets</StyleCopMSBuildTargetsFile>
+  </PropertyGroup>
+  <Import Condition="Exists('$(StyleCopMSBuildTargetsFile)')" Project="$(StyleCopMSBuildTargetsFile)" />
+  <PropertyGroup>
+    <StyleCopMSBuildMessageMissing>Failed to import StyleCop.MSBuild targets from '$(StyleCopMSBuildTargetsFile)'. The StyleCop.MSBuild package was either missing or incomplete when the project was loaded. Ensure that the package is present and then restart the build. If you are using an IDE (e.g. Visual Studio), reload the project before restarting the build.</StyleCopMSBuildMessageMissing>
+    <StyleCopMSBuildMessagePresent>Failed to import StyleCop.MSBuild targets from '$(StyleCopMSBuildTargetsFile)'. The StyleCop.MSBuild package was either missing or incomplete when the project was loaded (but is now present). To fix this, restart the build. If you are using an IDE (e.g. Visual Studio), reload the project before restarting the build.</StyleCopMSBuildMessagePresent>
+    <StyleCopMSBuildMessageRestore>Failed to import StyleCop.MSBuild targets from '$(StyleCopMSBuildTargetsFile)'. The StyleCop.MSBuild package was either missing or incomplete when the project was loaded. To fix this, restore the package and then restart the build. If you are using an IDE (e.g. Visual Studio), you may need to reload the project before restarting the build. Note that regular NuGet package restore (during build) does not work with this package because the package needs to be present before the project is loaded. If this is an automated build (e.g. CI server), you may want to ensure that the build process restores the StyleCop.MSBuild package before the project is built.</StyleCopMSBuildMessageRestore>
+    <StyleCopMSBuildMessageRestored>Failed to import StyleCop.MSBuild targets from '$(StyleCopMSBuildTargetsFile)'. The StyleCop.MSBuild package was either missing or incomplete when the project was loaded (but is now present). To fix this, restart the build. If you are using an IDE (e.g. Visual Studio), reload the project before restarting the build. Note that when using regular NuGet package restore (during build) the package will not be available for the initial build because the package needs to be present before the project is loaded. If package restore executes successfully in the intitial build then the package will be available for subsequent builds. If this is an automated build (e.g. CI server), you may want to ensure that the build process restores the StyleCop.MSBuild package before the initial build.</StyleCopMSBuildMessageRestored>
+  </PropertyGroup>
+  <Target Name="StyleCopMSBuildTargetsNotFound">
+    <Warning Condition="!Exists('$(StyleCopMSBuildTargetsFile)') And $(RestorePackages)!=true And $(StyleCopTreatErrorsAsWarnings)!=false" Text="$(StyleCopMSBuildMessageMissing)" />
+    <Warning Condition="Exists('$(StyleCopMSBuildTargetsFile)')  And $(RestorePackages)!=true And $(StyleCopTreatErrorsAsWarnings)!=false" Text="$(StyleCopMSBuildMessagePresent)" />
+    <Warning Condition="!Exists('$(StyleCopMSBuildTargetsFile)') And $(RestorePackages)==true And $(StyleCopTreatErrorsAsWarnings)!=false" Text="$(StyleCopMSBuildMessageRestore)" />
+    <Warning Condition="Exists('$(StyleCopMSBuildTargetsFile)')  And $(RestorePackages)==true And $(StyleCopTreatErrorsAsWarnings)!=false" Text="$(StyleCopMSBuildMessageRestored)" />
+    <Error Condition="!Exists('$(StyleCopMSBuildTargetsFile)') And $(RestorePackages)!=true And $(StyleCopTreatErrorsAsWarnings)==false" Text="$(StyleCopMSBuildMessageMissing)" />
+    <Error Condition="Exists('$(StyleCopMSBuildTargetsFile)')  And $(RestorePackages)!=true And $(StyleCopTreatErrorsAsWarnings)==false" Text="$(StyleCopMSBuildMessagePresent)" />
+    <Error Condition="!Exists('$(StyleCopMSBuildTargetsFile)') And $(RestorePackages)==true And $(StyleCopTreatErrorsAsWarnings)==false" Text="$(StyleCopMSBuildMessageRestore)" />
+    <Error Condition="Exists('$(StyleCopMSBuildTargetsFile)')  And $(RestorePackages)==true And $(StyleCopTreatErrorsAsWarnings)==false" Text="$(StyleCopMSBuildMessageRestored)" />
+  </Target>
+  <PropertyGroup>
+    <PrepareForBuildDependsOn Condition="!Exists('$(StyleCopMSBuildTargetsFile)')">StyleCopMSBuildTargetsNotFound;$(PrepareForBuildDependsOn)</PrepareForBuildDependsOn>
+  </PropertyGroup>
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+</Project>

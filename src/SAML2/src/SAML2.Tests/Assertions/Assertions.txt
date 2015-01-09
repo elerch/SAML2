@@ -1,0 +1,21 @@
+This file describes the assertions that are stored in this directory.
+
+EncryptedAssertion_01 - An signed, encrypted assertion. The symmetric key is "inline" included and encrypted with the public key of the certificate in the "sts_dev_certificate.pfx" file. 
+
+The signatures on the encrypted assertions in EncryptedAssertion_02-EncryptedAssertion_05 are invalid. 
+EncryptedAssertion_02 - An encrypted assertion. The symmetric key is "peer" included and encrypted with the public key of the certificate in the "sts_dev_certificate.pfx" file.
+EncryptedAssertion_03 - Same as EncryptedAssertion_02. The EncryptedKey does not specifiy its EncryptionMethod.
+EncryptedAssertion_04 - An encrypted assertion. The symmetric key is "inline" included. The symmetric algorithm is 3DES. Symmetric key is encrypted with the public key of the certificate in the "sts_dev_certificate.pfx" file. The encryption use OAEP.
+EncryptedAssertion_05 - An encrypted assertion. Session key is AES192. OAEP padding is used.
+ 
+Saml2Assertion_01 - Assertion is signed with the certificate that is embedded.
+Saml2Assertion_02 - Assertion is signed with the certificate that is embedded. The certificate and the user in the assertion are different from Saml2Assertion_01.
+Saml2Assertion_03 - Assertion is signed with the certificate that is embedded. The embedded certificate contains RSA keys instead of the normally used DSA keys.
+
+EvilSaml2Assertion_01 - Assertion is signed with one certificate, but has another (valid) certificate embedded.
+EvilSaml2Assertion_02 - Assertion is signed with the embedded certificate, but the SignatureValue element's value has been tampered with.
+EvilSaml2Assertion_02 - Assertion is signed with the embedded certificate, but the DigestValue element's value has been tampered with.
+
+InvalidDKSaml2Assertion_01 - Assertion is signed, and verifiable. It violates the DK-SAML format by containing an attribute on the Issuer-element.
+
+fobs-assertion - Første assertion modtaget fra fællesoffentlige brugerstyring. Taget direkte fra SAMLResponse-feltet. 
