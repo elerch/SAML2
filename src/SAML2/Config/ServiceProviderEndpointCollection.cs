@@ -6,7 +6,6 @@ namespace SAML2.Config
     /// <summary>
     /// Service Provider Endpoint configuration collection.
     /// </summary>
-    [ConfigurationCollection(typeof(ServiceProviderEndpointElement), AddItemName = "endpoint", CollectionType = ConfigurationElementCollectionType.BasicMap)]
     public class ServiceProviderEndpointCollection : EnumerableConfigurationElementCollection<ServiceProviderEndpointElement>
     {
         /// <summary>
