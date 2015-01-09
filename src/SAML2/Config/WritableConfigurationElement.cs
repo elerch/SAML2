@@ -13,7 +13,11 @@ namespace SAML2.Config
         /// <returns>true if the <see cref="T:System.Configuration.ConfigurationElementCollection"/> object is read only; otherwise, false.</returns>
         public override bool IsReadOnly()
         {
-            return false;
+            
         }
+    }
+
+    public class ConfigurationElement
+    {
     }
 }
