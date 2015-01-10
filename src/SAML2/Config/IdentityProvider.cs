@@ -1,19 +1,18 @@
-﻿using System.Configuration;
+﻿using System.Collections.Generic;
+using System.Configuration;
 
 namespace SAML2.Config
 {
     /// <summary>
     /// Identity Provider configuration element.
     /// </summary>
-    public class IdentityProvider : WritableConfigurationElement, IConfigurationElementCollectionElement
+    public class IdentityProvider
     {
         /// <summary>
         /// Gets or sets the metadata.
         /// </summary>
         /// <value>The metadata.</value>
         public Saml20MetadataDocument Metadata { get; set; }
-
-        #region Attributes
 
         /// <summary>
         /// Gets or sets a value indicating whether this <see cref="IdentityProvider"/> is default.
@@ -22,185 +21,95 @@ namespace SAML2.Config
         /// <remarks>
         /// Use default in case common domain cookie is not set, and more than one endpoint is available.
         /// </remarks>
-        [ConfigurationProperty("default")]
-        public bool Default
-        {
-            get { return (bool)base["default"]; }
-            set { base["default"] = value; }
-        }
-
+        public bool Default{ get; set; }
+        
         /// <summary>
         /// Gets or sets a value indicating whether to force authentication on each <c>AuthnRequest</c>.
         /// </summary>
         /// <value><c>true</c> if force authentication; otherwise, <c>false</c>.</value>
-        [ConfigurationProperty("forceAuth")]
-        public bool ForceAuth
-        {
-            get { return (bool)base["forceAuth"]; }
-            set { base["forceAuth"] = value; }
-        }
-
+        public bool ForceAuth { get; set; }
         /// <summary>
         /// Gets or sets the id.
         /// </summary>
         /// <value>The id.</value>
-        [ConfigurationProperty("id", IsKey = true, IsRequired = true)]
-        public string Id
-        {
-            get { return (string)base["id"]; }
-            set { base["id"] = value; }
-        }
-
+        public string Id { get; set; }
         /// <summary>
         /// Gets or sets a value indicating whether this <c>AuthnRequest</c> should be passive.
         /// </summary>
         /// <value><c>true</c> if this instance is passive; otherwise, <c>false</c>.</value>
-        [ConfigurationProperty("isPassive")]
-        public bool IsPassive
-        {
-            get { return (bool)base["isPassive"]; }
-            set { base["isPassive"] = value; }
-        }
-
+        public bool IsPassive { get; set; }
         /// <summary>
         /// Gets or sets the name.
         /// </summary>
         /// <value>The name.</value>
-        [ConfigurationProperty("name")]
-        public string Name
-        {
-            get { return (string)base["name"]; }
-            set { base["name"] = value; }
-        }
+        public string Name { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to omit assertion signature check.
         /// </summary>
         /// <value><c>true</c> if assertion signature check should be omitted; otherwise, <c>false</c>.</value>
-        [ConfigurationProperty("omitAssertionSignatureCheck")]
-        public bool OmitAssertionSignatureCheck
-        {
-            get { return (bool)base["omitAssertionSignatureCheck"]; }
-            set { base["omitAssertionSignatureCheck"] = value; }
-        }
+        public bool OmitAssertionSignatureCheck { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to allow IdP Initiated SSO. This profile allows SAML responses without an SP-initiated request.
         /// </summary>
         /// <value><c>true</c> if IdP Initiated SSO should be allowed; otherwise, <c>false</c></value>>
-        [ConfigurationProperty("allowIdPInitiatedSso")]
-        public bool AllowIdPInitiatedSso 
-        {
-            get { return (bool)base["allowIdPInitiatedSso"]; }
-            set { base["allowIdPInitiatedSso"] = value; }
-        }
-
+        public bool AllowIdPInitiatedSso { get; set; }
         /// <summary>
         /// Gets or sets a value indicating whether to allow replay attacks. This is more aggressive than the Idp Initiated SSO in that the InReponseTo attribute will be completely ignored. Do not use this unless your IdP is inadvertently sending InResponseTo values when it should not.
         /// </summary>
         /// <value><c>true</c> if replay attacks should be allowed; otherwise, <c>false</c></value>>
-        [ConfigurationProperty("allowReplayAttacks")]
-        public bool AllowReplayAttacks
-        {
-            get { return (bool)base["allowReplayAttacks"]; }
-            set { base["allowReplayAttacks"] = value; }
-        }
+        public bool AllowReplayAttacks { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether quirks mode should be enabled.
         /// </summary>
         /// <value><c>true</c> if quirks mode should be enabled; otherwise, <c>false</c>.</value>
-        [ConfigurationProperty("quirksMode")]
-        public bool QuirksMode
-        {
-            get { return (bool)base["quirksMode"]; }
-            set { base["quirksMode"] = value; }
-        }
+        public bool QuirksMode { get; set; }
 
         /// <summary>
         /// Gets or sets a value for overriding option for the default UTF-8 encoding convention on SAML responses
         /// </summary>
         /// <value>The response encoding.</value>
-        [ConfigurationProperty("responseEncoding")]
-        public string ResponseEncoding
-        {
-            get { return (string)base["responseEncoding"]; }
-            set { base["responseEncoding"] = value; }
-        }
+        public string ResponseEncoding { get; set; }
 
-        #endregion
-
-        #region Elements
 
         /// <summary>
         /// Gets or sets the artifact resolution.
         /// </summary>
         /// <value>The artifact resolution.</value>
-        [ConfigurationProperty("artifactResolution")]
-        public HttpAuth ArtifactResolution
-        {
-            get { return (HttpAuth)base["artifactResolution"]; }
-            set { base["artifactResolution"] = value; }
-        }
+        public HttpAuth ArtifactResolution { get; set; }
 
         /// <summary>
         /// Gets or sets the attribute query configuration parameters.
         /// </summary>
         /// <value>The attribute query.</value>
-        [ConfigurationProperty("attributeQuery")]
-        public HttpAuth AttributeQuery
-        {
-            get { return (HttpAuth)base["attributeQuery"]; }
-            set { base["attributeQuery"] = value; }
-        }
+        public HttpAuth AttributeQuery { get; set; }
 
         /// <summary>
         /// Gets or sets the certificate validations.
         /// </summary>
         /// <value>The certificate validations.</value>
-        [ConfigurationProperty("certificateValidations")]
-        public CertificateValidations CertificateValidations
-        {
-            get { return (CertificateValidations)base["certificateValidations"]; }
-            set { base["certificateValidations"] = value; }
-        }
+        public List<CertificateValidation> CertificateValidations { get; set; }
+
 
         /// <summary>
         /// Gets or sets the common domain cookie configuration settings.
         /// </summary>
         /// <value>The common domain cookie.</value>
-        [ConfigurationProperty("commonDomainCookie")]
-        public KeyValueConfigurationCollection CommonDomainCookie
-        {
-            get { return (KeyValueConfigurationCollection)base["commonDomainCookie"]; }
-            set { base["commonDomainCookie"] = value; }
-        }
+        public IDictionary<string,string> CommonDomainCookie { get; set; }
 
         /// <summary>
         /// Gets or sets the endpoints.
         /// </summary>
         /// <value>The endpoints.</value>
-        [ConfigurationProperty("endpoints")]
-        public IdentityProviderEndpointCollection Endpoints
-        {
-            get { return (IdentityProviderEndpointCollection)base["endpoints"]; }
-            set { base["endpoints"] = value; }
-        }
+        public IdentityProviderEndpoints Endpoints { get; set; }
 
         /// <summary>
         /// Gets or sets the persistent pseudonym configuration settings.
         /// </summary>
         /// <value>The persistent pseudonym.</value>
-        [ConfigurationProperty("persistentPseudonym")]
-        public PersistentPseudonymElement PersistentPseudonym
-        {
-            get { return (PersistentPseudonymElement)base["persistentPseudonym"]; }
-            set { base["persistentPseudonym"] = value; }
-        }
-
-        #endregion
-
-        #region Implementation of IConfigurationElementCollectionElement
+        public PersistentPseudonym PersistentPseudonym { get; set; }
 
         /// <summary>
         /// Gets the element key.
@@ -210,6 +119,5 @@ namespace SAML2.Config
             get { return Id; }
         }
 
-        #endregion
     }
 }

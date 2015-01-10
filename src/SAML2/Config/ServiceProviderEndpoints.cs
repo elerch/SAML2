@@ -1,4 +1,5 @@
-﻿using System.Configuration;
+﻿using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 
 namespace SAML2.Config
@@ -6,12 +7,12 @@ namespace SAML2.Config
     /// <summary>
     /// Service Provider Endpoint configuration collection.
     /// </summary>
-    public class ServiceProviderEndpointCollection : EnumerableConfigurationElementCollection<ServiceProviderEndpointElement>
+    public class ServiceProviderEndpoints : List<ServiceProviderEndpoint>
     {
         /// <summary>
         /// Gets the log off endpoint.
         /// </summary>
-        public ServiceProviderEndpointElement LogoutEndpoint
+        public ServiceProviderEndpoint DefaultLogoutEndpoint
         {
             get { return this.FirstOrDefault(x => x.Type == EndpointType.Logout); }
         }
@@ -19,7 +20,7 @@ namespace SAML2.Config
         /// <summary>
         /// Gets the sign on endpoint.
         /// </summary>
-        public ServiceProviderEndpointElement SignOnEndpoint
+        public ServiceProviderEndpoint DefaultSignOnEndpoint
         {
             get { return this.FirstOrDefault(x => x.Type == EndpointType.SignOn); }
         }

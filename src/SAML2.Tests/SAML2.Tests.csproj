@@ -141,9 +141,9 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SAML2\SAML2.csproj">
+    <ProjectReference Include="..\SAML2\SAML2.Core.csproj">
       <Project>{75E5BAD2-A20C-43CC-B5C8-38004CEDBDFD}</Project>
-      <Name>SAML2</Name>
+      <Name>SAML2.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

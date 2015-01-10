@@ -138,7 +138,7 @@ namespace SAML2.Identity
         /// <param name="assertion">The assertion.</param>
         /// <param name="point">The point.</param>
         /// <returns>The <see cref="IPrincipal"/>.</returns>
-        internal static IPrincipal InitSaml20Identity(Saml20Assertion assertion, IdentityProviderElement point)
+        internal static IPrincipal InitSaml20Identity(Saml20Assertion assertion, IdentityProvider point)
         {
             var isPersistentPseudonym = assertion.Subject.Format == Saml20Constants.NameIdentifierFormats.Persistent;
 

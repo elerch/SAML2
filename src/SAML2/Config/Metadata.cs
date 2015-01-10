@@ -5,7 +5,7 @@ namespace SAML2.Config
     /// <summary>
     /// Metadata configuration element.
     /// </summary>
-    public class MetadataElement 
+    public class Metadata 
     {
         
 
@@ -21,19 +21,19 @@ namespace SAML2.Config
         /// </summary>
         /// <value>The contacts.</value>
 
-        public ContactCollection Contacts { get; set; }
+        public Contacts Contacts { get; set; }
 
         /// <summary>
         /// Gets or sets the organization.
         /// </summary>
         /// <value>The organization.</value>
         
-        public OrganizationElement Organization { get; set; }
+        public Organization Organization { get; set; }
 
         /// <summary>
         /// Gets or sets the requested attributes.
         /// </summary>
         /// <value>The requested attributes.</value>
-        public RequestedAttributesCollection RequestedAttributes { get; set; }
+        public RequestedAttributes RequestedAttributes { get; set; }
     }
 }

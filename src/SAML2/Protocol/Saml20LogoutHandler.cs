@@ -25,7 +25,7 @@ namespace SAML2.Protocol
             // Read the proper redirect url from config
             try
             {
-                RedirectUrl = Saml2Config.GetConfig().ServiceProvider.Endpoints.LogoutEndpoint.RedirectUrl;
+                RedirectUrl = Saml2Config.GetConfig().ServiceProvider.Endpoints.DefaultLogoutEndpoint.RedirectUrl;
             }
             catch (Exception e)
             {
@@ -74,7 +74,7 @@ namespace SAML2.Protocol
             }
             else
             {
-                IdentityProviderElement idpEndpoint = null;
+                IdentityProvider idpEndpoint = null;
 
                 // context.Session[IDPLoginSessionKey] may be null if IIS has been restarted
                 if (context.Session[IdpSessionIdKey] != null)
@@ -188,7 +188,7 @@ namespace SAML2.Protocol
                                        };
 
                     var endpoint = RetrieveIDPConfiguration((string)context.Session[IdpLoginSessionKey]);
-                    var destination = DetermineEndpointConfiguration(BindingType.Redirect, endpoint.Endpoints.LogoutEndpoint, endpoint.Metadata.IDPSLOEndpoints);
+                    var destination = DetermineEndpointConfiguration(BindingType.Redirect, endpoint.Endpoints.DefaultLogoutEndpoint, endpoint.Metadata.IDPSLOEndpoints);
 
                     builder.RedirectFromLogout(destination, response);
                 }
@@ -243,7 +243,7 @@ namespace SAML2.Protocol
 
             // Fetch the endpoint configuration
             var idp = RetrieveIDPConfiguration((string)context.Session[IdpLoginSessionKey]);
-            var destination = DetermineEndpointConfiguration(BindingType.Redirect, idp.Endpoints.LogoutEndpoint, idp.Metadata.IDPSLOEndpoints);
+            var destination = DetermineEndpointConfiguration(BindingType.Redirect, idp.Endpoints.DefaultLogoutEndpoint, idp.Metadata.IDPSLOEndpoints);
 
             // Fetch config object
             var config = Saml2Config.GetConfig();
@@ -444,12 +444,12 @@ namespace SAML2.Protocol
         /// </summary>
         /// <param name="idp">The identity provider.</param>
         /// <param name="context">The context.</param>
-        private void TransferClient(IdentityProviderElement idp, HttpContext context)
+        private void TransferClient(IdentityProvider idp, HttpContext context)
         {
             var request = Saml20LogoutRequest.GetDefault();
 
             // Determine which endpoint to use from the configuration file or the endpoint metadata.
-            var destination = DetermineEndpointConfiguration(BindingType.Redirect, idp.Endpoints.LogoutEndpoint, idp.Metadata.IDPSLOEndpoints);
+            var destination = DetermineEndpointConfiguration(BindingType.Redirect, idp.Endpoints.DefaultLogoutEndpoint, idp.Metadata.IDPSLOEndpoints);
             request.Destination = destination.Url;
 
             var nameIdFormat = (string)context.Session[IdpNameIdFormat];

@@ -154,14 +154,14 @@ namespace SAML2
         {
             config = config ?? Saml2Config.GetConfig();
             var result = new Saml20AuthnRequest { Issuer = config.ServiceProvider.Id };
-            if (config.ServiceProvider.Endpoints.SignOnEndpoint.Binding != BindingType.NotSet)
+            if (config.ServiceProvider.Endpoints.DefaultSignOnEndpoint.Binding != BindingType.NotSet)
             {
                 var baseUrl = new Uri(config.ServiceProvider.Server);
-                result.AssertionConsumerServiceUrl = new Uri(baseUrl, config.ServiceProvider.Endpoints.SignOnEndpoint.LocalPath).ToString();
+                result.AssertionConsumerServiceUrl = new Uri(baseUrl, config.ServiceProvider.Endpoints.DefaultSignOnEndpoint.LocalPath).ToString();
             }
 
             // Binding
-            switch (config.ServiceProvider.Endpoints.SignOnEndpoint.Binding)
+            switch (config.ServiceProvider.Endpoints.DefaultSignOnEndpoint.Binding)
             {
                 case BindingType.Artifact:
                     result.Request.ProtocolBinding = Saml20Constants.ProtocolBindings.HttpArtifact;

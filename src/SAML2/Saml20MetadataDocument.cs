@@ -25,7 +25,7 @@ namespace SAML2
         /// <summary>
         /// AssertionConsumerServiceEndpoints backing field.
         /// </summary>
-        private List<IdentityProviderEndpointElement> _assertionConsumerServiceEndpoints;
+        private List<IdentityProviderEndpoint> _assertionConsumerServiceEndpoints;
 
         /// <summary>
         /// Attribute query endpoints.
@@ -40,7 +40,7 @@ namespace SAML2
         /// <summary>
         /// SLOEndpoints backing field.
         /// </summary>
-        private List<IdentityProviderEndpointElement> _idpSloEndpoints;
+        private List<IdentityProviderEndpoint> _idpSloEndpoints;
 
         /// <summary>
         /// The keys.
@@ -55,12 +55,12 @@ namespace SAML2
         /// <summary>
         /// SLOEndpoints backing field.
         /// </summary>
-        private List<IdentityProviderEndpointElement> _spSloEndpoints;
+        private List<IdentityProviderEndpoint> _spSloEndpoints;
 
         /// <summary>
         /// SSOEndpoints backing field.
         /// </summary>
-        private List<IdentityProviderEndpointElement> _ssoEndpoints;
+        private List<IdentityProviderEndpoint> _ssoEndpoints;
 
         #endregion
 
@@ -119,7 +119,7 @@ namespace SAML2
         /// Gets the endpoints specified in the <c>&lt;AssertionConsumerService&gt;</c> element in the <c>SpSsoDescriptor</c>.
         /// These endpoints are only applicable if we are reading metadata issued by a service provider.
         /// </summary>
-        public List<IdentityProviderEndpointElement> AssertionConsumerServiceEndpoints
+        public List<IdentityProviderEndpoint> AssertionConsumerServiceEndpoints
         {
             get
             {
@@ -157,7 +157,7 @@ namespace SAML2
         /// <summary>
         /// Gets the IDP SLO endpoints.
         /// </summary>
-        public List<IdentityProviderEndpointElement> IDPSLOEndpoints
+        public List<IdentityProviderEndpoint> IDPSLOEndpoints
         {
             get
             {
@@ -194,7 +194,7 @@ namespace SAML2
         /// <summary>
         /// Gets the SP SLO endpoints.
         /// </summary>
-        public List<IdentityProviderEndpointElement> SPSLOEndpoints
+        public List<IdentityProviderEndpoint> SPSLOEndpoints
         {
             get
             {
@@ -210,7 +210,7 @@ namespace SAML2
         /// <summary>
         /// Gets the SSO endpoints.
         /// </summary>
-        public List<IdentityProviderEndpointElement> SSOEndpoints
+        public List<IdentityProviderEndpoint> SSOEndpoints
         {
             get
             {
@@ -573,7 +573,7 @@ namespace SAML2
             // apply the <Organization> element
             if (config.Metadata.Organization.ElementInformation.IsPresent)
             {
-                entity.Organization = new Organization
+                entity.Organization = new Schema.Metadata.Organization
                                           {
                                               OrganizationName = new[] { new LocalizedName { Value = config.Metadata.Organization.Name } },
                                               OrganizationDisplayName = new[] { new LocalizedName { Value = config.Metadata.Organization.DisplayName } },
@@ -604,12 +604,12 @@ namespace SAML2
         {
             if (Entity != null)
             {
-                _ssoEndpoints = new List<IdentityProviderEndpointElement>();
-                _idpSloEndpoints = new List<IdentityProviderEndpointElement>();
+                _ssoEndpoints = new List<IdentityProviderEndpoint>();
+                _idpSloEndpoints = new List<IdentityProviderEndpoint>();
                 _idpArsEndpoints = new Dictionary<int, IndexedEndpoint>();
-                _spSloEndpoints = new List<IdentityProviderEndpointElement>();
+                _spSloEndpoints = new List<IdentityProviderEndpoint>();
                 _spArsEndpoints = new Dictionary<int, IndexedEndpoint>();
-                _assertionConsumerServiceEndpoints = new List<IdentityProviderEndpointElement>();
+                _assertionConsumerServiceEndpoints = new List<IdentityProviderEndpoint>();
                 _attributeQueryEndpoints = new List<Endpoint>();
 
                 foreach (var item in Entity.Items)
@@ -638,7 +638,7 @@ namespace SAML2
                                     throw new InvalidOperationException("Binding not supported: " + endpoint.Binding);
                             }
 
-                            _ssoEndpoints.Add(new IdentityProviderEndpointElement { Url = endpoint.Location, Binding = binding });
+                            _ssoEndpoints.Add(new IdentityProviderEndpoint { Url = endpoint.Location, Binding = binding });
                         }
 
                         if (descriptor.SingleLogoutService != null)
@@ -664,7 +664,7 @@ namespace SAML2
                                         throw new InvalidOperationException("Binding not supported: " + endpoint.Binding);
                                 }
 
-                                _idpSloEndpoints.Add(new IdentityProviderEndpointElement { Url = endpoint.Location, Binding = binding });
+                                _idpSloEndpoints.Add(new IdentityProviderEndpoint { Url = endpoint.Location, Binding = binding });
                             }
                         }
 
@@ -701,7 +701,7 @@ namespace SAML2
                                     throw new InvalidOperationException("Binding not supported: " + endpoint.Binding);
                             }
 
-                            _assertionConsumerServiceEndpoints.Add(new IdentityProviderEndpointElement { Url = endpoint.Location, Binding = binding });
+                            _assertionConsumerServiceEndpoints.Add(new IdentityProviderEndpoint { Url = endpoint.Location, Binding = binding });
                         }
 
                         if (descriptor.SingleLogoutService != null)
@@ -727,7 +727,7 @@ namespace SAML2
                                         throw new InvalidOperationException("Binding not supported: " + endpoint.Binding);
                                 }
 
-                                _spSloEndpoints.Add(new IdentityProviderEndpointElement { Url = endpoint.Location, Binding = binding });
+                                _spSloEndpoints.Add(new IdentityProviderEndpoint { Url = endpoint.Location, Binding = binding });
                             }
                         }
 

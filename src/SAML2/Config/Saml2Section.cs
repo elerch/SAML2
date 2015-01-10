@@ -1,4 +1,5 @@
-﻿using System.Configuration;
+﻿using System.Collections.Generic;
+using System.Configuration;
 
 namespace SAML2.Config
 {
@@ -22,7 +23,7 @@ namespace SAML2.Config
         /// Gets or sets the allowed audience uris.
         /// </summary>
         /// <value>The allowed audience uris.</value>
-        public AllowedAudienceUris AllowedAudienceUris { get; set; }
+        public List<AudienceUri> AllowedAudienceUris { get; set; }
 
         /// <summary>
         /// Gets or sets the assertion profile.
@@ -50,7 +51,7 @@ namespace SAML2.Config
         /// Gets or sets the metadata.
         /// </summary>
         /// <value>The metadata.</value>
-        public MetadataElement Metadata { get; set; }
+        public Metadata Metadata { get; set; }
 
         /// <summary>
         /// Gets or sets the service provider.

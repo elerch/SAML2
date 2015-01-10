@@ -5,7 +5,7 @@ namespace SAML2.Config
     /// <summary>
     /// Http Basic Authentication configuration element.
     /// </summary>
-    public class HttpAuthCredentialsElement
+    public class HttpAuthCredentials
     {
 
         /// <summary>

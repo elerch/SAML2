@@ -1,7 +1,9 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SAML2", "SAML2\SAML2.csproj", "{75E5BAD2-A20C-43CC-B5C8-38004CEDBDFD}"
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.22310.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SAML2.Core", "SAML2\SAML2.Core.csproj", "{75E5BAD2-A20C-43CC-B5C8-38004CEDBDFD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SAML2.Tests", "SAML2.Tests\SAML2.Tests.csproj", "{39FE8EA4-860C-4A15-A09C-B5B9EEF8CFA2}"
 EndProject
@@ -11,6 +13,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{40EAAC
 		.nuget\NuGet.exe = .nuget\NuGet.exe
 		.nuget\NuGet.targets = .nuget\NuGet.targets
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Owin.Security.Saml", "Owin.Security.Saml\Owin.Security.Saml.csproj", "{0054DAFD-1A69-4807-B24E-A6A6B71927C7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SAML2.AspNet", "SAML2.AspNet\SAML2.AspNet.csproj", "{D2136BFD-D2DA-4105-920B-8E05C090C597}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -26,6 +32,14 @@ Global
 		{39FE8EA4-860C-4A15-A09C-B5B9EEF8CFA2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{39FE8EA4-860C-4A15-A09C-B5B9EEF8CFA2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{39FE8EA4-860C-4A15-A09C-B5B9EEF8CFA2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0054DAFD-1A69-4807-B24E-A6A6B71927C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0054DAFD-1A69-4807-B24E-A6A6B71927C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0054DAFD-1A69-4807-B24E-A6A6B71927C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0054DAFD-1A69-4807-B24E-A6A6B71927C7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D2136BFD-D2DA-4105-920B-8E05C090C597}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D2136BFD-D2DA-4105-920B-8E05C090C597}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D2136BFD-D2DA-4105-920B-8E05C090C597}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D2136BFD-D2DA-4105-920B-8E05C090C597}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

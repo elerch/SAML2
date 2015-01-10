@@ -5,7 +5,7 @@ namespace SAML2.Config
     /// <summary>
     /// Attribute configuration element.
     /// </summary>
-    public class AttributeElement : IConfigurationElementCollectionElement
+    public class Attribute
     {
 
         /// <summary>
@@ -20,9 +20,5 @@ namespace SAML2.Config
         /// <value>The name.</value>
         public string Name { get; set; }
 
-        /// <summary>
-        /// Gets the element key.
-        /// </summary>
-        public object ElementKey { get; set; }
     }
 }

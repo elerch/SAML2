@@ -14,7 +14,7 @@ namespace SAML2.Specification
         /// </summary>
         /// <param name="endpoint">The endpoint.</param>
         /// <returns>A list of certificate validation specifications for this endpoint</returns>
-        public static List<ICertificateSpecification> GetCertificateSpecifications(IdentityProviderElement endpoint)
+        public static List<ICertificateSpecification> GetCertificateSpecifications(IdentityProvider endpoint)
         {
             var specs = new List<ICertificateSpecification>();
             if (endpoint.CertificateValidations != null && endpoint.CertificateValidations.Count > 0)

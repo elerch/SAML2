@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
@@ -15,7 +14,7 @@ namespace SAML2.Config
     /// Identity Provider configuration collection.
     /// </summary>
     //[ConfigurationCollection(typeof(IdentityProviderElement), CollectionType = ConfigurationElementCollectionType.AddRemoveClearMap)]
-    public class IdentityProviderCollection : EnumerableConfigurationElementCollection<IdentityProviderElement>
+    public class IdentityProviders : List<IdentityProvider>
     {
         /// <summary>
         /// The file system watcher.
@@ -44,9 +43,9 @@ namespace SAML2.Config
         private object _lockSync = new object();
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="IdentityProviderCollection"/> class.
+        /// Initializes a new instance of the <see cref="IdentityProviders"/> class.
         /// </summary>
-        public IdentityProviderCollection()
+        public IdentityProviders()
         {
             _fileInfo = new Dictionary<string, DateTime>();
             _fileToEntity = new Dictionary<string, string>();
@@ -154,7 +153,7 @@ namespace SAML2.Config
                     if (endp == null)
                     {
                         // If the endpoint does not exist, create it.
-                        endp = new IdentityProviderElement();
+                        endp = new IdentityProvider();
                         BaseAdd(endp);
                     }
 

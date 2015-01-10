@@ -5,78 +5,38 @@ namespace SAML2.Config
     /// <summary>
     /// Identity Provider Endpoint configuration element.
     /// </summary>
-    public class IdentityProviderEndpointElement : WritableConfigurationElement, IConfigurationElementCollectionElement
+    public class IdentityProviderEndpoint
     {
-        #region Attributes
-
         /// <summary>
         /// Gets or sets the binding.
         /// </summary>
         /// <value>The binding.</value>
-        [ConfigurationProperty("binding")]
-        public BindingType Binding
-        {
-            get { return (BindingType)base["binding"]; }
-            set { base["binding"] = value; }
-        }
+        public BindingType Binding { get; set; }
 
         /// <summary>
         /// Gets or sets the protocol binding to force.
         /// </summary>
         /// <value>The force protocol binding.</value>
-        [ConfigurationProperty("forceProtocolBinding")]
-        public string ForceProtocolBinding
-        {
-            get { return (string)base["forceProtocolBinding"]; }
-            set { base["forceProtocolBinding"] = value; }
-        }
+        public string ForceProtocolBinding { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating a caller to access the xml representation of an assertion before it's 
         /// translated to a strongly typed instance
         /// </summary>
         /// <value>The token accessor.</value>
-        [ConfigurationProperty("tokenAccessor")]
-        public string TokenAccessor
-        {
-            get { return (string)base["tokenAccessor"]; }
-            set { base["tokenAccessor"] = value; }
-        }
+        public string TokenAccessor { get; set; }
 
         /// <summary>
         /// Gets or sets the type.
         /// </summary>
         /// <value>The type.</value>
-        [ConfigurationProperty("type", IsKey = true, IsRequired = true)]
-        public EndpointType Type
-        {
-            get { return (EndpointType)base["type"]; }
-            set { base["type"] = value; }
-        }
+        public EndpointType Type { get; set; }
 
         /// <summary>
         /// Gets or sets the URL.
         /// </summary>
         /// <value>The URL.</value>
-        [ConfigurationProperty("url", IsRequired = true)]
-        public string Url
-        {
-            get { return (string)base["url"]; }
-            set { base["url"] = value; }
-        }
+        public string Url { get; set; }
 
-        #endregion
-
-        #region Implementation of IConfigurationElementCollectionElement
-
-        /// <summary>
-        /// Gets the element key.
-        /// </summary>
-        public object ElementKey
-        {
-            get { return Type; }
-        }
-
-        #endregion
     }
 }

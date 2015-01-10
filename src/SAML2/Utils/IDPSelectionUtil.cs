@@ -9,8 +9,8 @@ namespace SAML2.Utils
     /// and needs information on, which one to use.
     /// </summary>
     /// <param name="ep">List of configured endpoints</param>
-    /// <returns>The <see cref="IdentityProviderEndpointElement"/> for the IDP that should be used for authentication</returns>
-    public delegate IdentityProviderElement IdpSelectionEventHandler(IdentityProviderCollection ep);
+    /// <returns>The <see cref="IdentityProviderEndpoint"/> for the IDP that should be used for authentication</returns>
+    public delegate IdentityProvider IdpSelectionEventHandler(IdentityProviders ep);
 
     /// <summary>
     /// Contains helper functionality for selection of IDP when more than one is configured
@@ -33,15 +33,15 @@ namespace SAML2.Utils
         /// <returns>A URL that can be used for logging in at the IDP</returns>
         public static string GetIdpLoginUrl(string idpId)
         {
-            return string.Format("{0}?{1}={2}", Saml2Config.GetConfig().ServiceProvider.Endpoints.SignOnEndpoint.LocalPath, Saml20SignonHandler.IdpChoiceParameterName, HttpUtility.UrlEncode(idpId));
+            return string.Format("{0}?{1}={2}", Saml2Config.GetConfig().ServiceProvider.Endpoints.DefaultSignOnEndpoint.LocalPath, Saml20SignonHandler.IdpChoiceParameterName, HttpUtility.UrlEncode(idpId));
         }
 
         /// <summary>
         /// Invokes the IDP selection event handler.
         /// </summary>
         /// <param name="endpoints">The endpoints.</param>
-        /// <returns>The <see cref="IdentityProviderElement"/>.</returns>
-        internal static IdentityProviderElement InvokeIDPSelectionEventHandler(IdentityProviderCollection endpoints)
+        /// <returns>The <see cref="IdentityProvider"/>.</returns>
+        internal static IdentityProvider InvokeIDPSelectionEventHandler(IdentityProviders endpoints)
         {
             return IdpSelectionEvent != null ? IdpSelectionEvent(endpoints) : null;
         }

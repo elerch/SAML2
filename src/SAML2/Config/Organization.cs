@@ -5,7 +5,7 @@ namespace SAML2.Config
     /// <summary>
     /// Organization configuration element.
     /// </summary>
-    public class OrganizationElement
+    public class Organization
     {
         /// <summary>
         /// Gets or sets the display name.

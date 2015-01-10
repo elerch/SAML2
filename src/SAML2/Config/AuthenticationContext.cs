@@ -5,7 +5,7 @@ namespace SAML2.Config
     /// <summary>
     /// Authentication Context configuration element.
     /// </summary>
-    public class AuthenticationContextElement : IConfigurationElementCollectionElement
+    public class AuthenticationContext
     {
         /// <summary>
         /// Gets or sets the context.
@@ -19,9 +19,5 @@ namespace SAML2.Config
         /// <value>The reference type.</value>
         public string ReferenceType { get; set; }
 
-        /// <summary>
-        /// Gets the element key.
-        /// </summary>
-        public object ElementKey { get; set; }
     }
 }

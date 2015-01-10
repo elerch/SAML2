@@ -209,7 +209,7 @@ namespace SAML2.Tests
 
                 // Do some mock configuration.
                 var config = Saml2Config.GetConfig();
-                config.AllowedAudienceUris.Add(new AudienceUriElement { Uri = "https://saml.safewhere.net" });
+                config.AllowedAudienceUris.Add(new AudienceUri { Uri = "https://saml.safewhere.net" });
                 config.IdentityProviders.MetadataLocation = @"Protocol\MetadataDocs\FOBS"; // Set it manually.     
                 Assert.That(Directory.Exists(config.IdentityProviders.MetadataLocation));
 

@@ -5,7 +5,7 @@ namespace SAML2.Config
     /// <summary>
     /// Contact configuration element.
     /// </summary>
-    public class ContactElement
+    public class Contact
     {
 
         /// <summary>

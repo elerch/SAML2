@@ -7,7 +7,7 @@ namespace SAML2.Config
     /// <summary>
     /// Persistent Pseudonym configuration element.
     /// </summary>
-    public class PersistentPseudonymElement : WritableConfigurationElement
+    public class PersistentPseudonym : WritableConfigurationElement
     {
         /// <summary>
         /// Persistent Pseudonym mapper instance.

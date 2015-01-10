@@ -1,11 +1,12 @@
-﻿using System.Configuration;
+﻿using System.Collections.Generic;
+using System.Configuration;
 
 namespace SAML2.Config
 {
     /// <summary>
     /// Service Provider Endpoint configuration collection.
     /// </summary>
-    public class AuthenticationContextCollection : EnumerableConfigurationElementCollection<AuthenticationContextElement>
+    public class AuthenticationContexts : List<AuthenticationContext>
     {
         /// <summary>
         /// Gets the comparison.
