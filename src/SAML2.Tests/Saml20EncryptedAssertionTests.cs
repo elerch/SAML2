@@ -7,7 +7,6 @@ using System.Security.Cryptography.Xml;
 using System.Xml;
 using NUnit.Framework;
 using SAML2.Config;
-using SAML2.Protocol;
 using SAML2.Schema.Core;
 using SAML2.Schema.Metadata;
 using SAML2.Schema.Protocol;
@@ -108,7 +107,7 @@ namespace SAML2.Tests
 
                 // Act
                 encryptedAssertion.Decrypt();
-                var assertion = new Saml20Assertion(encryptedAssertion.Assertion.DocumentElement, null, false);
+                var assertion = new Saml20Assertion(encryptedAssertion.Assertion.DocumentElement, null, false, null);
 
                 // Assert
                 Assert.IsNotNull(encryptedAssertion.Assertion);
@@ -208,7 +207,10 @@ namespace SAML2.Tests
                 var encryptedList = doc.GetElementsByTagName(EncryptedAssertion.ElementName, Saml20Constants.Assertion);
 
                 // Do some mock configuration.
-                var config = Saml2Config.GetConfig();
+                var config = new Saml2Section {
+                    AllowedAudienceUris = new System.Collections.Generic.List<AudienceUri>(),
+                    IdentityProviders = new IdentityProviders()
+                };
                 config.AllowedAudienceUris.Add(new AudienceUri { Uri = "https://saml.safewhere.net" });
                 config.IdentityProviders.MetadataLocation = @"Protocol\MetadataDocs\FOBS"; // Set it manually.     
                 Assert.That(Directory.Exists(config.IdentityProviders.MetadataLocation));
@@ -222,7 +224,7 @@ namespace SAML2.Tests
                 encryptedAssertion.Decrypt();
 
                 // Retrieve metadata
-                var assertion = new Saml20Assertion(encryptedAssertion.Assertion.DocumentElement, null, false);
+                var assertion = new Saml20Assertion(encryptedAssertion.Assertion.DocumentElement, null, false, null);
                 var endp = config.IdentityProviders.FirstOrDefault(x => x.Id == assertion.Issuer);
 
                 // Assert
@@ -240,7 +242,8 @@ namespace SAML2.Tests
                 }
 
                 Assert.IsNull(assertion.SigningKey, "Signing key is already present on assertion. Modify test.");
-                Assert.That(assertion.CheckSignature(Saml20SignonHandler.GetTrustedSigners(endp.Metadata.GetKeys(KeyTypes.Signing), endp)));
+                Assert.IsTrue("We have tested this next test" == "");
+                //Assert.That(assertion.CheckSignature(Saml20SignonHandler.GetTrustedSigners(endp.Metadata.GetKeys(KeyTypes.Signing), endp)));
                 Assert.IsNotNull(assertion.SigningKey, "Signing key was not set on assertion instance.");
             }
         }

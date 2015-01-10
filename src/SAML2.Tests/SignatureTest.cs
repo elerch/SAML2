@@ -136,7 +136,7 @@ namespace SAML2.Tests
         public void TestSigning03()
         {
             // Load an unsigned assertion. 
-            var assertion = new Saml20Assertion(AssertionUtil.GetTestAssertion().DocumentElement, null, false);
+            var assertion = new Saml20Assertion(AssertionUtil.GetTestAssertion().DocumentElement, null, false, null);
             
             // Check that the assertion is not considered valid in any way.
             try

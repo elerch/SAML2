@@ -6,9 +6,10 @@ using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography.Xml;
 using System.Xml;
-using SAML2.Config;
 using SAML2.Schema.Core;
 using SAML2.Utils;
+using NUnit;
+using NUnit.Framework;
 
 namespace SAML2.Tests
 {
@@ -62,7 +63,7 @@ namespace SAML2.Tests
         {
             var document = LoadXmlDocument(assertionFile);
 
-            var assertion = new Saml20Assertion(document.DocumentElement, null, false);
+            var assertion = new Saml20Assertion(document.DocumentElement, null, false, null);
 
             if (verify)
             {
@@ -230,7 +231,8 @@ namespace SAML2.Tests
                 throw new ArgumentNullException("issuer");
             }
 
-            var config = Saml2Config.GetConfig();
+            // TODO: Mock out a config for this test
+            SAML2.Config.Saml2Section config = null; // Saml2Config.GetConfig(); 
 
             var idpEndpoint = config.IdentityProviders.FirstOrDefault(x => x.Id == issuer);
             if (idpEndpoint == null)
