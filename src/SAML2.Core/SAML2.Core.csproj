@@ -74,7 +74,6 @@
     <Compile Include="Config\NameIdFormat.cs" />
     <Compile Include="Config\Organization.cs" />
     <Compile Include="Config\PersistentPseudonym.cs" />
-    <Compile Include="Config\Saml2Config.cs" />
     <Compile Include="Config\Saml2Section.cs" />
     <Compile Include="Config\ServiceProvider.cs" />
     <Compile Include="Config\ServiceProviderEndpoints.cs" />
@@ -87,7 +86,6 @@
     <Compile Include="Identity\IPersistentPseudonymMapper.cs" />
     <Compile Include="Identity\ISaml20Identity.cs" />
     <Compile Include="Identity\Saml20Identity.cs" />
-    <Compile Include="Identity\Saml20PrincipalCache.cs" />
     <Compile Include="ISaml20IdpTokenAccessor.cs" />
     <Compile Include="Logging\IInternalLogger.cs" />
     <Compile Include="Logging\ILoggerFactory.cs" />
@@ -95,17 +93,6 @@
     <Compile Include="Logging\NoLoggingInternalLogger.cs" />
     <Compile Include="Logging\NoLoggingLoggerFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Protocol\AbstractEndpointHandler.cs" />
-    <Compile Include="Protocol\CommonDomainCookie.cs" />
-    <Compile Include="Protocol\Pages\BasePage.cs" />
-    <Compile Include="Protocol\Pages\ErrorPage.cs" />
-    <Compile Include="Protocol\Pages\SelectIDP.cs" />
-    <Compile Include="Protocol\Saml20AbstractEndpointHandler.cs" />
-    <Compile Include="Protocol\Saml20CDCIdpReturnPoint.cs" />
-    <Compile Include="Protocol\Saml20CDCReader.cs" />
-    <Compile Include="Protocol\Saml20LogoutHandler.cs" />
-    <Compile Include="Protocol\Saml20MetadataHandler.cs" />
-    <Compile Include="Protocol\Saml20SignonHandler.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

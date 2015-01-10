@@ -50,23 +50,6 @@ namespace SAML2.Identity
         }
 
         /// <summary>
-        /// Gets the user's identity and the attributes that were extracted from the SAML assertion.
-        /// This property may return null if the initialization of the SAML identity fails.
-        /// </summary>
-        public static Saml20Identity Current
-        {
-            get
-            {
-                if (Saml20PrincipalCache.GetPrincipal() != null)
-                {
-                    return Saml20PrincipalCache.GetPrincipal().Identity as Saml20Identity;
-                }
-
-                return null;
-            }
-        }
-
-        /// <summary>
         /// Gets the value of the persistent pseudonym issued by the IdP if the Service Provider connection
         /// is set up with persistent pseudonyms. Otherwise, returns null.
         /// </summary>
@@ -85,14 +68,6 @@ namespace SAML2.Identity
             get { return _attributes[attributeName]; }
         }
 
-        /// <summary>
-        /// Check if the SAML 2 Assertion's attributes have been correctly initialized.
-        /// </summary>
-        /// <returns><c>true</c> if this instance is initialized; otherwise, <c>false</c>.</returns>
-        public static bool IsInitialized()
-        {
-            return Saml20PrincipalCache.GetPrincipal() != null && Saml20PrincipalCache.GetPrincipal().Identity is Saml20Identity;
-        }
 
         /// <summary>
         /// Returns an enumerator that iterates through a collection.

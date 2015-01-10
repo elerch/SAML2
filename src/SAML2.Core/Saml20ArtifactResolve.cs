@@ -76,12 +76,9 @@ namespace SAML2
         /// Gets a default instance of this class with proper values set.
         /// </summary>
         /// <returns>The default <see cref="Saml20ArtifactResolve"/>.</returns>
-        public static Saml20ArtifactResolve GetDefault()
+        public static Saml20ArtifactResolve GetDefault(Saml2Section config)
         {
-            var config = Saml2Config.GetConfig();
-            var result = new Saml20ArtifactResolve { Issuer = config.ServiceProvider.Id };
-
-            return result;
+            return new Saml20ArtifactResolve { Issuer = config.ServiceProvider.Id };
         }
 
         /// <summary>

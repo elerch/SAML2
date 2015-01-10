@@ -29,15 +29,11 @@ namespace SAML2.Logging
             private ILoggerFactory loggerFactory;
             private ILoggerFactory LoggerFactory
             {
-                get { return loggerFactory ?? LocateLoggerFactory(); }
+                get { return loggerFactory = (loggerFactory ?? LocateLoggerFactory()); }
             }
             private ILoggerFactory LocateLoggerFactory()
             {
-                string loggerClass = null;
-                try {
-                    loggerClass = (Configuration ?? Saml2Config.GetConfig()).Logging.LoggingFactory;
-                }
-                catch (System.Configuration.ConfigurationErrorsException) { }
+                string loggerClass = Configuration.Logging.LoggingFactory;
                 return string.IsNullOrEmpty(loggerClass) ? new NoLoggingLoggerFactory() : GetLoggerFactory(loggerClass);
             }
             public IInternalLogger LoggerFor(string keyName)

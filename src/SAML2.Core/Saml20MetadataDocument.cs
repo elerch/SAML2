@@ -324,7 +324,6 @@ namespace SAML2
         public string ToXml(Encoding encoding, Saml2Section config)
         {
             encoding = encoding ?? Encoding.UTF8;
-            config = config ?? Saml2Config.GetConfig();
             var doc = new XmlDocument { PreserveWhitespace = true };
             doc.LoadXml(Serialization.SerializeToXmlString(Entity));
 
@@ -371,7 +370,7 @@ namespace SAML2
                 case BindingType.NotSet:
                     return defaultValue;
                 default:
-                    throw new ConfigurationErrorsException(string.Format("Unsupported SAML binding {0}", Enum.GetName(typeof(BindingType), samlBinding)));
+                    throw new InvalidOperationException(string.Format("Unsupported SAML binding {0}", Enum.GetName(typeof(BindingType), samlBinding)));
             }
         }
 
@@ -395,7 +394,7 @@ namespace SAML2
         /// <param name="doc">The doc.</param>
         private static void SignDocument(XmlDocument doc, Saml2Section config)
         {
-            var cert = config.ServiceProvider.SigningCertificate.GetCertificate();
+            var cert = config.ServiceProvider.SigningCertificate;
             if (!cert.HasPrivateKey)
             {
                 throw new InvalidOperationException("Private key access to the signing certificate is required.");
@@ -535,7 +534,7 @@ namespace SAML2
                                                                     {
                                                                         Name = config.Metadata.RequestedAttributes[i].Name
                                                                     };
-                    if (config.Metadata.RequestedAttributes[i].IsRequired)
+                    if (config.Metadata.RequestedAttributes[i].IsRequired.GetValueOrDefault())
                     {
                         attConsumingService.RequestedAttribute[i].IsRequired = true;
                     }
@@ -571,7 +570,7 @@ namespace SAML2
             keyEncryption.KeyInfo = keySigning.KeyInfo;
 
             // apply the <Organization> element
-            if (config.Metadata.Organization.ElementInformation.IsPresent)
+            if (config.Metadata.Organization != null)
             {
                 entity.Organization = new Schema.Metadata.Organization
                                           {
@@ -583,8 +582,8 @@ namespace SAML2
 
             if (config.Metadata.Contacts != null && config.Metadata.Contacts.Count > 0)
             {
-                entity.ContactPerson = config.Metadata.Contacts.Select(x => new Contact
-                                                                                {
+                entity.ContactPerson = config.Metadata.Contacts.Select(x => new Schema.Metadata.Contact
+                {
                                                                                     ContactType =
                                                                                         (Schema.Metadata.ContactType)
                                                                                         ((int)x.Type),

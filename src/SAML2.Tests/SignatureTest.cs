@@ -152,7 +152,7 @@ namespace SAML2.Tests
 
             var cert = new X509Certificate2(@"Certificates\sts_dev_certificate.pfx", "test1234");
             Assert.That(cert.HasPrivateKey, "Certificate no longer contains a private key. Modify test.");
-            assertion.Sign(cert);
+            assertion.Sign(cert, null);
 
             // Check that the signature is now valid
             assertion.CheckValid(new[] { cert.PublicKey.Key });

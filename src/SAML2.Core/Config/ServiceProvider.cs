@@ -45,6 +45,6 @@ namespace SAML2.Config
         /// Gets or sets the signing certificate.
         /// </summary>
         /// <value>The signing certificate.</value>
-        public X509Certificate SigningCertificate { get; set; }
+        public X509Certificate2 SigningCertificate { get; set; }
     }
 }

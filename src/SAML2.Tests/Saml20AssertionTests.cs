@@ -32,12 +32,12 @@ namespace SAML2.Tests
             public void AddAttribute()
             {
                 // Arrange
-                var assertion = new Saml20Assertion(AssertionUtil.LoadXmlDocument(@"Assertions\Saml2Assertion_01").DocumentElement, null, false);
+                var assertion = new Saml20Assertion(AssertionUtil.LoadXmlDocument(@"Assertions\Saml2Assertion_01").DocumentElement, null, false, null);
                 var attributes = assertion.Attributes;
                 attributes.Add(new SamlAttribute());
 
                 var cert = AssertionUtil.GetCertificate();
-                assertion.Sign(cert);
+                assertion.Sign(cert, null);
 
                 assertion.CheckValid(new[] { cert.PublicKey.Key });
 

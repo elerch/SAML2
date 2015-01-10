@@ -109,9 +109,8 @@ namespace SAML2
         /// Returns an instance of the class with meaningful default values set.
         /// </summary>
         /// <returns>The <see cref="Saml20LogoutRequest"/>.</returns>
-        public static Saml20LogoutRequest GetDefault()
+        public static Saml20LogoutRequest GetDefault(Saml2Section config)
         {
-            var config = Saml2Config.GetConfig();
             var result = new Saml20LogoutRequest
                              {
                                  SubjectToLogOut = new NameId(),

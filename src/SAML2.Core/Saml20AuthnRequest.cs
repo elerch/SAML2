@@ -152,7 +152,6 @@ namespace SAML2
         /// <returns>The default <see cref="Saml20AuthnRequest"/>.</returns>
         public static Saml20AuthnRequest GetDefault(Saml2Section config)
         {
-            config = config ?? Saml2Config.GetConfig();
             var result = new Saml20AuthnRequest { Issuer = config.ServiceProvider.Id };
             if (config.ServiceProvider.Endpoints.DefaultSignOnEndpoint.Binding != BindingType.NotSet)
             {

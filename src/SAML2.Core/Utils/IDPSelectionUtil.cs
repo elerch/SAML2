@@ -1,6 +1,4 @@
-﻿using System.Web;
-using SAML2.Config;
-using SAML2.Protocol;
+﻿using SAML2.Config;
 
 namespace SAML2.Utils
 {
@@ -31,9 +29,11 @@ namespace SAML2.Utils
         /// </summary>
         /// <param name="idpId">Id of IDP that an authentication URL is needed for</param>
         /// <returns>A URL that can be used for logging in at the IDP</returns>
-        public static string GetIdpLoginUrl(string idpId)
+        public static string GetIdpLoginUrl(string idpId, Saml2Section config)
         {
-            return string.Format("{0}?{1}={2}", Saml2Config.GetConfig().ServiceProvider.Endpoints.DefaultSignOnEndpoint.LocalPath, Saml20SignonHandler.IdpChoiceParameterName, HttpUtility.UrlEncode(idpId));
+            throw new System.NotImplementedException();
+            // TODO: This should be needed eventually, but probably has to be handled outside of core
+            //return string.Format("{0}?{1}={2}", config.ServiceProvider.Endpoints.DefaultSignOnEndpoint.LocalPath, Saml20SignonHandler.IdpChoiceParameterName, HttpUtility.UrlEncode(idpId));
         }
 
         /// <summary>

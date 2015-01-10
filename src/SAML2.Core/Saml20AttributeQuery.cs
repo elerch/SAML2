@@ -68,12 +68,9 @@ namespace SAML2
         /// Gets a default instance of this class with meaningful default values set.
         /// </summary>
         /// <returns>The default <see cref="Saml20AttributeQuery"/>.</returns>
-        public static Saml20AttributeQuery GetDefault()
+        public static Saml20AttributeQuery GetDefault(Saml2Section config)
         {
-            var config = Saml2Config.GetConfig();
-            var result = new Saml20AttributeQuery { Issuer = config.ServiceProvider.Id };
-
-            return result;
+            return new Saml20AttributeQuery { Issuer = config.ServiceProvider.Id };
         }
 
         /// <summary>

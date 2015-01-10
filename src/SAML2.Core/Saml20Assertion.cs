@@ -19,8 +19,6 @@ namespace SAML2
     /// </summary>
     public class Saml20Assertion 
     {
-        #region Private variables
-
         /// <summary>
         /// Configuration element
         /// </summary>
@@ -65,14 +63,6 @@ namespace SAML2
         /// </summary>
         private List<EncryptedElement> _encryptedAssertionAttributes;
 
-        #endregion
-
-        #region Constructors
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Saml20Assertion"/> class.
-        /// </summary>
-        public Saml20Assertion() { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Saml20Assertion"/> class.
@@ -85,7 +75,7 @@ namespace SAML2
             _quirksMode = quirksMode;
             _profile = null;
             _config = config;
-            LoadXml(assertion, trustedSigners);
+            LoadXml(assertion, trustedSigners, config);
         }
 
         /// <summary>
@@ -99,7 +89,7 @@ namespace SAML2
         {
             _profile = profile;
             _quirksMode = quirksMode;
-            LoadXml(assertion, trustedSigners);
+            LoadXml(assertion, trustedSigners, null);
         }
 
         /// <summary>
@@ -115,12 +105,9 @@ namespace SAML2
             _profile = profile;
             _quirksMode = quirksMode;
             _autoValidate = autoValidate;
-            LoadXml(assertion, trustedSigners);
+            LoadXml(assertion, trustedSigners, null);
         }
 
-        #endregion
-
-        #region Properties
         /// <summary>
         /// Value of current time, usually needed only for unit tests
         /// </summary>
@@ -334,42 +321,36 @@ namespace SAML2
         /// <summary>
         /// Gets the assertion validator.
         /// </summary>
-        private ISaml20AssertionValidator AssertionValidator
+        private ISaml20AssertionValidator GetAssertionValidator(Saml2Section config)
         {
-            get
+            if (_assertionValidator == null)
             {
-                if (_assertionValidator == null)
+                if (config == null || config.AllowedAudienceUris == null)
                 {
-                    var config = _config ?? Saml2Config.GetConfig();
-                    if (config == null || config.AllowedAudienceUris == null)
+                    if (string.IsNullOrEmpty(_profile))
                     {
-                        if (string.IsNullOrEmpty(_profile))
-                        {
-                            _assertionValidator = new Saml20AssertionValidator(null, _quirksMode);
-                        }
-                        else
-                        {
-                            _assertionValidator = (ISaml20AssertionValidator)Activator.CreateInstance(Type.GetType(_profile), null, _quirksMode);
-                        }
+                        _assertionValidator = new Saml20AssertionValidator(null, _quirksMode);
                     }
                     else
                     {
-                        if (string.IsNullOrEmpty(_profile))
-                        {
-                            _assertionValidator = new Saml20AssertionValidator(config.AllowedAudienceUris.Select(x => x.Uri).ToList(), _quirksMode);
-                        }
-                        else
-                        {
-                            _assertionValidator = (ISaml20AssertionValidator)Activator.CreateInstance(Type.GetType(_profile), config.AllowedAudienceUris, _quirksMode);
-                        }
+                        _assertionValidator = (ISaml20AssertionValidator)Activator.CreateInstance(Type.GetType(_profile), null, _quirksMode);
                     }
                 }
-
-                return _assertionValidator;
+                else
+                {
+                    if (string.IsNullOrEmpty(_profile))
+                    {
+                        _assertionValidator = new Saml20AssertionValidator(config.AllowedAudienceUris.Select(x => x.Uri).ToList(), _quirksMode);
+                    }
+                    else
+                    {
+                        _assertionValidator = (ISaml20AssertionValidator)Activator.CreateInstance(Type.GetType(_profile), config.AllowedAudienceUris, _quirksMode);
+                    }
+                }
             }
-        }
 
-        #endregion
+            return _assertionValidator;
+        }
 
         /// <summary>
         /// Check the signature of the XmlDocument using the list of keys. 
@@ -436,7 +417,7 @@ namespace SAML2
         /// Signs the assertion with the given certificate.
         /// </summary>
         /// <param name="cert">The certificate to sign the assertion with.</param>
-        public void Sign(X509Certificate2 cert)
+        public void Sign(X509Certificate2 cert, Saml2Section config)
         {
             CheckCertificateCanSign(cert);            
 
@@ -459,7 +440,7 @@ namespace SAML2
 
             AddSignature(assertionDocument, cert);
 
-            LoadXml(assertionDocument.DocumentElement, new List<AsymmetricAlgorithm>(new[] { cert.PublicKey.Key }));
+            LoadXml(assertionDocument.DocumentElement, new List<AsymmetricAlgorithm>(new[] { cert.PublicKey.Key }), config);
         }
 
         /// <summary>
@@ -628,7 +609,7 @@ namespace SAML2
         /// </summary>
         /// <param name="element">The element.</param>
         /// <param name="trustedSigners">The trusted signers.</param>
-        private void LoadXml(XmlElement element, IEnumerable<AsymmetricAlgorithm> trustedSigners)
+        private void LoadXml(XmlElement element, IEnumerable<AsymmetricAlgorithm> trustedSigners, Saml2Section config)
         {
             XmlAssertion = element;
             if (trustedSigners != null)
@@ -642,7 +623,7 @@ namespace SAML2
             // Validate the saml20Assertion.      
             if (_autoValidate)
             {
-                AssertionValidator.ValidateAssertion(Assertion);
+                GetAssertionValidator(config).ValidateAssertion(Assertion);
             }
         }
     }

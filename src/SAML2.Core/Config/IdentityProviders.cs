@@ -71,6 +71,7 @@ namespace SAML2.Config
         /// </summary>
           public string Encodings { get; set; }
 
+        private string metadatalocation;
         /// <summary>
         /// Gets or sets the metadata location.
         /// </summary>
@@ -78,18 +79,17 @@ namespace SAML2.Config
         {
             get
             {
-                var value = (string)base["metadata"];
-                if (!Path.IsPathRooted(value))
+                if (!Path.IsPathRooted(metadatalocation))
                 {
-                    return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, value);
+                    return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, metadatalocation);
                 }
 
-                return value;
+                return metadatalocation;
             }
 
             set
             {
-                base["metadata"] = value;
+                metadatalocation = value;
                 _fileSystemWatcher.Path = MetadataLocation;
                 Refresh();
             }
@@ -154,7 +154,7 @@ namespace SAML2.Config
                     {
                         // If the endpoint does not exist, create it.
                         endp = new IdentityProvider();
-                        BaseAdd(endp);
+                        Add(endp);
                     }
 
                     endp.Id = endp.Name = metadataDoc.EntityId;
@@ -340,8 +340,7 @@ namespace SAML2.Config
             catch (Exception e)
             {
                 // Probably not a metadata file.
-                Logging.LoggerProvider.LoggerFor(GetType()).Error("Problem parsing metadata file", e);
-                return null;
+                throw new FormatException("Problem parsing metadata file", e);
             }
         }
     }

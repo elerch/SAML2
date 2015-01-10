@@ -42,6 +42,26 @@
   <ItemGroup>
     <Compile Include="Class1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Protocol\AbstractEndpointHandler.cs" />
+    <Compile Include="Protocol\CommonDomainCookie.cs" />
+    <Compile Include="Protocol\Pages\BasePage.cs">
+      <SubType>aspxcodebehind</SubType>
+    </Compile>
+    <Compile Include="Protocol\Pages\ErrorPage.cs">
+      <SubType>aspxcodebehind</SubType>
+    </Compile>
+    <Compile Include="Protocol\Pages\SelectIDP.cs">
+      <SubType>aspxcodebehind</SubType>
+    </Compile>
+    <Compile Include="Protocol\Saml20AbstractEndpointHandler.cs" />
+    <Compile Include="Protocol\Saml20CDCIdPReturnPoint.cs" />
+    <Compile Include="Protocol\Saml20CDCReader.cs" />
+    <Compile Include="Protocol\Saml20LogoutHandler.cs" />
+    <Compile Include="Protocol\Saml20MetadataHandler.cs" />
+    <Compile Include="Protocol\Saml20SignonHandler.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Protocol\Saml20SignonHandler.cs.orig" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
