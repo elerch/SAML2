@@ -1,4 +1,5 @@
 ﻿using System.Configuration;
+using System.Security.Cryptography.X509Certificates;
 
 namespace SAML2.Config
 {
@@ -44,6 +45,6 @@ namespace SAML2.Config
         /// Gets or sets the signing certificate.
         /// </summary>
         /// <value>The signing certificate.</value>
-        public Certificate SigningCertificate { get; set; }
+        public X509Certificate SigningCertificate { get; set; }
     }
 }

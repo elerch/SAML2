@@ -13,12 +13,6 @@ namespace SAML2.Config
         /// </summary>
         public static string Name { get { return "saml2"; } }
 
-
-        /// <summary>
-        /// Gets or sets the actions to perform on successful processing.
-        /// </summary>
-        /// <value>The actions.</value>
-        public ActionCollection Actions { get; set; }
         /// <summary>
         /// Gets or sets the allowed audience uris.
         /// </summary>
@@ -59,17 +53,5 @@ namespace SAML2.Config
         /// <value>The service provider.</value>
         public ServiceProvider ServiceProvider { get; set; }
 
-        /// <summary>
-        /// Gets a value indicating whether the <see cref="T:System.Configuration.ConfigurationElement"/> object is read-only.
-        /// </summary>
-        /// <returns>true if the <see cref="T:System.Configuration.ConfigurationElement"/> object is read-only; otherwise, false.</returns>
-        public override bool IsReadOnly()
-        {
-            return false;
-        }
-
-        public class ActionCollection
-        {
-        }
     }
 }

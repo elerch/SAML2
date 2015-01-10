@@ -1,4 +1,6 @@
-﻿using System.Configuration;
+﻿using SAML2.Schema.Metadata;
+using System.Collections.Generic;
+using System.Configuration;
 
 namespace SAML2.Config
 {
@@ -21,7 +23,7 @@ namespace SAML2.Config
         /// </summary>
         /// <value>The contacts.</value>
 
-        public Contacts Contacts { get; set; }
+        public List<Contact> Contacts { get; set; }
 
         /// <summary>
         /// Gets or sets the organization.
@@ -34,6 +36,6 @@ namespace SAML2.Config
         /// Gets or sets the requested attributes.
         /// </summary>
         /// <value>The requested attributes.</value>
-        public RequestedAttributes RequestedAttributes { get; set; }
+        public List<RequestedAttribute> RequestedAttributes { get; set; }
     }
 }

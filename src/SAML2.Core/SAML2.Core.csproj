@@ -74,7 +74,6 @@
     <Compile Include="Config\NameIdFormat.cs" />
     <Compile Include="Config\Organization.cs" />
     <Compile Include="Config\PersistentPseudonym.cs" />
-    <Compile Include="Config\RequestedAttributes.cs" />
     <Compile Include="Config\Saml2Config.cs" />
     <Compile Include="Config\Saml2Section.cs" />
     <Compile Include="Config\ServiceProvider.cs" />
