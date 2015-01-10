@@ -5,7 +5,7 @@ namespace SAML2.Config
     /// <summary>
     /// Service Provider Endpoint configuration element.
     /// </summary>
-    public class ServiceProviderEndpointElement : WritableConfigurationElement, IConfigurationElementCollectionElement
+    public class ServiceProviderEndpoint : WritableConfigurationElement, IConfigurationElementCollectionElement
     {
         #region Attributes
 

@@ -5,7 +5,7 @@ namespace SAML2.Config
     /// <summary>
     /// Identity Provider configuration element.
     /// </summary>
-    public class IdentityProviderElement : WritableConfigurationElement, IConfigurationElementCollectionElement
+    public class IdentityProvider : WritableConfigurationElement, IConfigurationElementCollectionElement
     {
         /// <summary>
         /// Gets or sets the metadata.
@@ -16,7 +16,7 @@ namespace SAML2.Config
         #region Attributes
 
         /// <summary>
-        /// Gets or sets a value indicating whether this <see cref="IdentityProviderElement"/> is default.
+        /// Gets or sets a value indicating whether this <see cref="IdentityProvider"/> is default.
         /// </summary>
         /// <value><c>true</c> if default; otherwise, <c>false</c>.</value>
         /// <remarks>
@@ -137,9 +137,9 @@ namespace SAML2.Config
         /// </summary>
         /// <value>The artifact resolution.</value>
         [ConfigurationProperty("artifactResolution")]
-        public HttpAuthElement ArtifactResolution
+        public HttpAuth ArtifactResolution
         {
-            get { return (HttpAuthElement)base["artifactResolution"]; }
+            get { return (HttpAuth)base["artifactResolution"]; }
             set { base["artifactResolution"] = value; }
         }
 
@@ -148,9 +148,9 @@ namespace SAML2.Config
         /// </summary>
         /// <value>The attribute query.</value>
         [ConfigurationProperty("attributeQuery")]
-        public HttpAuthElement AttributeQuery
+        public HttpAuth AttributeQuery
         {
-            get { return (HttpAuthElement)base["attributeQuery"]; }
+            get { return (HttpAuth)base["attributeQuery"]; }
             set { base["attributeQuery"] = value; }
         }
 
@@ -159,9 +159,9 @@ namespace SAML2.Config
         /// </summary>
         /// <value>The certificate validations.</value>
         [ConfigurationProperty("certificateValidations")]
-        public CertificateValidationCollection CertificateValidations
+        public CertificateValidations CertificateValidations
         {
-            get { return (CertificateValidationCollection)base["certificateValidations"]; }
+            get { return (CertificateValidations)base["certificateValidations"]; }
             set { base["certificateValidations"] = value; }
         }
 

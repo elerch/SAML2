@@ -9,7 +9,7 @@ namespace SAML2.Config
     /// Enumerable ConfigurationElementCollection abstract base class.
     /// </summary>
     /// <typeparam name="TConfigurationElementType">The type of the configuration element type.</typeparam>
-    public abstract class EnumerableConfigurationElementCollection<TConfigurationElementType> :
+    public abstract class EnumerableConfigurationElements<TConfigurationElementType> :
        ICollection<TConfigurationElementType>
        where TConfigurationElementType : IConfigurationElementCollectionElement, new()
     {

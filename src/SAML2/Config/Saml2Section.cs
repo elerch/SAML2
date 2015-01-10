@@ -22,29 +22,29 @@ namespace SAML2.Config
         /// Gets or sets the allowed audience uris.
         /// </summary>
         /// <value>The allowed audience uris.</value>
-        public AllowedAudienceUriCollection AllowedAudienceUris { get; set; }
+        public AllowedAudienceUris AllowedAudienceUris { get; set; }
 
         /// <summary>
         /// Gets or sets the assertion profile.
         /// </summary>
         /// <value>The assertion profile configuration.</value>
-        public AssertionProfileElement AssertionProfile { get; set; }
+        public AssertionProfile AssertionProfile { get; set; }
         /// <summary>
         /// Gets or sets the common domain cookie configuration.
         /// </summary>
         /// <value>The common domain cookie configuration.</value>
-        public CommonDomainCookieElement CommonDomainCookie { get; set; }
+        public CommonDomainCookie CommonDomainCookie { get; set; }
 
         /// <summary>
         /// Gets or sets the identity providers.
         /// </summary>
         /// <value>The identity providers.</value>
-        public IdentityProviderCollection IdentityProviders { get; set; }
+        public IdentityProviders IdentityProviders { get; set; }
         /// <summary>
         /// Gets or sets the logging configuration.
         /// </summary>
         /// <value>The logging configuration.</value>
-        public LoggingElement Logging { get; set; }
+        public Logging Logging { get; set; }
 
         /// <summary>
         /// Gets or sets the metadata.
@@ -56,7 +56,7 @@ namespace SAML2.Config
         /// Gets or sets the service provider.
         /// </summary>
         /// <value>The service provider.</value>
-        public ServiceProviderElement ServiceProvider { get; set; }
+        public ServiceProvider ServiceProvider { get; set; }
 
         /// <summary>
         /// Gets a value indicating whether the <see cref="T:System.Configuration.ConfigurationElement"/> object is read-only.
