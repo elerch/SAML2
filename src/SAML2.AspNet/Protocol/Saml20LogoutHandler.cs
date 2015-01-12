@@ -10,6 +10,7 @@ using SAML2.Schema.Metadata;
 using SAML2.Schema.Protocol;
 using SAML2.Utils;
 using System.Security.Cryptography.X509Certificates;
+using SAML2.AspNet;
 
 namespace SAML2.Protocol
 {
@@ -26,7 +27,7 @@ namespace SAML2.Protocol
             // Read the proper redirect url from config
             try
             {
-                RedirectUrl = Saml2Config.GetConfig().ServiceProvider.Endpoints.DefaultLogoutEndpoint.RedirectUrl;
+                RedirectUrl = ConfigurationFactory.Instance.Configuration.ServiceProvider.Endpoints.DefaultLogoutEndpoint.RedirectUrl;
             }
             catch (Exception e)
             {
@@ -126,7 +127,7 @@ namespace SAML2.Protocol
         /// <param name="context">The context.</param>
         private void HandleArtifact(HttpContext context)
         {
-            var config = Saml2Config.GetConfig();
+            var config = ConfigurationFactory.Instance.Configuration;
             var builder = new HttpArtifactBindingBuilder(context, config);
             var inputStream = builder.ResolveArtifact();
 
@@ -143,7 +144,7 @@ namespace SAML2.Protocol
             var parser = new HttpArtifactBindingParser(inputStream);
             Logger.DebugFormat(TraceMessages.SOAPMessageParse, parser.SamlMessage.OuterXml);
 
-            var config = Saml2Config.GetConfig();
+            var config = ConfigurationFactory.Instance.Configuration;
             var builder = new HttpArtifactBindingBuilder(context, config);
             var idp = RetrieveIDPConfiguration(parser.Issuer);
             
@@ -249,7 +250,7 @@ namespace SAML2.Protocol
             var destination = DetermineEndpointConfiguration(BindingType.Redirect, idp.Endpoints.DefaultLogoutEndpoint, idp.Metadata.IDPSLOEndpoints);
 
             // Fetch config object
-            var config = Saml2Config.GetConfig();
+            var config = ConfigurationFactory.Instance.Configuration;
 
             // Build the response object
             var response = new Saml20LogoutResponse

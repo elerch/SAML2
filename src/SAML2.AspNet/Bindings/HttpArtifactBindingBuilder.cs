@@ -6,6 +6,7 @@ using System.Xml;
 using SAML2.Config;
 using SAML2.Schema.Protocol;
 using SAML2.Utils;
+using SAML2.AspNet;
 
 namespace SAML2.Bindings
 {
@@ -94,7 +95,7 @@ namespace SAML2.Bindings
             var endpointUrl = idpEndPoint.Metadata.GetIDPARSEndpoint(endpointIndex);
 
             Logger.DebugFormat(TraceMessages.ArtifactResolveForKnownIdentityProvider, artifact, idpEndPoint.Id, endpointUrl);
-            var config = Saml2Config.GetConfig();
+            var config = ConfigurationFactory.Instance.Configuration;
             var resolve = Saml20ArtifactResolve.GetDefault(config.ServiceProvider.Id);
             resolve.Artifact = artifact;
 

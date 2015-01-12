@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Web;
 using SAML2.Config;
+using SAML2.AspNet;
 
 namespace SAML2.Protocol
 {
@@ -17,7 +18,7 @@ namespace SAML2.Protocol
         {
             Logger.DebugFormat("{0}.{1} called", GetType(), "ProcessRequest()");
 
-            var config = Saml2Config.GetConfig();
+            var config = ConfigurationFactory.Instance.Configuration;
             if (config == null)
             {
                 throw new Saml20Exception("Missing saml2 config section in web.config.");

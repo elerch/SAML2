@@ -6,6 +6,7 @@ using System.Web;
 using SAML2.Config;
 using SAML2.Utils;
 using SAML2.Bindings;
+using SAML2.AspNet;
 
 namespace SAML2.Protocol
 {
@@ -235,7 +236,7 @@ namespace SAML2.Protocol
                 return;
             }
 
-            Validated = BindingUtility.ValidateConfiguration(Saml2Config.GetConfig());
+            Validated = BindingUtility.ValidateConfiguration(ConfigurationFactory.Instance.Configuration);
         }
     }
 }

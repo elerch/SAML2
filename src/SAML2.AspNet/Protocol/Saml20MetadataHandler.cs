@@ -4,6 +4,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Web;
 using SAML2.Config;
+using SAML2.AspNet;
 
 namespace SAML2.Protocol
 {
@@ -73,7 +74,7 @@ namespace SAML2.Protocol
         {
             Logger.Debug(TraceMessages.MetadataDocumentBeingCreated);
 
-            var configuration = Saml2Config.GetConfig();
+            var configuration = ConfigurationFactory.Instance.Configuration;
 
             var keyinfo = new System.Security.Cryptography.Xml.KeyInfo();
             var keyClause = new System.Security.Cryptography.Xml.KeyInfoX509Data(configuration.ServiceProvider.SigningCertificate, X509IncludeOption.EndCertOnly);

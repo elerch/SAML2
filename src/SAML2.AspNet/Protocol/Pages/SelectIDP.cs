@@ -3,6 +3,7 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using SAML2.Config;
 using SAML2.Utils;
+using SAML2.AspNet;
 
 namespace SAML2.Protocol.Pages
 {
@@ -23,7 +24,7 @@ namespace SAML2.Protocol.Pages
             BodyPanel.Controls.Add(new LiteralControl(Resources.PageIdentityProviderSelectDescription));
             BodyPanel.Controls.Add(new LiteralControl("<br/><br/>"));
 
-            var config = Saml2Config.GetConfig();
+            var config = ConfigurationFactory.Instance.Configuration;
 
             foreach (var endPoint in config.IdentityProviders)
             {
@@ -35,7 +36,7 @@ namespace SAML2.Protocol.Pages
                                            string.IsNullOrEmpty(endPoint.Name)
                                                ? endPoint.Metadata.EntityId
                                                : endPoint.Name,
-                                       NavigateUrl = IdpSelectionUtil.GetIdpLoginUrl(endPoint.Id)
+                                       NavigateUrl = IdpSelectionUtil.GetIdpLoginUrl(endPoint.Id, ConfigurationFactory.Instance.Configuration)
                                    };
 
                     // Link text. If a name has been specified in web.config, use it. Otherwise, use id from metadata.

@@ -17,6 +17,7 @@ using SAML2.Schema.Metadata;
 using SAML2.Schema.Protocol;
 using SAML2.Specification;
 using SAML2.Utils;
+using SAML2.AspNet;
 
 namespace SAML2.Protocol
 {
@@ -139,7 +140,7 @@ namespace SAML2.Protocol
         
         protected override void Handle(HttpContext context)
         {
-            Handle(context, Saml2Config.GetConfig());
+            Handle(context, ConfigurationFactory.Instance.Configuration);
         }
         /// <summary>
         /// Handles a request.
