@@ -36,6 +36,6 @@ namespace SAML2.Config
         /// Gets or sets the requested attributes.
         /// </summary>
         /// <value>The requested attributes.</value>
-        public List<RequestedAttribute> RequestedAttributes { get; set; }
+        public List<Attribute> RequestedAttributes { get; set; }
     }
 }

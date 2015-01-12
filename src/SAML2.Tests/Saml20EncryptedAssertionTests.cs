@@ -208,10 +208,10 @@ namespace SAML2.Tests
 
                 // Do some mock configuration.
                 var config = new Saml2Configuration {
-                    AllowedAudienceUris = new System.Collections.Generic.List<AudienceUri>(),
+                    AllowedAudienceUris = new System.Collections.Generic.List<Uri>(),
                     IdentityProviders = new IdentityProviders()
                 };
-                config.AllowedAudienceUris.Add(new AudienceUri { Uri = "https://saml.safewhere.net" });
+                config.AllowedAudienceUris.Add(new Uri("https://saml.safewhere.net"));
                 config.IdentityProviders.MetadataLocation = @"Protocol\MetadataDocs\FOBS"; // Set it manually.     
                 Assert.That(Directory.Exists(config.IdentityProviders.MetadataLocation));
 

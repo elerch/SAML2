@@ -340,7 +340,7 @@ namespace SAML2
                 {
                     if (string.IsNullOrEmpty(_profile))
                     {
-                        _assertionValidator = new Saml20AssertionValidator(config.AllowedAudienceUris.Select(x => x.Uri).ToList(), _quirksMode);
+                        _assertionValidator = new Saml20AssertionValidator(config.AllowedAudienceUris, _quirksMode);
                     }
                     else
                     {

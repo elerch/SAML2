@@ -19,7 +19,7 @@ namespace SAML2.Validation
         /// <summary>
         /// The allowed audience URIs.
         /// </summary>
-        private readonly List<string> _allowedAudienceUris;
+        private readonly List<Uri> _allowedAudienceUris;
 
         /// <summary>
         /// NameIDValidator backing field.
@@ -41,7 +41,7 @@ namespace SAML2.Validation
         /// </summary>
         /// <param name="allowedAudienceUris">The allowed audience uris.</param>
         /// <param name="quirksMode">if set to <c>true</c> [quirks mode].</param>
-        public Saml20AssertionValidator(List<string> allowedAudienceUris, bool quirksMode)
+        public Saml20AssertionValidator(List<Uri> allowedAudienceUris, bool quirksMode)
         {
             _allowedAudienceUris = allowedAudienceUris;
             _quirksMode = quirksMode;
@@ -303,7 +303,7 @@ namespace SAML2.Validation
                         throw new Saml20FormatException("The service is not configured to meet any audience restrictions");
                     }
 
-                    string match = null;
+                    Uri match = null;
                     foreach (var audience in audienceRestriction.Audience)
                     {
                         // In QuirksMode this validation is omitted
@@ -316,7 +316,7 @@ namespace SAML2.Validation
                             }
                         }
 
-                        match = _allowedAudienceUris.Find(allowedUri => allowedUri.Equals(audience));
+                        match = _allowedAudienceUris.Find(allowedUri => allowedUri.Equals(new Uri(audience)));
                         if (match != null)
                         {
                             break;
@@ -327,7 +327,7 @@ namespace SAML2.Validation
                     if (logger.IsDebugEnabled)
                     {
                         var intended = string.Join(", ", audienceRestriction.Audience.ToArray());
-                        var allowed = string.Join(", ", _allowedAudienceUris.ToArray());
+                        var allowed = string.Join(", ", _allowedAudienceUris.Select(u => u.ToString()).ToArray());
                         logger.DebugFormat(TraceMessages.AudienceRestrictionValidated, intended, allowed);
                     }
 

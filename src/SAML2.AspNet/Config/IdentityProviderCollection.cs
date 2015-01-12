@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
@@ -8,18 +9,18 @@ using System.Xml;
 using SAML2.Schema.Metadata;
 using SAML2.Utils;
 
-namespace SAML2.Config
+namespace SAML2.AspNet.Config
 {
     /// <summary>
     /// Identity Provider configuration collection.
     /// </summary>
-    //[ConfigurationCollection(typeof(IdentityProviderElement), CollectionType = ConfigurationElementCollectionType.AddRemoveClearMap)]
-    public class IdentityProviders : List<IdentityProvider>
+    [ConfigurationCollection(typeof(IdentityProviderElement), CollectionType = ConfigurationElementCollectionType.AddRemoveClearMap)]
+    public class IdentityProviderCollection : EnumerableConfigurationElementCollection<IdentityProviderElement>
     {
         /// <summary>
         /// The file system watcher.
         /// </summary>
-        private FileSystemWatcher _fileSystemWatcher;
+        private readonly FileSystemWatcher _fileSystemWatcher;
 
         /// <summary>
         /// Contains Encoding instances of the the encodings that should by tried when a metadata file does not have its
@@ -42,13 +43,10 @@ namespace SAML2.Config
         /// </summary>
         private object _lockSync = new object();
 
-        public IdentityProviders() : base() { Initialize(); }
-
-        public IdentityProviders(IEnumerable<IdentityProvider> collection) : base(collection) { Initialize(); }
         /// <summary>
-        /// Initializes a new instance of the <see cref="IdentityProviders"/> class.
+        /// Initializes a new instance of the <see cref="IdentityProviderCollection"/> class.
         /// </summary>
-        private void Initialize()
+        public IdentityProviderCollection()
         {
             _fileInfo = new Dictionary<string, DateTime>();
             _fileToEntity = new Dictionary<string, string>();
@@ -67,32 +65,38 @@ namespace SAML2.Config
             _fileSystemWatcher.Renamed += FileSystemWatcher_Renamed;
         }
 
-        
+        #region Attributes
 
         /// <summary>
         /// Gets or sets the encodings.
         /// </summary>
-          public string Encodings { get; set; }
+        [ConfigurationProperty("encodings")]
+        public string Encodings
+        {
+            get { return (string)base["encodings"]; }
+            set { base["encodings"] = value; }
+        }
 
-        private string metadatalocation;
         /// <summary>
         /// Gets or sets the metadata location.
         /// </summary>
+        [ConfigurationProperty("metadata")]
         public string MetadataLocation
         {
             get
             {
-                if (!Path.IsPathRooted(metadatalocation))
+                var value = (string)base["metadata"];
+                if (!Path.IsPathRooted(value))
                 {
-                    return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, metadatalocation);
+                    return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, value);
                 }
 
-                return metadatalocation;
+                return value;
             }
 
             set
             {
-                metadatalocation = value;
+                base["metadata"] = value;
                 _fileSystemWatcher.Path = MetadataLocation;
                 Refresh();
             }
@@ -101,7 +105,14 @@ namespace SAML2.Config
         /// <summary>
         /// Gets the selection URL to use for choosing identity providers if multiple are available and none are set as default.
         /// </summary>
-        public string SelectionUrl { get; set; }
+        [ConfigurationProperty("selectionUrl")]
+        public string SelectionUrl
+        {
+            get { return (string)base["selectionUrl"]; }
+        }
+
+        #endregion
+
         /// <summary>
         /// Refreshes this instance from metadata location.
         /// </summary>
@@ -156,8 +167,8 @@ namespace SAML2.Config
                     if (endp == null)
                     {
                         // If the endpoint does not exist, create it.
-                        endp = new IdentityProvider();
-                        Add(endp);
+                        endp = new IdentityProviderElement();
+                        BaseAdd(endp);
                     }
 
                     endp.Id = endp.Name = metadataDoc.EntityId;
@@ -343,7 +354,8 @@ namespace SAML2.Config
             catch (Exception e)
             {
                 // Probably not a metadata file.
-                throw new FormatException("Problem parsing metadata file", e);
+                Logging.LoggerProvider.LoggerFor(GetType()).Error("Problem parsing metadata file", e);
+                return null;
             }
         }
     }

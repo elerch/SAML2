@@ -1,20 +1,18 @@
-﻿using System.Collections.Generic;
-using System.Configuration;
+﻿using System.Configuration;
 using System.Linq;
 
-namespace SAML2.Config
+namespace SAML2.AspNet.Config
 {
     /// <summary>
     /// Service Provider Endpoint configuration collection.
     /// </summary>
-    public class ServiceProviderEndpoints : List<ServiceProviderEndpoint>
+    [ConfigurationCollection(typeof(ServiceProviderEndpointElement), AddItemName = "endpoint", CollectionType = ConfigurationElementCollectionType.BasicMap)]
+    public class ServiceProviderEndpointCollection : EnumerableConfigurationElementCollection<ServiceProviderEndpointElement>
     {
-        public ServiceProviderEndpoints() : base() { }
-        public ServiceProviderEndpoints(IEnumerable<ServiceProviderEndpoint> collection) : base(collection) { }
         /// <summary>
         /// Gets the log off endpoint.
         /// </summary>
-        public ServiceProviderEndpoint DefaultLogoutEndpoint
+        public ServiceProviderEndpointElement LogoutEndpoint
         {
             get { return this.FirstOrDefault(x => x.Type == EndpointType.Logout); }
         }
@@ -22,7 +20,7 @@ namespace SAML2.Config
         /// <summary>
         /// Gets the sign on endpoint.
         /// </summary>
-        public ServiceProviderEndpoint DefaultSignOnEndpoint
+        public ServiceProviderEndpointElement SignOnEndpoint
         {
             get { return this.FirstOrDefault(x => x.Type == EndpointType.SignOn); }
         }

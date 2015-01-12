@@ -8,6 +8,8 @@ namespace SAML2.Config
     /// </summary>
     public class AuthenticationContexts : List<AuthenticationContext>
     {
+        public AuthenticationContexts() : base() { }
+        public AuthenticationContexts(IEnumerable<AuthenticationContext> collection) : base(collection) { }
         /// <summary>
         /// Gets the comparison.
         /// </summary>

@@ -17,13 +17,13 @@ namespace SAML2.Specification
         public static List<ICertificateSpecification> GetCertificateSpecifications(IdentityProvider endpoint)
         {
             var specs = new List<ICertificateSpecification>();
-            if (endpoint.CertificateValidations != null && endpoint.CertificateValidations.Count > 0)
+            if (endpoint.CertificateValidationTypes != null && endpoint.CertificateValidationTypes.Count > 0)
             {
-                foreach (var elem in endpoint.CertificateValidations)
+                foreach (var elem in endpoint.CertificateValidationTypes)
                 {
                     try
                     {
-                        var val = (ICertificateSpecification)Activator.CreateInstance(Type.GetType(elem.Type));
+                        var val = (ICertificateSpecification)Activator.CreateInstance(Type.GetType(elem));
                         specs.Add(val);
                     }
                     catch (Exception e)

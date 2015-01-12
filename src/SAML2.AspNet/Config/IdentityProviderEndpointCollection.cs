@@ -1,21 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
+﻿using System.Configuration;
 using System.Linq;
 
-namespace SAML2.Config
+namespace SAML2.AspNet.Config
 {
     /// <summary>
     /// Identity Provider Endpoint configuration collection.
     /// </summary>
-    public class IdentityProviderEndpoints : List<IdentityProviderEndpoint>
+    [ConfigurationCollection(typeof(IdentityProviderEndpointElement), AddItemName = "endpoint", CollectionType = ConfigurationElementCollectionType.BasicMap)]
+    public class IdentityProviderEndpointCollection : EnumerableConfigurationElementCollection<IdentityProviderEndpointElement>
     {
-        public IdentityProviderEndpoints() : base() { }
-        public IdentityProviderEndpoints(IEnumerable<IdentityProviderEndpoint> collection) : base(collection) { }
         /// <summary>
         /// Gets the log off endpoint.
         /// </summary>
-        public IdentityProviderEndpoint DefaultLogoutEndpoint
+        public IdentityProviderEndpointElement LogoutEndpoint
         {
             get { return this.FirstOrDefault(x => x.Type == EndpointType.Logout); }
         }
@@ -23,10 +20,9 @@ namespace SAML2.Config
         /// <summary>
         /// Gets the sign on endpoint.
         /// </summary>
-        public IdentityProviderEndpoint DefaultSignOnEndpoint
+        public IdentityProviderEndpointElement SignOnEndpoint
         {
             get { return this.FirstOrDefault(x => x.Type == EndpointType.SignOn); }
         }
-
     }
 }

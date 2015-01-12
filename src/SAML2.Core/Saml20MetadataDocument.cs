@@ -534,7 +534,7 @@ namespace SAML2
                                                                     {
                                                                         Name = config.Metadata.RequestedAttributes[i].Name
                                                                     };
-                    if (config.Metadata.RequestedAttributes[i].IsRequired.GetValueOrDefault())
+                    if (config.Metadata.RequestedAttributes[i].IsRequired)
                     {
                         attConsumingService.RequestedAttribute[i].IsRequired = true;
                     }

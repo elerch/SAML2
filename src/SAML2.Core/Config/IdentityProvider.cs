@@ -90,7 +90,7 @@ namespace SAML2.Config
         /// Gets or sets the certificate validations.
         /// </summary>
         /// <value>The certificate validations.</value>
-        public List<CertificateValidation> CertificateValidations { get; set; }
+        public List<string> CertificateValidationTypes { get; set; }
 
 
         /// <summary>

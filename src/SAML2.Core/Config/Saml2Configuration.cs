@@ -17,13 +17,13 @@ namespace SAML2.Config
         /// Gets or sets the allowed audience uris.
         /// </summary>
         /// <value>The allowed audience uris.</value>
-        public List<AudienceUri> AllowedAudienceUris { get; set; }
+        public List<System.Uri> AllowedAudienceUris { get; set; }
 
         /// <summary>
         /// Gets or sets the assertion profile.
         /// </summary>
         /// <value>The assertion profile configuration.</value>
-        public AssertionProfile AssertionProfile { get; set; }
+        public string AssertionProfileValidator { get; set; }
         /// <summary>
         /// Gets or sets the common domain cookie configuration.
         /// </summary>
@@ -39,7 +39,7 @@ namespace SAML2.Config
         /// Gets or sets the logging configuration.
         /// </summary>
         /// <value>The logging configuration.</value>
-        public Logging Logging { get; set; }
+        public string LoggingFactoryType { get; set; }
 
         /// <summary>
         /// Gets or sets the metadata.

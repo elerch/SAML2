@@ -48,6 +48,40 @@
     <Compile Include="Bindings\HttpPostBindingParser.cs" />
     <Compile Include="Bindings\HttpSOAPBindingBuilder.cs" />
     <Compile Include="Configuration.cs" />
+    <Compile Include="Config\ActionCollection.cs" />
+    <Compile Include="Config\ActionElement.cs" />
+    <Compile Include="Config\AllowedAudienceUriCollection.cs" />
+    <Compile Include="Config\AssertionProfileElement.cs" />
+    <Compile Include="Config\AttributeElement.cs" />
+    <Compile Include="Config\AudienceUriElement.cs" />
+    <Compile Include="Config\AuthenticationContextCollection.cs" />
+    <Compile Include="Config\AuthenticationContextElement.cs" />
+    <Compile Include="Config\CertificateElement.cs" />
+    <Compile Include="Config\CertificateValidationCollection.cs" />
+    <Compile Include="Config\CertificateValidationElement.cs" />
+    <Compile Include="Config\CommonDomainCookieElement.cs" />
+    <Compile Include="Config\ContactCollection.cs" />
+    <Compile Include="Config\ContactElement.cs" />
+    <Compile Include="Config\EnumerableConfigurationElementCollection.cs" />
+    <Compile Include="Config\HttpAuthCredentialsElement.cs" />
+    <Compile Include="Config\HttpAuthElement.cs" />
+    <Compile Include="Config\IConfigurationElementCollectionElement.cs" />
+    <Compile Include="Config\IdentityProviderCollection.cs" />
+    <Compile Include="Config\IdentityProviderElement.cs" />
+    <Compile Include="Config\IdentityProviderEndpointCollection.cs" />
+    <Compile Include="Config\IdentityProviderEndpointElement.cs" />
+    <Compile Include="Config\LoggingElement.cs" />
+    <Compile Include="Config\MetadataElement.cs" />
+    <Compile Include="Config\NameIdFormatCollection.cs" />
+    <Compile Include="Config\NameIdFormatElement.cs" />
+    <Compile Include="Config\OrganizationElement.cs" />
+    <Compile Include="Config\PersistentPseudonymElement.cs" />
+    <Compile Include="Config\RequestedAttributesCollection.cs" />
+    <Compile Include="Config\Saml2Section.cs" />
+    <Compile Include="Config\ServiceProviderElement.cs" />
+    <Compile Include="Config\ServiceProviderEndpointCollection.cs" />
+    <Compile Include="Config\ServiceProviderEndpointElement.cs" />
+    <Compile Include="Config\WritableConfigurationElement.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Protocol\AbstractEndpointHandler.cs" />
     <Compile Include="Protocol\CommonDomainCookie.cs" />
@@ -74,6 +108,9 @@
       <Project>{75e5bad2-a20c-43cc-b5c8-38004cedbdfd}</Project>
       <Name>SAML2.Core</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Config\IdentityProviderElement.cs.orig" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
