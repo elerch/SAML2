@@ -63,7 +63,7 @@ namespace SAML2.Tests
         {
             var document = LoadXmlDocument(assertionFile);
 
-            var assertion = new Saml20Assertion(document.DocumentElement, null, false, null);
+            var assertion = new Saml20Assertion(document.DocumentElement, null, false, TestConfiguration.Configuration);
 
             if (verify)
             {
@@ -232,7 +232,7 @@ namespace SAML2.Tests
             }
 
             // TODO: Mock out a config for this test
-            SAML2.Config.Saml2Configuration config = null; // Saml2Config.GetConfig(); 
+            SAML2.Config.Saml2Configuration config = TestConfiguration.Configuration; // Saml2Config.GetConfig(); 
 
             var idpEndpoint = config.IdentityProviders.FirstOrDefault(x => x.Id == issuer);
             if (idpEndpoint == null)

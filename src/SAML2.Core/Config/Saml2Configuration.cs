@@ -53,5 +53,11 @@ namespace SAML2.Config
         /// <value>The service provider.</value>
         public ServiceProvider ServiceProvider { get; set; }
 
+        public Saml2Configuration()
+        {
+            IdentityProviders = new IdentityProviders();
+            AllowedAudienceUris = new List<System.Uri>();
+        }
+
     }
 }

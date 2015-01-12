@@ -84,7 +84,7 @@ namespace SAML2.Protocol
 
             Logger.Debug(TraceMessages.MetadataDocumentCreated);
 
-            context.Response.Write(doc.ToXml(context.Response.ContentEncoding));
+            context.Response.Write(doc.ToXml(context.Response.ContentEncoding, configuration.ServiceProvider.SigningCertificate));
         }
     }
 }

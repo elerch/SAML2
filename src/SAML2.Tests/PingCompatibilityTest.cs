@@ -55,7 +55,7 @@ namespace SAML2.Tests
             encass.Assertion.WriteTo(writer);
             writer.Flush();
             
-            var assertion = new Saml20Assertion(encass.Assertion.DocumentElement, AssertionUtil.GetTrustedSigners(encass.Assertion.Attributes["Issuer"].Value), false, null);
+            var assertion = new Saml20Assertion(encass.Assertion.DocumentElement, AssertionUtil.GetTrustedSigners(encass.Assertion.Attributes["Issuer"].Value), false, TestConfiguration.Configuration);
 
             Assert.That(encass.Assertion != null);
 

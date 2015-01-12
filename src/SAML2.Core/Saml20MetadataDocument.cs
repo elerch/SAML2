@@ -296,32 +296,11 @@ namespace SAML2
         /// <summary>
         /// Return a string containing the metadata XML based on the settings added to this instance.
         /// The resulting XML will be signed, if the AsymmetricAlgorithm property has been set.
-        /// The default encoding (UTF-8) will be used for the resulting XML.
-        /// </summary>
-        /// <returns>The XML.</returns>
-        public string ToXml()
-        {
-            return ToXml(null);
-        }
-
-        /// <summary>
-        /// Return a string containing the metadata XML based on the settings added to this instance.
-        /// The resulting XML will be signed, if the AsymmetricAlgorithm property has been set.
         /// </summary>
         /// <param name="encoding">The encoding.</param>
+        /// <param name="certificate">Certificate to be used for signing (if appropriate)</param>
         /// <returns>The XML.</returns>
-        public string ToXml(Encoding encoding)
-        {
-            return ToXml(encoding, null);
-        }
-        /// <summary>
-        /// Return a string containing the metadata XML based on the settings added to this instance.
-        /// The resulting XML will be signed, if the AsymmetricAlgorithm property has been set.
-        /// </summary>
-        /// <param name="encoding">The encoding.</param>
-        /// <param name="config">The configuration.</param>
-        /// <returns>The XML.</returns>
-        public string ToXml(Encoding encoding, Saml2Configuration config)
+        public string ToXml(Encoding encoding, X509Certificate2 certificate)
         {
             encoding = encoding ?? Encoding.UTF8;
             var doc = new XmlDocument { PreserveWhitespace = true };
@@ -339,15 +318,11 @@ namespace SAML2
 
             if (Sign)
             {
-                SignDocument(doc, config);
+                SignDocument(doc, certificate);
             }
 
             return doc.OuterXml;
         }
-
-        #endregion
-
-        #region Private methods
 
         /// <summary>
         /// Gets the binding.
@@ -392,17 +367,16 @@ namespace SAML2
         /// Signs the document.
         /// </summary>
         /// <param name="doc">The doc.</param>
-        private static void SignDocument(XmlDocument doc, Saml2Configuration config)
+        private static void SignDocument(XmlDocument doc, X509Certificate2 certificate)
         {
-            var cert = config.ServiceProvider.SigningCertificate;
-            if (!cert.HasPrivateKey)
+            if (!certificate.HasPrivateKey)
             {
                 throw new InvalidOperationException("Private key access to the signing certificate is required.");
             }
 
             var signedXml = new SignedXml(doc);
             signedXml.SignedInfo.CanonicalizationMethod = SignedXml.XmlDsigExcC14NTransformUrl;
-            signedXml.SigningKey = cert.PrivateKey;
+            signedXml.SigningKey = certificate.PrivateKey;
 
             // Retrieve the value of the "ID" attribute on the root assertion element.
             var reference = new Reference("#" + doc.DocumentElement.GetAttribute("ID"));
@@ -416,7 +390,7 @@ namespace SAML2
             signedXml.KeyInfo = new KeyInfo();
             // This was WholeChain, requiring us to trust our certs. WIF WSFed does not have this requirement,
             // so the option was relaxed to EndCertOnly. This might need to be configurable
-            signedXml.KeyInfo.AddClause(new KeyInfoX509Data(cert, X509IncludeOption.EndCertOnly)); 
+            signedXml.KeyInfo.AddClause(new KeyInfoX509Data(certificate, X509IncludeOption.EndCertOnly)); 
 
             signedXml.ComputeSignature();
 

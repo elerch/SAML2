@@ -82,12 +82,13 @@ namespace SAML2.Config
         {
             get
             {
-                if (!Path.IsPathRooted(metadatalocation))
+                var value = metadatalocation ?? string.Empty;
+                if (!Path.IsPathRooted(value))
                 {
-                    return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, metadatalocation);
+                    return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, value);
                 }
 
-                return metadatalocation;
+                return value;
             }
 
             set

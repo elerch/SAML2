@@ -4,6 +4,8 @@ using System.Xml;
 using NUnit.Framework;
 using SAML2.Schema.Metadata;
 using SAML2.Utils;
+using System.Security.Cryptography.X509Certificates;
+using System.IO;
 
 namespace SAML2.Tests
 {
@@ -86,14 +88,29 @@ namespace SAML2.Tests
                 var entity = doc.CreateDefaultEntity();
                 entity.ValidUntil = DateTime.Now.AddDays(14);
 
+                var certificate = new X509Certificate2(FileEmbeddedResource("SAML2.Tests.Certificates.sts_dev_certificate.pfx"), "test1234");
                 // Act
-                var metadata = doc.ToXml();
+                var metadata = doc.ToXml(null, certificate);
                 var document = new XmlDocument { PreserveWhitespace = true };
                 document.LoadXml(metadata);
                 var result = XmlSignatureUtils.CheckSignature(document);
 
                 // Assert
                 Assert.That(result);
+            }
+
+            private byte[] FileEmbeddedResource(string path)
+            {
+                var assembly = System.Reflection.Assembly.GetExecutingAssembly();
+                var resourceName = path;
+
+                byte[] result = null;
+                using (Stream stream = assembly.GetManifestResourceStream(resourceName))
+                using (var memoryStream = new MemoryStream()) {
+                    stream.CopyTo(memoryStream);
+                    result = memoryStream.ToArray();
+                }
+                return result;
             }
         }
     }

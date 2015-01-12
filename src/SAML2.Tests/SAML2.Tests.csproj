@@ -68,6 +68,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Saml20EncryptedAssertionTests.cs" />
+    <Compile Include="TestConfiguration.cs" />
     <Compile Include="Utils\ArtifactUtilTests.cs" />
     <Compile Include="AssertionUtil.cs" />
     <Compile Include="EncryptedAssertionUtil.cs" />
@@ -134,9 +135,9 @@
     <None Include="Certificates\SafewhereTest_SFS.pfx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Certificates\sts_dev_certificate.pfx">
+    <EmbeddedResource Include="Certificates\sts_dev_certificate.pfx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    </EmbeddedResource>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
