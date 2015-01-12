@@ -180,9 +180,9 @@ namespace SAML2.Tests.Validation
             {
                 // Arrange
                 var assertion = AssertionUtil.GetBasicAssertion();
-                var allowedAudienceUris = new List<string>
+                var allowedAudienceUris = new List<Uri>
                                               {
-                                                  "uri:lalal"
+                                                  new Uri("uri:lalal")
                                               };
                 var validator = new Saml20AssertionValidator(allowedAudienceUris, false);
 

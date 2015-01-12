@@ -84,9 +84,9 @@ namespace SAML2.Tests
         /// Gets the audiences.
         /// </summary>
         /// <returns>The audience list used for tests.</returns>
-        public static List<string> GetAudiences()
+        public static List<Uri> GetAudiences()
         {
-            return new List<string>(new[] { "urn:borger.dk:id" });
+            return new List<Uri>(new[] { new Uri("urn:borger.dk:id") });
         }
 
         /// <summary>
@@ -117,7 +117,7 @@ namespace SAML2.Tests
             };
             assertion.Subject.Items = new object[] { subjectConfirmation };
             assertion.Conditions = new Conditions { NotOnOrAfter = new DateTime(2008, 12, 31, 12, 0, 0, 0) };
-            var audienceRestriction = new AudienceRestriction { Audience = GetAudiences() };
+            var audienceRestriction = new AudienceRestriction { Audience = GetAudiences().Select(u => u.ToString()).ToList() };
             assertion.Conditions.Items = new List<ConditionAbstract>(new ConditionAbstract[] { audienceRestriction });
 
             AuthnStatement authnStatement;

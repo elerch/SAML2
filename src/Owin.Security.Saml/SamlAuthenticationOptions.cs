@@ -4,6 +4,7 @@ using System.IdentityModel.Tokens;
 using System.Net.Http;
 using Microsoft.IdentityModel.Extensions;
 using Microsoft.IdentityModel.Protocols;
+using SAML2.Config;
 
 namespace Owin.Security.Saml
 {
@@ -77,21 +78,9 @@ namespace Owin.Security.Saml
         }
 
         /// <summary>
-        /// Configuration provided directly by the developer. If provided, then MetadataAddress and the Backchannel properties
-        /// will not be used. This information should not be updated during request processing.
+        /// Configuration provided directly by the developer. 
         /// </summary>
-        public SamlConfiguration Configuration { get; set; }
-
-        /// <summary>
-        /// Gets or sets the address to retrieve the Saml metadata
-        /// </summary>
-        public string MetadataAddress { get; set; }
-
-        /// <summary>
-        /// Responsible for retrieving, caching, and refreshing the configuration from metadata.
-        /// If not provided, then one will be created using the MetadataAddress and Backchannel properties.
-        /// </summary>
-        public IConfigurationManager<SamlConfiguration> ConfigurationManager { get; set; }
+        public Saml2Configuration Configuration { get; set; }
 
         /// <summary>
         /// Gets or sets if a metadata refresh should be attempted after a SecurityTokenSignatureKeyNotFoundException. This allows for automatic

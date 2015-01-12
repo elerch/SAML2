@@ -1,4 +1,5 @@
-﻿using System.Configuration;
+﻿using SAML2.Config;
+using System.Configuration;
 
 namespace SAML2.AspNet.Config
 {
