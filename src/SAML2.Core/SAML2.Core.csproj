@@ -70,7 +70,7 @@
     <Compile Include="Config\EndpointType.cs" />
     <Compile Include="Config\HttpAuthCredentials.cs" />
     <Compile Include="Config\HttpAuth.cs" />
-    <Compile Include="Config\IConfigurationReader.cs" />
+    <Compile Include="Config\IConfigurationProvider.cs" />
     <Compile Include="Config\IdentityProviderEndpoint.cs" />
     <Compile Include="Config\IdentityProviderEndpoints.cs" />
     <Compile Include="Config\IdentityProviders.cs" />

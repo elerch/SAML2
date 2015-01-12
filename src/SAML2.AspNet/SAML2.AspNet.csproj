@@ -101,7 +101,7 @@
     <Compile Include="Protocol\Saml20MetadataHandler.cs" />
     <Compile Include="Protocol\Saml20SignonHandler.cs" />
     <Compile Include="Saml20MetadataFetcherModule.cs" />
-    <Compile Include="WebConfigConfigurationReader.cs" />
+    <Compile Include="WebConfigConfigurationProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SAML2.Core\SAML2.Core.csproj">
