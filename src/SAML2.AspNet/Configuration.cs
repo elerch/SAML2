@@ -15,7 +15,7 @@ namespace SAML2.AspNet
 
         private Saml2Configuration GetConfiguration()
         {
-            return ((IConfigurationReader)Activator.CreateInstance(Type.GetType(FetcherType))).GetConfiguration();
+            return ((IConfigurationProvider)Activator.CreateInstance(Type.GetType(FetcherType))).GetConfiguration();
         }
 
         private string fetcherType;

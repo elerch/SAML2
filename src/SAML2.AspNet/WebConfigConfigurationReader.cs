@@ -10,7 +10,7 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace SAML2.AspNet
 {
-    public class WebConfigConfigurationReader : IConfigurationReader
+    public class WebConfigConfigurationReader : IConfigurationProvider
     {
         public Saml2Configuration GetConfiguration()
         {

@@ -1,5 +1,7 @@
 ﻿using System;
-using Microsoft.Owin.Security.Saml;
+using Microsoft.Owin.Security;
+using SAML2.Config;
+using Owin.Security.Saml;
 
 namespace Owin
 {
@@ -43,23 +45,15 @@ namespace Owin
         /// <param name="app">The <see cref="IAppBuilder"/> passed to the configuration method</param>
         /// <param name="SamlOptions">SamlAuthenticationOptions configuration options</param>
         /// <returns>The updated <see cref="IAppBuilder"/></returns>
-        public static IAppBuilder UseSamlAuthentication(this IAppBuilder app, SamlAuthenticationOptions SamlOptions)
+        public static IAppBuilder UseSamlAuthentication(this IAppBuilder app, IConfigurationProvider configurationReader)
         {
             if (app == null)
             {
                 throw new ArgumentNullException("app");
             }
-            if (SamlOptions == null)
-            {
-                throw new ArgumentNullException("SamlOptions");
-            }
+            if (configurationReader == null) throw new ArgumentNullException("configurationReader"); 
 
-            if (string.IsNullOrWhiteSpace(SamlOptions.TokenValidationParameters.ValidAudience))
-            {
-                SamlOptions.TokenValidationParameters.ValidAudience = SamlOptions.Wtrealm;
-            }
-
-            return app.Use<SamlAuthenticationMiddleware>(app, SamlOptions);
+            return app.Use<SamlAuthenticationMiddleware>(app, configurationReader);
         }
     }
 }

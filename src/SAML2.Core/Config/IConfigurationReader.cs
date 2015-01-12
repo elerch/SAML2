@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SAML2.Config
+﻿namespace SAML2.Config
 {
-    public interface IConfigurationReader
+    public interface IConfigurationProvider
     {
         Saml2Configuration GetConfiguration();
     }
