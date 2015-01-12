@@ -84,7 +84,7 @@
     <Compile Include="Config\NameIdFormat.cs" />
     <Compile Include="Config\Organization.cs" />
     <Compile Include="Config\PersistentPseudonym.cs" />
-    <Compile Include="Config\Saml2Section.cs" />
+    <Compile Include="Config\Saml2Configuration.cs" />
     <Compile Include="Config\ServiceProvider.cs" />
     <Compile Include="Config\ServiceProviderEndpoints.cs" />
     <Compile Include="Config\ServiceProviderEndpoint.cs" />

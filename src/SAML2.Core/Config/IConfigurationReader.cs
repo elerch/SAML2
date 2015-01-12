@@ -8,6 +8,6 @@ namespace SAML2.Config
 {
     public interface IConfigurationReader
     {
-        Saml2Section GetConfiguration();
+        Saml2Configuration GetConfiguration();
     }
 }

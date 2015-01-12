@@ -48,7 +48,7 @@ namespace SAML2.Protocol
         /// Handles a request.
         /// </summary>
         /// <param name="context">The context.</param>
-        public void Handle(HttpContext context, Saml2Section config)
+        public void Handle(HttpContext context, Saml2Configuration config)
         {
             Logger.Debug(TraceMessages.LogoutHandlerCalled);
 
@@ -107,7 +107,7 @@ namespace SAML2.Protocol
         /// </summary>
         /// <param name="context">The context.</param>
         /// <param name="idpInitiated">if set to <c>true</c> identity provider is initiated.</param>
-        private void DoLogout(HttpContext context, bool idpInitiated = false, Saml2Section config = null)
+        private void DoLogout(HttpContext context, bool idpInitiated = false, Saml2Configuration config = null)
         {
             Logger.Debug(TraceMessages.LogoutActionsExecuting);
             // TODO: Event for logout actions
@@ -367,7 +367,7 @@ namespace SAML2.Protocol
         /// Handles the response.
         /// </summary>
         /// <param name="context">The context.</param>
-        private void HandleResponse(HttpContext context, Saml2Section config)
+        private void HandleResponse(HttpContext context, Saml2Configuration config)
         {
             Logger.DebugFormat(TraceMessages.LogoutResponseReceived);
 
@@ -448,7 +448,7 @@ namespace SAML2.Protocol
         /// </summary>
         /// <param name="idp">The identity provider.</param>
         /// <param name="context">The context.</param>
-        private void TransferClient(IdentityProvider idp, HttpContext context, Saml2Section config)
+        private void TransferClient(IdentityProvider idp, HttpContext context, Saml2Configuration config)
         {
             var request = Saml20LogoutRequest.GetDefault(config);
 

@@ -6,7 +6,7 @@ namespace SAML2.Config
     /// <summary>
     /// SAML2 Configuration Section.
     /// </summary>
-    public class Saml2Section
+    public class Saml2Configuration
     {
         /// <summary>
         /// Gets the section name.

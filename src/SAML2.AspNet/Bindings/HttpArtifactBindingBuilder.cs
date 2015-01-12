@@ -15,13 +15,13 @@ namespace SAML2.Bindings
     /// </summary>
     public class HttpArtifactBindingBuilder : HttpSoapBindingBuilder
     {
-        private readonly Saml2Section config;
+        private readonly Saml2Configuration config;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="HttpArtifactBindingBuilder"/> class.
         /// </summary>
         /// <param name="context">The current http context.</param>
-        public HttpArtifactBindingBuilder(HttpContext context, Saml2Section config) : base(context)
+        public HttpArtifactBindingBuilder(HttpContext context, Saml2Configuration config) : base(context)
         {
             if (config == null) throw new ArgumentNullException("config");
             this.config = config;

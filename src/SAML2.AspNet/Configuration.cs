@@ -5,15 +5,15 @@ namespace SAML2.AspNet
 {
     public class ConfigurationFactory
     {
-        private Saml2Section configuration;
-        public Saml2Section Configuration
+        private Saml2Configuration configuration;
+        public Saml2Configuration Configuration
         {
             get {
                 return configuration ?? (configuration = GetConfiguration());
             }
         }
 
-        private Saml2Section GetConfiguration()
+        private Saml2Configuration GetConfiguration()
         {
             return ((IConfigurationReader)Activator.CreateInstance(Type.GetType(FetcherType))).GetConfiguration();
         }

@@ -98,7 +98,7 @@ namespace SAML2.Protocol
         /// <param name="context">The context.</param>
         /// <param name="config">Configuration.  If null, configuration will be populated from application config</param>
         /// <returns>The <see cref="IdentityProvider"/>.</returns>
-        public IdentityProvider RetrieveIDP(HttpContext context, Saml2Section config)
+        public IdentityProvider RetrieveIDP(HttpContext context, Saml2Configuration config)
         {
             // If idpChoice is set, use it value
             if (!string.IsNullOrEmpty(context.Request.Params[IdpChoiceParameterName]))
@@ -169,7 +169,7 @@ namespace SAML2.Protocol
         /// </summary>
         /// <param name="idpId">The identity provider id.</param>
         /// <returns>The <see cref="IdentityProvider"/>.</returns>
-        public IdentityProvider RetrieveIDPConfiguration(string idpId, Saml2Section config)
+        public IdentityProvider RetrieveIDPConfiguration(string idpId, Saml2Configuration config)
         {
             return config.IdentityProviders.FirstOrDefault(x => x.Id == idpId);
         }

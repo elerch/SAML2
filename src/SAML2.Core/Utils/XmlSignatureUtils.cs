@@ -251,7 +251,7 @@ namespace SAML2.Utils
         /// </summary>
         /// <param name="doc">The XmlDocument to be signed</param>
         /// <param name="id">The id of the topmost element in the XmlDocument</param>
-        public static void SignDocument(XmlDocument doc, string id, Saml2Section config)
+        public static void SignDocument(XmlDocument doc, string id, Saml2Configuration config)
         {
             SignDocument(doc, id, config.ServiceProvider.SigningCertificate);
         }

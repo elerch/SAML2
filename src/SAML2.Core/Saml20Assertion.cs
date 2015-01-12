@@ -22,7 +22,7 @@ namespace SAML2
         /// <summary>
         /// Configuration element
         /// </summary>
-        private readonly Saml2Section _config = null;
+        private readonly Saml2Configuration _config = null;
 
         /// <summary>
         /// Auto validate assertions.
@@ -70,7 +70,7 @@ namespace SAML2
         /// <param name="assertion">The assertion.</param>
         /// <param name="trustedSigners">If <code>null</code>, the signature of the given assertion is not verified.</param>
         /// <param name="quirksMode">if set to <c>true</c> quirks mode is enabled.</param>
-        public Saml20Assertion(XmlElement assertion, IEnumerable<AsymmetricAlgorithm> trustedSigners, bool quirksMode, Saml2Section config)
+        public Saml20Assertion(XmlElement assertion, IEnumerable<AsymmetricAlgorithm> trustedSigners, bool quirksMode, Saml2Configuration config)
         {
             _quirksMode = quirksMode;
             _profile = null;
@@ -321,7 +321,7 @@ namespace SAML2
         /// <summary>
         /// Gets the assertion validator.
         /// </summary>
-        private ISaml20AssertionValidator GetAssertionValidator(Saml2Section config)
+        private ISaml20AssertionValidator GetAssertionValidator(Saml2Configuration config)
         {
             if (_assertionValidator == null)
             {
@@ -417,7 +417,7 @@ namespace SAML2
         /// Signs the assertion with the given certificate.
         /// </summary>
         /// <param name="cert">The certificate to sign the assertion with.</param>
-        public void Sign(X509Certificate2 cert, Saml2Section config)
+        public void Sign(X509Certificate2 cert, Saml2Configuration config)
         {
             CheckCertificateCanSign(cert);            
 
@@ -609,7 +609,7 @@ namespace SAML2
         /// </summary>
         /// <param name="element">The element.</param>
         /// <param name="trustedSigners">The trusted signers.</param>
-        private void LoadXml(XmlElement element, IEnumerable<AsymmetricAlgorithm> trustedSigners, Saml2Section config)
+        private void LoadXml(XmlElement element, IEnumerable<AsymmetricAlgorithm> trustedSigners, Saml2Configuration config)
         {
             XmlAssertion = element;
             if (trustedSigners != null)

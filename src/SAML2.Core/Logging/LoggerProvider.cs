@@ -18,7 +18,7 @@ namespace SAML2.Logging
         /// </summary>
         private readonly ILoggerFactory _loggerFactory;
 
-        public static Saml2Section Configuration { get; set; }
+        public static Saml2Configuration Configuration { get; set; }
 
         static LoggerProvider()
         {

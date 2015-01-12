@@ -12,7 +12,7 @@ namespace SAML2.Bindings
         /// Validates the SAML20Federation configuration.
         /// </summary>
         /// <returns>True if validation passes, false otherwise</returns>
-        public static bool ValidateConfiguration(Saml2Section config)
+        public static bool ValidateConfiguration(Saml2Configuration config)
         {
             if (config == null)
             {

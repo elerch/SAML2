@@ -207,7 +207,7 @@ namespace SAML2.Tests
                 var encryptedList = doc.GetElementsByTagName(EncryptedAssertion.ElementName, Saml20Constants.Assertion);
 
                 // Do some mock configuration.
-                var config = new Saml2Section {
+                var config = new Saml2Configuration {
                     AllowedAudienceUris = new System.Collections.Generic.List<AudienceUri>(),
                     IdentityProviders = new IdentityProviders()
                 };

@@ -29,7 +29,7 @@ namespace SAML2.Utils
         /// </summary>
         /// <param name="idpId">Id of IDP that an authentication URL is needed for</param>
         /// <returns>A URL that can be used for logging in at the IDP</returns>
-        public static string GetIdpLoginUrl(string idpId, Saml2Section config)
+        public static string GetIdpLoginUrl(string idpId, Saml2Configuration config)
         {
             throw new System.NotImplementedException();
             // TODO: This should be needed eventually, but probably has to be handled outside of core

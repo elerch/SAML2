@@ -106,7 +106,7 @@ namespace SAML2
         /// <param name="config">The config.</param>
         /// <param name="keyinfo">key information for the service provider certificate.</param>
         /// <param name="sign">if set to <c>true</c> the metadata document will be signed.</param>
-        public Saml20MetadataDocument(Saml2Section config, KeyInfo keyinfo, bool sign)
+        public Saml20MetadataDocument(Saml2Configuration config, KeyInfo keyinfo, bool sign)
             : this(sign)
         {
             ConvertToMetadata(config, keyinfo);
@@ -321,7 +321,7 @@ namespace SAML2
         /// <param name="encoding">The encoding.</param>
         /// <param name="config">The configuration.</param>
         /// <returns>The XML.</returns>
-        public string ToXml(Encoding encoding, Saml2Section config)
+        public string ToXml(Encoding encoding, Saml2Configuration config)
         {
             encoding = encoding ?? Encoding.UTF8;
             var doc = new XmlDocument { PreserveWhitespace = true };
@@ -392,7 +392,7 @@ namespace SAML2
         /// Signs the document.
         /// </summary>
         /// <param name="doc">The doc.</param>
-        private static void SignDocument(XmlDocument doc, Saml2Section config)
+        private static void SignDocument(XmlDocument doc, Saml2Configuration config)
         {
             var cert = config.ServiceProvider.SigningCertificate;
             if (!cert.HasPrivateKey)
@@ -429,7 +429,7 @@ namespace SAML2
         /// </summary>
         /// <param name="config">The config.</param>
         /// <param name="keyInfo">The keyInfo.</param>
-        private void ConvertToMetadata(Saml2Section config, KeyInfo keyInfo)
+        private void ConvertToMetadata(Saml2Configuration config, KeyInfo keyInfo)
         {
             var entity = CreateDefaultEntity();
             entity.EntityID = config.ServiceProvider.Id;

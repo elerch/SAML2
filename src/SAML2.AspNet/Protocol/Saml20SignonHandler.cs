@@ -51,7 +51,7 @@ namespace SAML2.Protocol
         public Saml20SignonHandler() : this(null)
         { }
 
-        public Saml20SignonHandler(Saml2Section config)
+        public Saml20SignonHandler(Saml2Configuration config)
         {
             _certificate = config.ServiceProvider.SigningCertificate;
 
@@ -146,7 +146,7 @@ namespace SAML2.Protocol
         /// Handles a request.
         /// </summary>
         /// <param name="context">The context.</param>
-        public void Handle(HttpContext context, Saml2Section config)
+        public void Handle(HttpContext context, Saml2Configuration config)
         {
             Logger.Debug(TraceMessages.SignOnHandlerCalled);
 
@@ -291,7 +291,7 @@ namespace SAML2.Protocol
         /// </summary>
         /// <param name="elem">The elem.</param>
         /// <returns>The decrypted <see cref="Saml20EncryptedAssertion"/>.</returns>
-        private static Saml20EncryptedAssertion GetDecryptedAssertion(XmlElement elem, Saml2Section config)
+        private static Saml20EncryptedAssertion GetDecryptedAssertion(XmlElement elem, Saml2Configuration config)
         {
             Logger.Debug(TraceMessages.EncryptedAssertionDecrypting);
 
@@ -338,7 +338,7 @@ namespace SAML2.Protocol
         /// </summary>
         /// <param name="context">The context.</param>
         /// <param name="assertion">The assertion.</param>
-        private void DoSignOn(HttpContext context, Saml20Assertion assertion, Saml2Section config)
+        private void DoSignOn(HttpContext context, Saml20Assertion assertion, Saml2Configuration config)
         {
             // User is now logged in at IDP specified in tmp
             context.Items[IdpLoginSessionKey] = context.Session != null ? context.Session[IdpTempSessionKey] : context.Items[IdpTempSessionKey];
@@ -364,7 +364,7 @@ namespace SAML2.Protocol
         /// Handles the artifact.
         /// </summary>
         /// <param name="context">The context.</param>
-        private void HandleArtifact(HttpContext context, Saml2Section config)
+        private void HandleArtifact(HttpContext context, Saml2Configuration config)
         {
             var builder = new HttpArtifactBindingBuilder(context, config);
             var inputStream = builder.ResolveArtifact();
@@ -377,7 +377,7 @@ namespace SAML2.Protocol
         /// </summary>
         /// <param name="context">The context.</param>
         /// <param name="elem">The elem.</param>
-        private void HandleAssertion(HttpContext context, XmlElement elem, Saml2Section config)
+        private void HandleAssertion(HttpContext context, XmlElement elem, Saml2Configuration config)
         {
             Logger.DebugFormat(TraceMessages.AssertionProcessing, elem.OuterXml);
 
@@ -434,7 +434,7 @@ namespace SAML2.Protocol
         /// </summary>
         /// <param name="context">The context.</param>
         /// <param name="elem">The elem.</param>
-        private void HandleEncryptedAssertion(HttpContext context, XmlElement elem, Saml2Section config)
+        private void HandleEncryptedAssertion(HttpContext context, XmlElement elem, Saml2Configuration config)
         {
             HandleAssertion(context, GetDecryptedAssertion(elem, config).Assertion.DocumentElement, config);
         }
@@ -443,7 +443,7 @@ namespace SAML2.Protocol
         /// Handle the authentication response from the IDP.
         /// </summary>
         /// <param name="context">The context.</param>
-        private void HandleResponse(HttpContext context, Saml2Section config)
+        private void HandleResponse(HttpContext context, Saml2Configuration config)
         {
             var defaultEncoding = Encoding.UTF8;
             var doc = GetDecodedSamlResponse(context, defaultEncoding);
@@ -505,7 +505,7 @@ namespace SAML2.Protocol
         /// </summary>
         /// <param name="context">The context.</param>
         /// <param name="inputStream">The input stream.</param>
-        private void HandleSoap(HttpContext context, Stream inputStream, Saml2Section config)
+        private void HandleSoap(HttpContext context, Stream inputStream, Saml2Configuration config)
         {
             var parser = new HttpArtifactBindingParser(inputStream);
             Logger.DebugFormat(TraceMessages.SOAPMessageParse, parser.SamlMessage.OuterXml);
@@ -588,7 +588,7 @@ namespace SAML2.Protocol
         /// Send an authentication request to the IDP.
         /// </summary>
         /// <param name="context">The context.</param>
-        private void SendRequest(HttpContext context, Saml2Section config)
+        private void SendRequest(HttpContext context, Saml2Configuration config)
         {
             // See if the "ReturnUrl" - parameter is set.
             var returnUrl = context.Request.QueryString["ReturnUrl"];
@@ -618,7 +618,7 @@ namespace SAML2.Protocol
         /// <param name="identityProvider">The identity provider.</param>
         /// <param name="request">The request.</param>
         /// <param name="context">The context.</param>
-        private void TransferClient(IdentityProvider identityProvider, Saml20AuthnRequest request, HttpContext context, Saml2Section config)
+        private void TransferClient(IdentityProvider identityProvider, Saml20AuthnRequest request, HttpContext context, Saml2Configuration config)
         {
             // Set the last IDP we attempted to login at.
             if (context.Session != null) 
