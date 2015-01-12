@@ -41,7 +41,7 @@ namespace SAML2.Utils
         /// </summary>
         /// <param name="endpoints">The endpoints.</param>
         /// <returns>The <see cref="IdentityProvider"/>.</returns>
-        internal static IdentityProvider InvokeIDPSelectionEventHandler(IdentityProviders endpoints)
+        public static IdentityProvider InvokeIDPSelectionEventHandler(IdentityProviders endpoints)
         {
             return IdpSelectionEvent != null ? IdpSelectionEvent(endpoints) : null;
         }

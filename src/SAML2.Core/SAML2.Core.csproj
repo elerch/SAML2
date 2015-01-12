@@ -50,6 +50,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Bindings\BindingUtility.cs" />
+    <Compile Include="Bindings\HttpPostBindingBuilder.cs" />
+    <Compile Include="Bindings\HttpPostBindingParser.cs" />
+    <Compile Include="Bindings\HttpRedirectBindingBuilder.cs" />
+    <Compile Include="Bindings\HttpRedirectBindingConstants.cs" />
     <Compile Include="Config\AssertionProfile.cs" />
     <Compile Include="Config\Attribute.cs" />
     <Compile Include="Config\AudienceUri.cs" />
@@ -280,9 +285,7 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Bindings\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

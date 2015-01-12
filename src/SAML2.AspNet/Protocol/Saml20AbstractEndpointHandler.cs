@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
 using System.Threading;
 using System.Web;
-using SAML2.Bindings;
 using SAML2.Config;
 using SAML2.Utils;
 
@@ -100,8 +98,6 @@ namespace SAML2.Protocol
         /// <returns>The <see cref="IdentityProvider"/>.</returns>
         public IdentityProvider RetrieveIDP(HttpContext context, Saml2Section config)
         {
-            config = config ?? Saml2Config.GetConfig();
-
             // If idpChoice is set, use it value
             if (!string.IsNullOrEmpty(context.Request.Params[IdpChoiceParameterName]))
             {
@@ -173,8 +169,6 @@ namespace SAML2.Protocol
         /// <returns>The <see cref="IdentityProvider"/>.</returns>
         public IdentityProvider RetrieveIDPConfiguration(string idpId, Saml2Section config)
         {
-            config = config ?? Saml2Config.GetConfig();
-
             return config.IdentityProviders.FirstOrDefault(x => x.Id == idpId);
         }
 
@@ -215,7 +209,7 @@ namespace SAML2.Protocol
                 var endpoint = metadata.Find(el => el.Binding == result.Binding);
                 if (endpoint == null)
                 {
-                    throw new ConfigurationErrorsException(string.Format("No IdentityProvider supporting SAML binding {0} found in metadata", result.Binding));
+                    throw new FormatException(string.Format("No IdentityProvider supporting SAML binding {0} found in metadata", result.Binding));
                 }
 
                 result.Url = endpoint.Url;

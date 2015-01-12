@@ -159,7 +159,7 @@ namespace SAML2.Bindings
             result.Append("&RelayState=");
 
             // Encode the relay state if we're building a request. Otherwise, append unmodified.
-            result.Append(_request != null ? HttpUtility.UrlEncode(DeflateEncode(RelayState)) : RelayState);
+            result.Append(_request != null ? Uri.EscapeDataString(DeflateEncode(RelayState)) : RelayState);
         }
 
         /// <summary>
@@ -177,18 +177,18 @@ namespace SAML2.Bindings
 
             if (_signingKey is RSA)
             {
-                result.Append(UpperCaseUrlEncode(HttpUtility.UrlEncode(SignedXml.XmlDsigRSASHA1Url)));
+                result.Append(UpperCaseUrlEncode(Uri.EscapeDataString(SignedXml.XmlDsigRSASHA1Url)));
             }
             else
             {
-                result.Append(UpperCaseUrlEncode(HttpUtility.UrlEncode(SignedXml.XmlDsigDSAUrl)));
+                result.Append(UpperCaseUrlEncode(Uri.EscapeDataString(SignedXml.XmlDsigDSAUrl)));
             }
 
             // Calculate the signature of the URL as described in [SAMLBind] section 3.4.4.1.
             var signature = SignData(Encoding.UTF8.GetBytes(result.ToString()));            
             
             result.AppendFormat("&{0}=", HttpRedirectBindingConstants.Signature);
-            result.Append(HttpUtility.UrlEncode(Convert.ToBase64String(signature)));
+            result.Append(Uri.EscapeDataString(Convert.ToBase64String(signature)));
         }
 
         /// <summary>
@@ -234,7 +234,7 @@ namespace SAML2.Bindings
             }
 
             var encoded = DeflateEncode(value);
-            result.Append(UpperCaseUrlEncode(HttpUtility.UrlEncode(encoded)));
+            result.Append(UpperCaseUrlEncode(Uri.EscapeDataString(encoded)));
         }
     }
 }

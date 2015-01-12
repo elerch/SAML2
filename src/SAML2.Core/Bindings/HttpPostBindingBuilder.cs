@@ -1,7 +1,5 @@
 using System;
 using System.Text;
-using System.Web.UI;
-using System.Web.UI.HtmlControls;
 using SAML2.Config;
 
 namespace SAML2.Bindings
@@ -14,7 +12,7 @@ namespace SAML2.Bindings
         /// <summary>
         /// The endpoint to send the message to.
         /// </summary>
-        private readonly IdentityProviderEndpointElement _destinationEndpoint;
+        private readonly IdentityProviderEndpoint _destinationEndpoint;
 
         /// <summary>
         /// Request backing field.
@@ -30,7 +28,7 @@ namespace SAML2.Bindings
         /// Initializes a new instance of the <see cref="HttpPostBindingBuilder"/> class.
         /// </summary>
         /// <param name="endpoint">The IdP endpoint that messages will be sent to.</param>
-        public HttpPostBindingBuilder(IdentityProviderEndpointElement endpoint) 
+        public HttpPostBindingBuilder(IdentityProviderEndpoint endpoint) 
         {
             _destinationEndpoint = endpoint;
             Action = SamlActionType.SAMLRequest;
@@ -85,13 +83,11 @@ namespace SAML2.Bindings
             }
         }        
         
-        #region Page related functions
-
         /// <summary>
         /// Gets the ASP.Net page that will serve html to user agent.
         /// </summary>
         /// <returns>The Page.</returns>
-        public Page GetPage()
+        public string GetPage()
         {
             if (_request == null && _response == null)
             {
@@ -100,49 +96,33 @@ namespace SAML2.Bindings
 
             var msg = _request ?? _response;
 
-            var p = new Page
-                        {
-                            EnableViewState = false,
-                            EnableViewStateMac = false
-                        };
+            var rc = new StringBuilder(800);
+            rc.Append(@"<?xml version=""1.0"" encoding=""utf-8""?>
+<!DOCTYPE html PUBLIC ""-//W3C//DTD XHTML 1.1//EN"" ""http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd"">
 
-            p.Controls.Add(new LiteralControl("<?xml version=\"1.0\" encoding=\"utf-8\"?>" + Environment.NewLine));
-            p.Controls.Add(new LiteralControl("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">\r\n\r\n<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\">" + Environment.NewLine));
+<html xmlns=""http://www.w3.org/1999/xhtml"" xml:lang=""en"">
+<head>
+    <title>SAML2.0 POST binding</title>
+    </head>
+    <body onload=""document.forms[0].submit()"">
+        <noscript><prop><strong>Note:</strong> Since your browser does not support JavaScript, you must press the Continue button once to proceed.</prop></noscript>
+");
 
-            var head = new HtmlHead { Title = "SAML2.0 POST binding" };
-            p.Controls.Add(head);            
-
-            p.Controls.Add(new LiteralControl(Environment.NewLine + "<body onload=\"document.forms[0].submit()\">" + Environment.NewLine));
-            p.Controls.Add(new LiteralControl("<noscript><p><strong>Note:</strong> Since your browser does not support JavaScript, you must press the Continue button once to proceed.</p></noscript>"));                                   
-
-            p.Controls.Add(new LiteralControl("<form action=\"" + _destinationEndpoint.Url + "\" method=\"post\"><div>"));
+            rc.AppendFormat("        <form action='{0}' method='post'><div>", _destinationEndpoint.Url);
 
             if (!string.IsNullOrEmpty(RelayState))
-            {
-                var relayStateHidden = new HtmlInputHidden
-                                           {
-                                               ID = "RelayState",
-                                               Name = "RelayState",
-                                               Value = RelayState
-                                           };
-                p.Controls.Add(relayStateHidden);
-            }
+                rc.AppendFormat("            <input type='hidden' id='RelayState' name='RelayState' value='{0}'/>", RelayState);
 
-            var action = new HtmlInputHidden
-                             {
-                                 Name = Enum.GetName(typeof(SamlActionType), Action),
-                                 ID = Enum.GetName(typeof(SamlActionType), Action),
-                                 Value = Convert.ToBase64String(Encoding.UTF8.GetBytes(msg))
-                             };
-            p.Controls.Add(action);
+            rc.AppendFormat("            <input type='hidden' id='{0}' name='{0}' value='{1}'/>", Enum.GetName(typeof(SamlActionType), Action), Convert.ToBase64String(Encoding.UTF8.GetBytes(msg)));
 
-            p.Controls.Add(new LiteralControl("<noscript><div><input type=\"submit\" value=\"Continue\"/></div></noscript>"));
-            p.Controls.Add(new LiteralControl("</div></form>"));                                      
-            p.Controls.Add(new LiteralControl(Environment.NewLine + "</body>" + Environment.NewLine + "</html>"));
-
-            return p;
+            rc.Append(@"        <noscript><div><input type=""submit"" value=""Continue""/></div></noscript>
+        </div>
+    </form>
+</body>
+</html>
+");
+            return rc.ToString();
         }
 
-        #endregion
     }
 }

@@ -1,5 +1,5 @@
-using System.Configuration;
 using SAML2.Config;
+using System;
 
 namespace SAML2.Bindings
 {
@@ -12,44 +12,43 @@ namespace SAML2.Bindings
         /// Validates the SAML20Federation configuration.
         /// </summary>
         /// <returns>True if validation passes, false otherwise</returns>
-        public static bool ValidateConfiguration()
+        public static bool ValidateConfiguration(Saml2Section config)
         {
-            var config = Saml2Config.GetConfig();
             if (config == null)
             {
-                throw new ConfigurationErrorsException(ErrorMessages.ConfigMissingSaml2Element);
+                throw new ArgumentNullException("config", ErrorMessages.ConfigMissingSaml2Element);
             }
 
             if (config.ServiceProvider == null)
             {
-                throw new ConfigurationErrorsException(ErrorMessages.ConfigMissingServiceProviderElement);
+                throw new ArgumentOutOfRangeException("config", ErrorMessages.ConfigMissingServiceProviderElement);
             }
 
             if (string.IsNullOrEmpty(config.ServiceProvider.Id))
             {
-                throw new ConfigurationErrorsException(ErrorMessages.ConfigMissingServiceProviderIdAttribute);
+                throw new ArgumentOutOfRangeException("config", ErrorMessages.ConfigMissingServiceProviderIdAttribute);
             }
 
             if (config.ServiceProvider.SigningCertificate == null)
             {
-                throw new ConfigurationErrorsException(ErrorMessages.ConfigMissingSigningCertificateElement);
+                throw new ArgumentOutOfRangeException("config", ErrorMessages.ConfigMissingSigningCertificateElement);
             }
 
             // This will throw if no certificate or multiple certificates are found
-            var certificate = config.ServiceProvider.SigningCertificate.GetCertificate();
+            var certificate = config.ServiceProvider.SigningCertificate;
             if (!certificate.HasPrivateKey)
             {
-                throw new ConfigurationErrorsException(ErrorMessages.ConfigSigningCertificateMissingPrivateKey);
+                throw new ArgumentOutOfRangeException("config", ErrorMessages.ConfigSigningCertificateMissingPrivateKey);
             }
 
             if (config.IdentityProviders == null)
             {
-                throw new ConfigurationErrorsException(ErrorMessages.ConfigMissingIdentityProvidersElement);
+                throw new ArgumentOutOfRangeException("config", ErrorMessages.ConfigMissingIdentityProvidersElement);
             }
 
             if (config.IdentityProviders.MetadataLocation == null)
             {
-                throw new ConfigurationErrorsException(ErrorMessages.ConfigMissingMetadataLocation);
+                throw new ArgumentOutOfRangeException("config", ErrorMessages.ConfigMissingMetadataLocation);
             }
 
             return true;
