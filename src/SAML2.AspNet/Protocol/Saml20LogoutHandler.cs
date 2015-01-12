@@ -9,6 +9,7 @@ using SAML2.Config;
 using SAML2.Schema.Metadata;
 using SAML2.Schema.Protocol;
 using SAML2.Utils;
+using System.Security.Cryptography.X509Certificates;
 
 namespace SAML2.Protocol
 {
@@ -92,7 +93,7 @@ namespace SAML2.Protocol
                     throw new Saml20Exception(string.Format(ErrorMessages.UnknownIdentityProvider, string.Empty));
                 }
 
-                TransferClient(idpEndpoint, context);
+                TransferClient(idpEndpoint, context, config);
             }
         }
 
@@ -108,14 +109,15 @@ namespace SAML2.Protocol
         private void DoLogout(HttpContext context, bool idpInitiated = false, Saml2Section config = null)
         {
             Logger.Debug(TraceMessages.LogoutActionsExecuting);
-            foreach (var action in Actions.Actions.GetActions(config))
-            {
-                Logger.DebugFormat("{0}.{1} called", action.GetType(), "LogoutAction()");
+            // TODO: Event for logout actions
+            //foreach (var action in Actions.Actions.GetActions(config))
+            //{
+            //    Logger.DebugFormat("{0}.{1} called", action.GetType(), "LogoutAction()");
 
-                action.LogoutAction(this, context, idpInitiated);
+            //    action.LogoutAction(this, context, idpInitiated);
 
-                Logger.DebugFormat("{0}.{1} finished", action.GetType(), "LogoutAction()");
-            }
+            //    Logger.DebugFormat("{0}.{1} finished", action.GetType(), "LogoutAction()");
+            //}
         }
 
         /// <summary>
@@ -124,7 +126,8 @@ namespace SAML2.Protocol
         /// <param name="context">The context.</param>
         private void HandleArtifact(HttpContext context)
         {
-            var builder = new HttpArtifactBindingBuilder(context);
+            var config = Saml2Config.GetConfig();
+            var builder = new HttpArtifactBindingBuilder(context, config);
             var inputStream = builder.ResolveArtifact();
 
             HandleSoap(context, inputStream);
@@ -140,8 +143,8 @@ namespace SAML2.Protocol
             var parser = new HttpArtifactBindingParser(inputStream);
             Logger.DebugFormat(TraceMessages.SOAPMessageParse, parser.SamlMessage.OuterXml);
 
-            var builder = new HttpArtifactBindingBuilder(context);
             var config = Saml2Config.GetConfig();
+            var builder = new HttpArtifactBindingBuilder(context, config);
             var idp = RetrieveIDPConfiguration(parser.Issuer);
             
             if (parser.IsArtifactResolve)
@@ -218,7 +221,7 @@ namespace SAML2.Protocol
 
                 // response.Destination = destination.Url;
                 var doc = response.GetXml();
-                XmlSignatureUtils.SignDocument(doc, response.Id);
+                XmlSignatureUtils.SignDocument(doc, response.Id, config.ServiceProvider.SigningCertificate);
                 if (doc.FirstChild is XmlDeclaration)
                 {
                     doc.RemoveChild(doc.FirstChild);
@@ -331,7 +334,7 @@ namespace SAML2.Protocol
                                   {
                                       RelayState = context.Request.Params["RelayState"],
                                       Response = response.GetXml().OuterXml,
-                                      SigningKey = Saml2Config.GetConfig().ServiceProvider.SigningCertificate.GetCertificate().PrivateKey
+                                      SigningKey = config.ServiceProvider.SigningCertificate.PrivateKey
                                   };
 
                 Logger.DebugFormat(TraceMessages.LogoutResponseSent, builder.Response);
@@ -352,10 +355,10 @@ namespace SAML2.Protocol
 
                 Logger.DebugFormat(TraceMessages.LogoutResponseSent, responseDocument.OuterXml);
 
-                XmlSignatureUtils.SignDocument(responseDocument, response.Id);
+                XmlSignatureUtils.SignDocument(responseDocument, response.Id, config.ServiceProvider.SigningCertificate);
                 builder.Response = responseDocument.OuterXml;
                 builder.RelayState = context.Request.Params["RelayState"];
-                builder.GetPage().ProcessRequest(context);
+                context.Response.Write(builder.GetPage());
             }
         }
         
@@ -444,9 +447,9 @@ namespace SAML2.Protocol
         /// </summary>
         /// <param name="idp">The identity provider.</param>
         /// <param name="context">The context.</param>
-        private void TransferClient(IdentityProvider idp, HttpContext context)
+        private void TransferClient(IdentityProvider idp, HttpContext context, Saml2Section config)
         {
-            var request = Saml20LogoutRequest.GetDefault();
+            var request = Saml20LogoutRequest.GetDefault(config);
 
             // Determine which endpoint to use from the configuration file or the endpoint metadata.
             var destination = DetermineEndpointConfiguration(BindingType.Redirect, idp.Endpoints.DefaultLogoutEndpoint, idp.Metadata.IDPSLOEndpoints);
@@ -465,12 +468,12 @@ namespace SAML2.Protocol
                 request.SessionIndex = (string)context.Session[IdpSessionIdKey];
 
                 var requestDocument = request.GetXml();
-                XmlSignatureUtils.SignDocument(requestDocument, request.Id);
+                XmlSignatureUtils.SignDocument(requestDocument, request.Id, config.ServiceProvider.SigningCertificate);
                 builder.Request = requestDocument.OuterXml;
 
                 Logger.DebugFormat(TraceMessages.LogoutRequestSent, idp.Id, "POST", builder.Request);
 
-                builder.GetPage().ProcessRequest(context);
+                context.Response.Write(builder.GetPage());
                 context.Response.End();
                 return;
             }
@@ -486,7 +489,7 @@ namespace SAML2.Protocol
                 var builder = new HttpRedirectBindingBuilder
                                   {
                                       Request = request.GetXml().OuterXml,
-                                      SigningKey = Saml2Config.GetConfig().ServiceProvider.SigningCertificate.GetCertificate().PrivateKey
+                                      SigningKey = config.ServiceProvider.SigningCertificate.PrivateKey
                                   };
 
                 var redirectUrl = destination.Url + "?" + builder.ToQuery();
@@ -506,7 +509,7 @@ namespace SAML2.Protocol
 
                 Logger.DebugFormat(TraceMessages.LogoutRequestSent, idp.Id, "ARTIFACT", request.GetXml().OuterXml);
 
-                var builder = new HttpArtifactBindingBuilder(context);
+                var builder = new HttpArtifactBindingBuilder(context, config);
                 builder.RedirectFromLogout(destination, request, Guid.NewGuid().ToString("N"));
             }
 

@@ -1,6 +1,6 @@
 using System;
 using System.Security.Cryptography.X509Certificates;
-using System.Security.Cryptography.Xml;
+//using System.Security.Cryptography.Xml;
 using System.Text;
 using System.Web;
 using SAML2.Config;
@@ -15,8 +15,6 @@ namespace SAML2.Protocol
     /// </summary>
     public class Saml20MetadataHandler : AbstractEndpointHandler
     {
-        #region IHttpHandler Members
-
         /// <summary>
         /// Gets a value indicating whether this instance is reusable.
         /// </summary>
@@ -66,8 +64,6 @@ namespace SAML2.Protocol
             context.Response.End();            
         }
 
-        #endregion
-
         /// <summary>
         /// Creates the metadata document.
         /// </summary>
@@ -79,8 +75,8 @@ namespace SAML2.Protocol
 
             var configuration = Saml2Config.GetConfig();
 
-            var keyinfo = new KeyInfo();
-            var keyClause = new KeyInfoX509Data(Saml2Config.GetConfig().ServiceProvider.SigningCertificate.GetCertificate(), X509IncludeOption.EndCertOnly);
+            var keyinfo = new System.Security.Cryptography.Xml.KeyInfo();
+            var keyClause = new System.Security.Cryptography.Xml.KeyInfoX509Data(configuration.ServiceProvider.SigningCertificate, X509IncludeOption.EndCertOnly);
             keyinfo.AddClause(keyClause);
 
             var doc = new Saml20MetadataDocument(configuration, keyinfo, sign);

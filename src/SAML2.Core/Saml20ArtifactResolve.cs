@@ -76,9 +76,10 @@ namespace SAML2
         /// Gets a default instance of this class with proper values set.
         /// </summary>
         /// <returns>The default <see cref="Saml20ArtifactResolve"/>.</returns>
-        public static Saml20ArtifactResolve GetDefault(Saml2Section config)
+        public static Saml20ArtifactResolve GetDefault(string serviceProviderId)
         {
-            return new Saml20ArtifactResolve { Issuer = config.ServiceProvider.Id };
+            if (serviceProviderId == null) throw new ArgumentNullException("serviceProviderId"); 
+            return new Saml20ArtifactResolve { Issuer = serviceProviderId };
         }
 
         /// <summary>

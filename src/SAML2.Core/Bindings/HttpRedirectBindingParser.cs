@@ -37,7 +37,7 @@ namespace SAML2.Bindings
             var paramDict = UriToDictionary(uri);
             foreach (var param in paramDict)
             {
-                SetParam(param.Key, HttpUtility.UrlDecode(param.Value));
+                SetParam(param.Key, Uri.UnescapeDataString(param.Value));
             }
 
             // If the message is signed, save the original, encoded parameters so that the signature can be verified.

@@ -52,8 +52,7 @@ namespace SAML2.Protocol
 
         public Saml20SignonHandler(Saml2Section config)
         {
-            config = config ?? Saml2Config.GetConfig();
-            _certificate = config.ServiceProvider.SigningCertificate.GetCertificate();
+            _certificate = config.ServiceProvider.SigningCertificate;
 
             // Read the proper redirect url from config
             try {
@@ -63,8 +62,6 @@ namespace SAML2.Protocol
                 Logger.Error(e.Message, e);
             }
         }
-
-        #region Public methods
 
         /// <summary>
         /// Gets the trusted signers.
@@ -140,12 +137,9 @@ namespace SAML2.Protocol
             return null;
         }
         
-        #endregion
-
-        #region Protected methods
         protected override void Handle(HttpContext context)
         {
-            Handle(context, null);
+            Handle(context, Saml2Config.GetConfig());
         }
         /// <summary>
         /// Handles a request.
@@ -153,7 +147,6 @@ namespace SAML2.Protocol
         /// <param name="context">The context.</param>
         public void Handle(HttpContext context, Saml2Section config)
         {
-            config = config ?? Saml2Config.GetConfig();
             Logger.Debug(TraceMessages.SignOnHandlerCalled);
 
             // Some IdP's are known to fail to set an actual value in the SOAPAction header
@@ -179,7 +172,7 @@ namespace SAML2.Protocol
                     && context.Request.Params["cidp"] == null)
                 {
                     Logger.Debug(TraceMessages.CommonDomainCookieRedirectForDiscovery);
-                    context.Response.Redirect(Saml2Config.GetConfig().CommonDomainCookie.LocalReaderEndpoint);
+                    context.Response.Redirect(config.CommonDomainCookie.LocalReaderEndpoint);
                 }
                 else
                 {
@@ -210,10 +203,6 @@ namespace SAML2.Protocol
                 }
             }
         }
-
-        #endregion
-
-        #region Private methods - Helpers
 
         /// <summary>
         /// Determines whether the certificate is satisfied by all specifications.
@@ -301,11 +290,11 @@ namespace SAML2.Protocol
         /// </summary>
         /// <param name="elem">The elem.</param>
         /// <returns>The decrypted <see cref="Saml20EncryptedAssertion"/>.</returns>
-        private static Saml20EncryptedAssertion GetDecryptedAssertion(XmlElement elem)
+        private static Saml20EncryptedAssertion GetDecryptedAssertion(XmlElement elem, Saml2Section config)
         {
             Logger.Debug(TraceMessages.EncryptedAssertionDecrypting);
 
-            var decryptedAssertion = new Saml20EncryptedAssertion((RSA)Saml2Config.GetConfig().ServiceProvider.SigningCertificate.GetCertificate().PrivateKey);
+            var decryptedAssertion = new Saml20EncryptedAssertion((RSA)config.ServiceProvider.SigningCertificate.PrivateKey);
             decryptedAssertion.LoadXml(elem);
             decryptedAssertion.Decrypt();
 
@@ -343,10 +332,6 @@ namespace SAML2.Protocol
             return Serialization.DeserializeFromXmlString<Status>(statElem.OuterXml);
         }
 
-        #endregion
-
-        #region Private  methods - Handlers
-
         /// <summary>
         /// Handles executing the login.
         /// </summary>
@@ -363,14 +348,15 @@ namespace SAML2.Protocol
             Logger.DebugFormat(TraceMessages.SignOnProcessed, assertion.SessionIndex, assertion.Subject.Value, assertion.Subject.Format);
 
             Logger.Debug(TraceMessages.SignOnActionsExecuting);
-            foreach (var action in Actions.Actions.GetActions(config))
-            {
-                Logger.DebugFormat("{0}.{1} called", action.GetType(), "LoginAction()");
+            // TODO: Signon event
+            //foreach (var action in Actions.Actions.GetActions(config))
+            //{
+            //    Logger.DebugFormat("{0}.{1} called", action.GetType(), "LoginAction()");
 
-                action.SignOnAction(this, context, assertion, config);
+            //    action.SignOnAction(this, context, assertion, config);
 
-                Logger.DebugFormat("{0}.{1} finished", action.GetType(), "LoginAction()");
-            }
+            //    Logger.DebugFormat("{0}.{1} finished", action.GetType(), "LoginAction()");
+            //}
         }
 
         /// <summary>
@@ -379,7 +365,7 @@ namespace SAML2.Protocol
         /// <param name="context">The context.</param>
         private void HandleArtifact(HttpContext context, Saml2Section config)
         {
-            var builder = new HttpArtifactBindingBuilder(context);
+            var builder = new HttpArtifactBindingBuilder(context, config);
             var inputStream = builder.ResolveArtifact();
             
             HandleSoap(context, inputStream, config);
@@ -449,7 +435,7 @@ namespace SAML2.Protocol
         /// <param name="elem">The elem.</param>
         private void HandleEncryptedAssertion(HttpContext context, XmlElement elem, Saml2Section config)
         {
-            HandleAssertion(context, GetDecryptedAssertion(elem).Assertion.DocumentElement, config);
+            HandleAssertion(context, GetDecryptedAssertion(elem, config).Assertion.DocumentElement, config);
         }
 
         /// <summary>
@@ -467,7 +453,7 @@ namespace SAML2.Protocol
             var assertion = GetAssertion(doc.DocumentElement, out isEncrypted);
             if (isEncrypted) 
             {
-                assertion = GetDecryptedAssertion(assertion).Assertion.DocumentElement;
+                assertion = GetDecryptedAssertion(assertion, config).Assertion.DocumentElement;
             }
 
             // Check if an encoding-override exists for the IdP endpoint in question
@@ -523,7 +509,7 @@ namespace SAML2.Protocol
             var parser = new HttpArtifactBindingParser(inputStream);
             Logger.DebugFormat(TraceMessages.SOAPMessageParse, parser.SamlMessage.OuterXml);
 
-            var builder = new HttpArtifactBindingBuilder(context);
+            var builder = new HttpArtifactBindingBuilder(context, config);
 
             if (parser.IsArtifactResolve)
             {
@@ -622,7 +608,7 @@ namespace SAML2.Protocol
             }
 
             var authnRequest = Saml20AuthnRequest.GetDefault(config);
-            TransferClient(idp, authnRequest, context);            
+            TransferClient(idp, authnRequest, context, config);            
         }
 
         /// <summary>
@@ -631,7 +617,7 @@ namespace SAML2.Protocol
         /// <param name="identityProvider">The identity provider.</param>
         /// <param name="request">The request.</param>
         /// <param name="context">The context.</param>
-        private void TransferClient(IdentityProvider identityProvider, Saml20AuthnRequest request, HttpContext context)
+        private void TransferClient(IdentityProvider identityProvider, Saml20AuthnRequest request, HttpContext context, Saml2Section config)
         {
             // Set the last IDP we attempted to login at.
             if (context.Session != null) 
@@ -717,17 +703,17 @@ namespace SAML2.Protocol
                     }
 
                     var requestXml = request.GetXml();
-                    XmlSignatureUtils.SignDocument(requestXml, request.Id);
+                    XmlSignatureUtils.SignDocument(requestXml, request.Id, config.ServiceProvider.SigningCertificate);
                     postBuilder.Request = requestXml.OuterXml;
 
                     Logger.DebugFormat(TraceMessages.AuthnRequestSent, postBuilder.Request);
 
-                    postBuilder.GetPage().ProcessRequest(context);
+                    context.Response.Write(postBuilder.GetPage());
                     break;
                 case BindingType.Artifact:
                     Logger.DebugFormat(TraceMessages.AuthnRequestPrepared, identityProvider.Id, Saml20Constants.ProtocolBindings.HttpArtifact);
 
-                    var artifactBuilder = new HttpArtifactBindingBuilder(context);
+                    var artifactBuilder = new HttpArtifactBindingBuilder(context, config);
 
                     // Honor the ForceProtocolBinding and only set this if it's not already set
                     if (string.IsNullOrEmpty(request.ProtocolBinding))
@@ -745,6 +731,5 @@ namespace SAML2.Protocol
             }
         }
 
-        #endregion
     }
 }

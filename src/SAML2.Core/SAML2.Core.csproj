@@ -51,10 +51,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bindings\BindingUtility.cs" />
+    <Compile Include="Bindings\HttpArtifactBindingConstants.cs" />
+    <Compile Include="Bindings\HttpArtifactBindingParser.cs" />
     <Compile Include="Bindings\HttpPostBindingBuilder.cs" />
-    <Compile Include="Bindings\HttpPostBindingParser.cs" />
     <Compile Include="Bindings\HttpRedirectBindingBuilder.cs" />
     <Compile Include="Bindings\HttpRedirectBindingConstants.cs" />
+    <Compile Include="Bindings\HttpRedirectBindingParser.cs" />
+    <Compile Include="Bindings\HttpSOAPBindingParser.cs" />
+    <Compile Include="Bindings\SOAPConstants.cs" />
     <Compile Include="Config\AssertionProfile.cs" />
     <Compile Include="Config\Attribute.cs" />
     <Compile Include="Config\AudienceUri.cs" />
@@ -274,7 +278,7 @@
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
+      <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="TraceMessages.resx">

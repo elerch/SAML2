@@ -9,8 +9,6 @@ namespace SAML2.Protocol.Pages
     /// </summary>
     public class ErrorPage : BasePage
     {
-        #region Constructor functions
-
         /// <summary>
         /// Initializes a new instance of the <see cref="ErrorPage"/> class.
         /// </summary>
@@ -21,10 +19,6 @@ namespace SAML2.Protocol.Pages
             TitleText = ErrorMessages.GenericError;
             HeaderText = ErrorMessages.GenericError;
         }
-
-        #endregion
-
-        #region Properties
 
         /// <summary>
         /// Gets or sets the error text.
@@ -37,10 +31,6 @@ namespace SAML2.Protocol.Pages
         /// </summary>
         /// <value><c>true</c> if config is overridden; otherwise, <c>false</c>.</value>
         public bool OverrideConfig { get; set; }
-
-        #endregion
-
-        #region overridden page functions
 
         /// <summary>
         /// Raises the <see cref="E:System.Web.UI.Control.Load"/> event.
@@ -80,7 +70,5 @@ namespace SAML2.Protocol.Pages
             
             BodyPanel.Controls.Add(new LiteralControl(err));
         }
-
-        #endregion
     }
 }
