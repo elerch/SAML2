@@ -14,46 +14,17 @@ namespace Owin
         /// Adds the <see cref="SamlAuthenticationMiddleware"/> into the OWIN runtime.
         /// </summary>
         /// <param name="app">The <see cref="IAppBuilder"/> passed to the configuration method</param>
-        /// <param name="wtrealm">The application identifier.</param>
-        /// <param name="metadataAddress">The address to retrieve the Saml metadata from.</param>
+        /// <param name="options">Saml2Configuration configuration options</param>
         /// <returns>The updated <see cref="IAppBuilder"/></returns>
-        public static IAppBuilder UseSamlAuthentication(this IAppBuilder app, string wtrealm, string metadataAddress)
+        public static IAppBuilder UseSamlAuthentication(this IAppBuilder app, SamlAuthenticationOptions options)
         {
             if (app == null)
             {
                 throw new ArgumentNullException("app");
             }
-            if (string.IsNullOrEmpty(wtrealm))
-            {
-                throw new ArgumentNullException("wtrealm");
-            }
-            if (string.IsNullOrEmpty(metadataAddress))
-            {
-                throw new ArgumentNullException("metadataAddress");
-            }
+            if (options == null) throw new ArgumentNullException("options"); 
 
-            return app.UseSamlAuthentication(new SamlAuthenticationOptions()
-            {
-                Wtrealm = wtrealm,
-                MetadataAddress = metadataAddress,
-            });
-        }
-
-        /// <summary>
-        /// Adds the <see cref="SamlAuthenticationMiddleware"/> into the OWIN runtime.
-        /// </summary>
-        /// <param name="app">The <see cref="IAppBuilder"/> passed to the configuration method</param>
-        /// <param name="SamlOptions">SamlAuthenticationOptions configuration options</param>
-        /// <returns>The updated <see cref="IAppBuilder"/></returns>
-        public static IAppBuilder UseSamlAuthentication(this IAppBuilder app, IConfigurationProvider configurationReader)
-        {
-            if (app == null)
-            {
-                throw new ArgumentNullException("app");
-            }
-            if (configurationReader == null) throw new ArgumentNullException("configurationReader"); 
-
-            return app.Use<SamlAuthenticationMiddleware>(app, configurationReader);
+            return app.Use<SamlAuthenticationMiddleware>(app, options);
         }
     }
 }

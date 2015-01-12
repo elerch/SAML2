@@ -27,6 +27,5 @@ namespace Owin.Security.Saml
         /// </summary>
         public const string Caption = "Saml";
 
-        internal const string WctxKey = "WsFedOwinState";
     }
 }

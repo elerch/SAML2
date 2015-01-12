@@ -11,6 +11,7 @@ using Microsoft.IdentityModel.Protocols;
 using Microsoft.Owin.Logging;
 using Microsoft.Owin.Security.Infrastructure;
 using Microsoft.Owin.Security.Notifications;
+using Microsoft.Owin.Security;
 
 namespace Owin.Security.Saml
 {
@@ -109,10 +110,7 @@ namespace Owin.Security.Saml
                 return;
             }
 
-            if (_configuration == null)
-            {
-                _configuration = await Options.ConfigurationManager.GetConfigurationAsync(Context.Request.CallCancelled);
-            }
+            _configuration = Options.Configuration;
 
             string baseUri =
                     Request.Scheme +
@@ -384,71 +382,5 @@ namespace Owin.Security.Saml
             return new AuthenticationTicket(null, new AuthenticationProperties(new Dictionary<string, string>() { { HandledResponse, "true" } }));
         }
 
-        private AuthenticationProperties GetPropertiesFromWctx(string state)
-        {
-            AuthenticationProperties properties = null;
-            if (!string.IsNullOrEmpty(state))
-            {
-                var pairs = ParseDelimited(state);
-                List<string> values;
-                if (pairs.TryGetValue(SamlAuthenticationDefaults.WctxKey, out values) && values.Count > 0)
-                {
-                    string value = values.First();
-                    properties = Options.StateDataFormat.Unprotect(value);
-                }
-            }
-            return properties;
-        }
-
-        private static IDictionary<string, List<string>> ParseDelimited(string text)
-        {
-            char[] delimiters = new[] { '&', ';' };
-            var accumulator = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
-            int textLength = text.Length;
-            int equalIndex = text.IndexOf('=');
-            if (equalIndex == -1)
-            {
-                equalIndex = textLength;
-            }
-            int scanIndex = 0;
-            while (scanIndex < textLength)
-            {
-                int delimiterIndex = text.IndexOfAny(delimiters, scanIndex);
-                if (delimiterIndex == -1)
-                {
-                    delimiterIndex = textLength;
-                }
-                if (equalIndex < delimiterIndex)
-                {
-                    while (scanIndex != equalIndex && char.IsWhiteSpace(text[scanIndex]))
-                    {
-                        ++scanIndex;
-                    }
-                    string name = text.Substring(scanIndex, equalIndex - scanIndex);
-                    string value = text.Substring(equalIndex + 1, delimiterIndex - equalIndex - 1);
-
-                    name = Uri.UnescapeDataString(name.Replace('+', ' '));
-                    value = Uri.UnescapeDataString(value.Replace('+', ' '));
-
-                    List<string> existing;
-                    if (!accumulator.TryGetValue(name, out existing))
-                    {
-                        accumulator.Add(name, new List<string>(1) { value });
-                    }
-                    else
-                    {
-                        existing.Add(value);
-                    }
-
-                    equalIndex = text.IndexOf('=', delimiterIndex);
-                    if (equalIndex == -1)
-                    {
-                        equalIndex = textLength;
-                    }
-                }
-                scanIndex = delimiterIndex + 1;
-            }
-            return accumulator;
-        }
     }
 }

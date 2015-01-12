@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
-using Microsoft.IdentityModel.Extensions;
-using Microsoft.IdentityModel.Protocols;
 using Microsoft.Owin.Logging;
-using Microsoft.Owin.Security.DataHandler;
-using Microsoft.Owin.Security.DataProtection;
 using Microsoft.Owin.Security.Infrastructure;
-using Owin;
+using Microsoft.Owin;
 
 namespace Owin.Security.Saml
 {
@@ -30,49 +26,15 @@ namespace Owin.Security.Saml
         {
             _logger = app.CreateLogger<SamlAuthenticationMiddleware>();
 
-            if (string.IsNullOrWhiteSpace(Options.TokenValidationParameters.AuthenticationType))
-            {
-                Options.TokenValidationParameters.AuthenticationType = app.GetDefaultSignInAsAuthenticationType();
-            }
-
-            if (Options.StateDataFormat == null)
-            {
-                var dataProtector = app.CreateDataProtector(
-                    typeof(SamlAuthenticationMiddleware).FullName,
-                    Options.AuthenticationType, "v1");
-                Options.StateDataFormat = new PropertiesDataFormat(dataProtector);
-            }
-
-            if (Options.SecurityTokenHandlers == null)
-            {
-                Options.SecurityTokenHandlers = SecurityTokenHandlerCollectionExtensions.GetDefaultHandlers();
-            }
-
             if (Options.Notifications == null)
             {
                 Options.Notifications = new SamlAuthenticationNotifications();
             }
 
-            Uri wreply;
-            if (!Options.CallbackPath.HasValue && !string.IsNullOrEmpty(Options.Wreply) && Uri.TryCreate(Options.Wreply, UriKind.Absolute, out wreply))
-            {
-                // Wreply must be a very specific, case sensitive value, so we can't generate it. Instead we generate CallbackPath from it.
-                Options.CallbackPath = PathString.FromUriComponent(wreply);
-            }
 
-            if (Options.ConfigurationManager == null)
+            if (Options.Configuration == null)
             {
-                if (Options.Configuration != null)
-                {
-                    Options.ConfigurationManager = new StaticConfigurationManager<SamlConfiguration>(Options.Configuration);
-                }
-                else
-                {
-                    HttpClient httpClient = new HttpClient(ResolveHttpMessageHandler(Options));
-                    httpClient.Timeout = Options.BackchannelTimeout;
-                    httpClient.MaxResponseContentBufferSize = 1024 * 1024 * 10; // 10 MB
-                    Options.ConfigurationManager = new ConfigurationManager<SamlConfiguration>(Options.MetadataAddress, httpClient);
-                }
+                throw new ArgumentOutOfRangeException("options", "Configuration must be set prior to using SamlAuthenticationMiddleware");
             }
         }
 
@@ -88,20 +50,7 @@ namespace Owin.Security.Saml
         [SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "Managed by caller")]
         private static HttpMessageHandler ResolveHttpMessageHandler(SamlAuthenticationOptions options)
         {
-            HttpMessageHandler handler = options.BackchannelHttpHandler ?? new WebRequestHandler();
-
-            // If they provided a validator, apply it or fail.
-            if (options.BackchannelCertificateValidator != null)
-            {
-                // Set the cert validate callback
-                var webRequestHandler = handler as WebRequestHandler;
-                if (webRequestHandler == null)
-                {
-                    throw new InvalidOperationException(Resources.Exception_ValidatorHandlerMismatch);
-                }
-                webRequestHandler.ServerCertificateValidationCallback = options.BackchannelCertificateValidator.Validate;
-            }
-
+            HttpMessageHandler handler = new WebRequestHandler();
             return handler;
         }
     }
