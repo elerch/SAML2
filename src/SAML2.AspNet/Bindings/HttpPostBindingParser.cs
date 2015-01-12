@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Security.Cryptography.Xml;
 using System.Text;
-using System.Web;
 using System.Xml;
 using SAML2.Schema.Metadata;
 using SAML2.Utils;
+using System.Collections.Specialized;
 
 namespace SAML2.Bindings
 {
@@ -15,29 +15,22 @@ namespace SAML2.Bindings
     public class HttpPostBindingParser
     {
         /// <summary>
-        /// The HTTP Context.
-        /// </summary>
-        private readonly HttpContext _context;
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="HttpPostBindingParser"/> class.
         /// </summary>
         /// <param name="context">The current HTTP context.</param>
-        public HttpPostBindingParser(HttpContext context)
+        public HttpPostBindingParser(NameValueCollection requestParams)
         {
-            _context = context;
-
             var base64 = string.Empty;
 
-            if (_context.Request.Params["SAMLRequest"] != null)
+            if (requestParams["SAMLRequest"] != null)
             {
-                base64 = _context.Request.Params["SAMLRequest"];
+                base64 = requestParams["SAMLRequest"];
                 IsRequest = true;
             }
 
-            if (_context.Request.Params["SAMLResponse"] != null)
+            if (requestParams["SAMLResponse"] != null)
             {
-                base64 = _context.Request.Params["SAMLResponse"];
+                base64 = requestParams["SAMLResponse"];
                 IsResponse = true;
             }
 

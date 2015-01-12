@@ -6,7 +6,6 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Security.Cryptography.Xml;
 using System.Text;
-using System.Web;
 using SAML2.Schema.Metadata;
 using SAML2.Utils;
 

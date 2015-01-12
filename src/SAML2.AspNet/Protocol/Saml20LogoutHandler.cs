@@ -286,7 +286,7 @@ namespace SAML2.Protocol
             else if (context.Request.RequestType == "POST")
             {
                 // HTTP Post binding
-                var parser = new HttpPostBindingParser(context);
+                var parser = new HttpPostBindingParser(context.Request.Params);
                 Logger.DebugFormat(TraceMessages.LogoutRequestPostBindingParse, parser.Message);
 
                 if (!parser.IsSigned)
@@ -397,7 +397,7 @@ namespace SAML2.Protocol
             }
             else if (context.Request.RequestType == "POST")
             {
-                var parser = new HttpPostBindingParser(context);
+                var parser = new HttpPostBindingParser(context.Request.Params);
                 Logger.DebugFormat(TraceMessages.LogoutResponsePostBindingParse, parser.Message);
 
                 response = Serialization.DeserializeFromXmlString<LogoutResponse>(parser.Message);

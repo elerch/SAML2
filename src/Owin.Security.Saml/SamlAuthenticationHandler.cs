@@ -12,6 +12,7 @@ using Microsoft.Owin.Logging;
 using Microsoft.Owin.Security.Infrastructure;
 using Microsoft.Owin.Security.Notifications;
 using Microsoft.Owin.Security;
+using SAML2.Config;
 
 namespace Owin.Security.Saml
 {
@@ -23,7 +24,6 @@ namespace Owin.Security.Saml
         private const string HandledResponse = "HandledResponse";
 
         private readonly ILogger _logger;
-        private SamlConfiguration _configuration;
 
         /// <summary>
         /// Creates a new SamlAuthenticationHandler
@@ -44,11 +44,6 @@ namespace Owin.Security.Saml
             if (signout == null)
             {
                 return;
-            }
-
-            if (_configuration == null)
-            {
-                _configuration = await Options.ConfigurationManager.GetConfigurationAsync(Context.Request.CallCancelled);
             }
 
             SamlMessage SamlMessage = new SamlMessage()
