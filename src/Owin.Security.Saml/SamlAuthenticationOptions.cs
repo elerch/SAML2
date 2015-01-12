@@ -5,8 +5,16 @@ namespace Owin.Security.Saml
 {
     public class SamlAuthenticationOptions : AuthenticationOptions
     {
-        public SamlAuthenticationOptions() : base("SAML2") { }
+        public SamlAuthenticationOptions() : base("SAML2") {
+            Description = new AuthenticationDescription
+            {
+                AuthenticationType = "SAML2",
+                Caption = "Saml 2.0 Authentication protocol for OWIN"
+            };
+            MetadataPath = "/metadata";
+        }
         public Saml2Configuration Configuration { get; set; }
+        public string MetadataPath { get; internal set; }
         public SamlAuthenticationNotifications Notifications { get; set; }
     }
 }

@@ -57,6 +57,7 @@ namespace SAML2.Config
         {
             IdentityProviders = new IdentityProviders();
             AllowedAudienceUris = new List<System.Uri>();
+            Metadata = new Metadata();
         }
 
     }

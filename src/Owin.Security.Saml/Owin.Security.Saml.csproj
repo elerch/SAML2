@@ -62,6 +62,7 @@
     <Compile Include="SamlAuthenticationNotifications.cs" />
     <Compile Include="SamlAuthenticationOptions.cs" />
     <Compile Include="SamlMessage.cs" />
+    <Compile Include="SamlMetadataWriter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

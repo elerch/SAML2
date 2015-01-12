@@ -46,5 +46,13 @@ namespace SAML2.Config
         /// </summary>
         /// <value>The signing certificate.</value>
         public X509Certificate2 SigningCertificate { get; set; }
+
+
+        public ServiceProvider()
+        {
+            NameIdFormats = new NameIdFormats();
+            Endpoints = new ServiceProviderEndpoints();
+            AuthenticationContexts = new AuthenticationContexts();
+        }
     }
 }

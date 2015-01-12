@@ -248,6 +248,7 @@
     </Compile>
     <Compile Include="Utils\ArtifactUtil.cs" />
     <Compile Include="Utils\IdpSelectionUtil.cs" />
+    <Compile Include="Utils\MetadataUtils.cs" />
     <Compile Include="Utils\Saml20Utils.cs" />
     <Compile Include="Utils\Serialization.cs" />
     <Compile Include="Utils\TimeRestrictionValidation.cs" />

@@ -554,7 +554,7 @@ namespace SAML2
                                           };
             }
 
-            if (config.Metadata.Contacts != null && config.Metadata.Contacts.Count > 0)
+            if (config.Metadata.Contacts != null && config.Metadata.Contacts.Any())
             {
                 entity.ContactPerson = config.Metadata.Contacts.Select(x => new Schema.Metadata.Contact
                 {

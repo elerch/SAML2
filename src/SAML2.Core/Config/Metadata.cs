@@ -23,7 +23,7 @@ namespace SAML2.Config
         /// </summary>
         /// <value>The contacts.</value>
 
-        public List<Contact> Contacts { get; set; }
+        public IEnumerable<Contact> Contacts { get; set; }
 
         /// <summary>
         /// Gets or sets the organization.
@@ -36,6 +36,13 @@ namespace SAML2.Config
         /// Gets or sets the requested attributes.
         /// </summary>
         /// <value>The requested attributes.</value>
-        public List<Attribute> RequestedAttributes { get; set; }
+        public IList<Attribute> RequestedAttributes { get; set; }
+
+        public Metadata()
+        {
+            RequestedAttributes = new List<Attribute>();
+            Organization = new Organization();
+            Contacts = new List<Contact>();
+        }
     }
 }

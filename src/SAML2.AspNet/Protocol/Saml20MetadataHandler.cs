@@ -5,6 +5,7 @@ using System.Text;
 using System.Web;
 using SAML2.Config;
 using SAML2.AspNet;
+using SAML2.Utils;
 
 namespace SAML2.Protocol
 {
@@ -60,31 +61,11 @@ namespace SAML2.Protocol
             context.Response.ContentType = Saml20Constants.MetadataMimetype;
             context.Response.AddHeader("Content-Disposition", "attachment; filename=\"metadata.xml\"");
 
-            CreateMetadataDocument(context, sign);
+            var metautil = new MetadataUtils(ConfigurationFactory.Instance.Configuration, Logger);
+            context.Response.Write(metautil.CreateMetadataDocument(context.Response.ContentEncoding, sign));
             
             context.Response.End();            
         }
 
-        /// <summary>
-        /// Creates the metadata document.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        /// <param name="sign">if set to <c>true</c> sign the document.</param>
-        private void CreateMetadataDocument(HttpContext context, bool sign)
-        {
-            Logger.Debug(TraceMessages.MetadataDocumentBeingCreated);
-
-            var configuration = ConfigurationFactory.Instance.Configuration;
-
-            var keyinfo = new System.Security.Cryptography.Xml.KeyInfo();
-            var keyClause = new System.Security.Cryptography.Xml.KeyInfoX509Data(configuration.ServiceProvider.SigningCertificate, X509IncludeOption.EndCertOnly);
-            keyinfo.AddClause(keyClause);
-
-            var doc = new Saml20MetadataDocument(configuration, keyinfo, sign);
-
-            Logger.Debug(TraceMessages.MetadataDocumentCreated);
-
-            context.Response.Write(doc.ToXml(context.Response.ContentEncoding, configuration.ServiceProvider.SigningCertificate));
-        }
     }
 }

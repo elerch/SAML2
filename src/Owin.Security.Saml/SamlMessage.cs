@@ -35,5 +35,15 @@ namespace Microsoft.IdentityModel.Protocols
         {
             throw new NotImplementedException();
         }
+
+        public override string BuildRedirectUrl()
+        {
+            return base.BuildRedirectUrl(); // See Saml20SignonHandler.cs, line 591
+        }
+
+        public override string BuildFormPost()
+        {
+            return base.BuildFormPost(); // See Saml20SignonHandler.cs, line 591 (post binding)
+        }
     }
 }
