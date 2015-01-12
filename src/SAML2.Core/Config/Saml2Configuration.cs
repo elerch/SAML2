@@ -53,10 +53,5 @@ namespace SAML2.Config
         /// <value>The service provider.</value>
         public ServiceProvider ServiceProvider { get; set; }
 
-
-        /// <summary>
-        /// Gets or sets the <see cref="SamlAuthenticationNotifications"/> to call when processing Saml messages.
-        /// </summary>
-        public SamlAuthenticationNotifications Notifications { get; set; }
     }
 }
