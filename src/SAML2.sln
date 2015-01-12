@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Owin.Security.Saml", "Owin.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SAML2.AspNet", "SAML2.AspNet\SAML2.AspNet.csproj", "{D2136BFD-D2DA-4105-920B-8E05C090C597}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SelfHostOwinSPExample", "SelfHostOwinSPExample\SelfHostOwinSPExample.csproj", "{6A489386-AFB0-4172-ACF4-61F79DC340DC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{D2136BFD-D2DA-4105-920B-8E05C090C597}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D2136BFD-D2DA-4105-920B-8E05C090C597}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D2136BFD-D2DA-4105-920B-8E05C090C597}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6A489386-AFB0-4172-ACF4-61F79DC340DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6A489386-AFB0-4172-ACF4-61F79DC340DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6A489386-AFB0-4172-ACF4-61F79DC340DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6A489386-AFB0-4172-ACF4-61F79DC340DC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
