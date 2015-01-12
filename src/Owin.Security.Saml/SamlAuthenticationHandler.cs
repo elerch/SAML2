@@ -46,11 +46,11 @@ namespace Owin.Security.Saml
                 return;
             }
 
-            SamlMessage SamlMessage = new SamlMessage()
+            SamlMessage SamlMessage = new SamlMessage
             {
-                IssuerAddress = _configuration.TokenEndpoint ?? string.Empty,
-                Wtrealm = Options.Wtrealm,
-                Wa = SamlActions.SignOut,
+                // WS Fed was "TokenAddress". Not sure this is the right endpoint
+                IssuerAddress = Options.Configuration.ServiceProvider.Endpoints.DefaultLogoutEndpoint.RedirectUrl ?? string.Empty,
+                Reply = string.Empty
             };
 
             // Set Wreply in order:
@@ -60,15 +60,11 @@ namespace Owin.Security.Saml
             AuthenticationProperties properties = signout.Properties;
             if (properties != null && !string.IsNullOrEmpty(properties.RedirectUri))
             {
-                SamlMessage.Wreply = properties.RedirectUri;
+                SamlMessage.Reply = properties.RedirectUri;
             }
-            else if (!string.IsNullOrWhiteSpace(Options.SignOutWreply))
+            else if (!string.IsNullOrWhiteSpace(Options.Configuration.ServiceProvider.Endpoints.DefaultLogoutEndpoint.RedirectUrl))
             {
-                SamlMessage.Wreply = Options.SignOutWreply;
-            }
-            else if (!string.IsNullOrWhiteSpace(Options.Wreply))
-            {
-                SamlMessage.Wreply = Options.Wreply;
+                SamlMessage.Reply = Options.Configuration.ServiceProvider.Endpoints.DefaultLogoutEndpoint.RedirectUrl;
             }
 
             var notification = new RedirectToIdentityProviderNotification<SamlMessage, SamlAuthenticationOptions>(Context, Options)
@@ -79,7 +75,7 @@ namespace Owin.Security.Saml
 
             if (!notification.HandledResponse)
             {
-                string redirectUri = notification.ProtocolMessage.CreateSignOutUrl();
+                string redirectUri = notification.ProtocolMessage.BuildRedirectUrl();
                 if (!Uri.IsWellFormedUriString(redirectUri, UriKind.Absolute))
                 {
                     _logger.WriteWarning("The sign-out redirect URI is malformed: " + redirectUri);
@@ -105,8 +101,6 @@ namespace Owin.Security.Saml
                 return;
             }
 
-            _configuration = Options.Configuration;
-
             string baseUri =
                     Request.Scheme +
                     Uri.SchemeDelimiter +
@@ -127,16 +121,16 @@ namespace Owin.Security.Saml
 
             SamlMessage SamlMessage = new SamlMessage()
             {
-                IssuerAddress = _configuration.TokenEndpoint ?? string.Empty,
-                Wtrealm = Options.Wtrealm,
-                Wctx = SamlAuthenticationDefaults.WctxKey + "=" + Uri.EscapeDataString(Options.StateDataFormat.Protect(properties)),
-                Wa = SamlActions.SignIn,
+                //IssuerAddress = _configuration.TokenEndpoint ?? string.Empty,
+                //Wtrealm = Options.Wtrealm,
+                //Wctx = SamlAuthenticationDefaults.WctxKey + "=" + Uri.EscapeDataString(Options.StateDataFormat.Protect(properties)),
+                //Wa = SamlActions.SignIn,
             };
 
-            if (!string.IsNullOrWhiteSpace(Options.Wreply))
-            {
-                SamlMessage.Wreply = Options.Wreply;
-            }
+            //if (!string.IsNullOrWhiteSpace(Options.Wreply))
+            //{
+            //    SamlMessage.Wreply = Options.Wreply;
+            //}
 
             var notification = new RedirectToIdentityProviderNotification<SamlMessage, SamlAuthenticationOptions>(Context, Options)
             {
@@ -146,7 +140,7 @@ namespace Owin.Security.Saml
 
             if (!notification.HandledResponse)
             {
-                string redirectUri = notification.ProtocolMessage.CreateSignInUrl();
+                string redirectUri = notification.ProtocolMessage.BuildRedirectUrl();
                 if (!Uri.IsWellFormedUriString(redirectUri, UriKind.Absolute))
                 {
                     _logger.WriteWarning("The sign-in redirect URI is malformed: " + redirectUri);
@@ -199,67 +193,40 @@ namespace Owin.Security.Saml
         protected override async Task<AuthenticationTicket> AuthenticateCoreAsync()
         {
             // Allow login to be constrained to a specific path.
-            if (Options.CallbackPath.HasValue && Options.CallbackPath != (Request.PathBase + Request.Path))
-            {
-                return null;
-            }
+            //if (Options.CallbackPath.HasValue && Options.CallbackPath != (Request.PathBase + Request.Path))
+            //{
+            //    return null;
+            //}
 
             SamlMessage SamlMessage = null;
 
-            // assumption: if the ContentType is "application/x-www-form-urlencoded" it should be safe to read as it is small.
-            if (string.Equals(Request.Method, "POST", StringComparison.OrdinalIgnoreCase)
-              && !string.IsNullOrWhiteSpace(Request.ContentType)
-              // May have media/type; charset=utf-8, allow partial match.
-              && Request.ContentType.StartsWith("application/x-www-form-urlencoded", StringComparison.OrdinalIgnoreCase)
-              && Request.Body.CanRead)
-            {
-                if (!Request.Body.CanSeek)
-                {
-                    _logger.WriteVerbose("Buffering request body");
-                    // Buffer in case this body was not meant for us.
-                    MemoryStream memoryStream = new MemoryStream();
-                    await Request.Body.CopyToAsync(memoryStream);
-                    memoryStream.Seek(0, SeekOrigin.Begin);
-                    Request.Body = memoryStream;
-                }
-                IFormCollection form = await Request.ReadFormAsync();
-                Request.Body.Seek(0, SeekOrigin.Begin);
-    
-                // TODO: a delegate on SamlAuthenticationOptions would allow for users to hook their own custom message.
-                SamlMessage = new SamlMessage(form);
-            }
+            SamlMessage = await SamlMessageFromRequest(SamlMessage);
 
-            if (SamlMessage == null || !SamlMessage.IsSignInMessage)
-            {
+            if (SamlMessage == null || !SamlMessage.IsSignInMessage()) {
                 return null;
             }
 
             ExceptionDispatchInfo authFailedEx = null;
-            try
-            {
+            try {
                 var messageReceivedNotification = new MessageReceivedNotification<SamlMessage, SamlAuthenticationOptions>(Context, Options)
                 {
                     ProtocolMessage = SamlMessage
                 };
                 await Options.Notifications.MessageReceived(messageReceivedNotification);
-                if (messageReceivedNotification.HandledResponse)
-                {
+                if (messageReceivedNotification.HandledResponse) {
                     return GetHandledResponseTicket();
                 }
-                if (messageReceivedNotification.Skipped)
-                {
+                if (messageReceivedNotification.Skipped) {
                     return null;
                 }
 
-                if (SamlMessage.Wresult == null)
-                {
-                    _logger.WriteWarning("Received a sign-in message without a WResult.");
-                    return null;
-                }
+                //if (SamlMessage.Wresult == null) {
+                //    _logger.WriteWarning("Received a sign-in message without a WResult.");
+                //    return null;
+                //}
 
                 string token = SamlMessage.GetToken();
-                if (string.IsNullOrWhiteSpace(token))
-                {
+                if (string.IsNullOrWhiteSpace(token)) {
                     _logger.WriteWarning("Received a sign-in message without a token.");
                     return null;
                 }
@@ -269,51 +236,37 @@ namespace Owin.Security.Saml
                     ProtocolMessage = SamlMessage
                 };
                 await Options.Notifications.SecurityTokenReceived(securityTokenReceivedNotification);
-                if (securityTokenReceivedNotification.HandledResponse)
-                {
+                if (securityTokenReceivedNotification.HandledResponse) {
                     return GetHandledResponseTicket();
                 }
-                if (securityTokenReceivedNotification.Skipped)
-                {
+                if (securityTokenReceivedNotification.Skipped) {
                     return null;
                 }
 
-                if (_configuration == null)
-                {
-                    _configuration = await Options.ConfigurationManager.GetConfigurationAsync(Context.Request.CallCancelled);
-                }
 
                 // Copy and augment to avoid cross request race conditions for updated configurations.
-                TokenValidationParameters tvp = Options.TokenValidationParameters.Clone();
-                IEnumerable<string> issuers = new[] { _configuration.Issuer };
-                tvp.ValidIssuers = (tvp.ValidIssuers == null ? issuers : tvp.ValidIssuers.Concat(issuers));
-                tvp.IssuerSigningKeys = (tvp.IssuerSigningKeys == null ? _configuration.SigningKeys : tvp.IssuerSigningKeys.Concat(_configuration.SigningKeys));
 
-                SecurityToken parsedToken;
-                ClaimsPrincipal principal = Options.SecurityTokenHandlers.ValidateToken(token, tvp, out parsedToken);
+                ClaimsPrincipal principal = null;
                 ClaimsIdentity claimsIdentity = principal.Identity as ClaimsIdentity;
 
                 // Retrieve our cached redirect uri
-                string state = SamlMessage.Wctx;
+                // string state = SamlMessage.Wctx;
                 // WsFed allows for uninitiated logins, state may be missing.
-                AuthenticationProperties properties = GetPropertiesFromWctx(state);
+                AuthenticationProperties properties = null;// GetPropertiesFromWctx(state);
                 AuthenticationTicket ticket = new AuthenticationTicket(claimsIdentity, properties);
 
-                if (Options.UseTokenLifetime)
-                {
-                    // Override any session persistence to match the token lifetime.
-                    DateTime issued = parsedToken.ValidFrom;
-                    if (issued != DateTime.MinValue)
-                    {
-                        ticket.Properties.IssuedUtc = issued.ToUniversalTime();
-                    }
-                    DateTime expires = parsedToken.ValidTo;
-                    if (expires != DateTime.MinValue)
-                    {
-                        ticket.Properties.ExpiresUtc = expires.ToUniversalTime();
-                    }
-                    ticket.Properties.AllowRefresh = false;
-                }
+                //if (Options.UseTokenLifetime) {
+                //    // Override any session persistence to match the token lifetime.
+                //    DateTime issued = parsedToken.ValidFrom;
+                //    if (issued != DateTime.MinValue) {
+                //        ticket.Properties.IssuedUtc = issued.ToUniversalTime();
+                //    }
+                //    DateTime expires = parsedToken.ValidTo;
+                //    if (expires != DateTime.MinValue) {
+                //        ticket.Properties.ExpiresUtc = expires.ToUniversalTime();
+                //    }
+                //    ticket.Properties.AllowRefresh = false;
+                //}
 
                 var securityTokenValidatedNotification = new SecurityTokenValidatedNotification<SamlMessage, SamlAuthenticationOptions>(Context, Options)
                 {
@@ -322,12 +275,10 @@ namespace Owin.Security.Saml
                 };
 
                 await Options.Notifications.SecurityTokenValidated(securityTokenValidatedNotification);
-                if (securityTokenValidatedNotification.HandledResponse)
-                {
+                if (securityTokenValidatedNotification.HandledResponse) {
                     return GetHandledResponseTicket();
                 }
-                if (securityTokenValidatedNotification.Skipped)
-                {
+                if (securityTokenValidatedNotification.Skipped) {
                     return null;
                 }
                 // Flow possible changes
@@ -335,21 +286,18 @@ namespace Owin.Security.Saml
 
                 return ticket;
             }
-            catch (Exception exception)
-            {
+            catch (Exception exception) {
                 // We can't await inside a catch block, capture and handle outside.
                 authFailedEx = ExceptionDispatchInfo.Capture(exception);
             }
 
-            if (authFailedEx != null)
-            {
+            if (authFailedEx != null) {
                 _logger.WriteError("Exception occurred while processing message: ", authFailedEx.SourceException);
 
                 // Refresh the configuration for exceptions that may be caused by key rollovers. The user can also request a refresh in the notification.
-                if (Options.RefreshOnIssuerKeyNotFound && authFailedEx.SourceException.GetType().Equals(typeof(SecurityTokenSignatureKeyNotFoundException)))
-                {
-                    Options.ConfigurationManager.RequestRefresh();
-                }
+                //if (Options.RefreshOnIssuerKeyNotFound && authFailedEx.SourceException.GetType().Equals(typeof(SecurityTokenSignatureKeyNotFoundException))) {
+                //    Options.ConfigurationManager.RequestRefresh();
+                //}
 
                 var authenticationFailedNotification = new AuthenticationFailedNotification<SamlMessage, SamlAuthenticationOptions>(Context, Options)
                 {
@@ -357,12 +305,10 @@ namespace Owin.Security.Saml
                     Exception = authFailedEx.SourceException
                 };
                 await Options.Notifications.AuthenticationFailed(authenticationFailedNotification);
-                if (authenticationFailedNotification.HandledResponse)
-                {
+                if (authenticationFailedNotification.HandledResponse) {
                     return GetHandledResponseTicket();
                 }
-                if (authenticationFailedNotification.Skipped)
-                {
+                if (authenticationFailedNotification.Skipped) {
                     return null;
                 }
 
@@ -370,6 +316,32 @@ namespace Owin.Security.Saml
             }
 
             return null;
+        }
+
+        private async Task<SamlMessage> SamlMessageFromRequest(SamlMessage SamlMessage)
+        {
+            // assumption: if the ContentType is "application/x-www-form-urlencoded" it should be safe to read as it is small.
+            if (string.Equals(Request.Method, "POST", StringComparison.OrdinalIgnoreCase)
+              && !string.IsNullOrWhiteSpace(Request.ContentType)
+              // May have media/type; charset=utf-8, allow partial match.
+              && Request.ContentType.StartsWith("application/x-www-form-urlencoded", StringComparison.OrdinalIgnoreCase)
+              && Request.Body.CanRead) {
+                if (!Request.Body.CanSeek) {
+                    _logger.WriteVerbose("Buffering request body");
+                    // Buffer in case this body was not meant for us.
+                    MemoryStream memoryStream = new MemoryStream();
+                    await Request.Body.CopyToAsync(memoryStream);
+                    memoryStream.Seek(0, SeekOrigin.Begin);
+                    Request.Body = memoryStream;
+                }
+                var form = await Request.ReadFormAsync();
+                Request.Body.Seek(0, SeekOrigin.Begin);
+
+                // TODO: a delegate on SamlAuthenticationOptions would allow for users to hook their own custom message.
+                SamlMessage = new SamlMessage(form, Request.Headers, Request.QueryString);
+            }
+
+            return SamlMessage;
         }
 
         private static AuthenticationTicket GetHandledResponseTicket()

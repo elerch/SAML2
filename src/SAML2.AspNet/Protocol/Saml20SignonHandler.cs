@@ -382,7 +382,7 @@ namespace SAML2.Protocol
             Logger.DebugFormat(TraceMessages.AssertionProcessing, elem.OuterXml);
 
             var issuer = GetIssuer(elem);
-            var endp = RetrieveIDPConfiguration(issuer, config);
+            var endp = IdpSelectionUtil.RetrieveIDPConfiguration(issuer, config);
 
             PreHandleAssertion(context, elem, endp);
 
@@ -459,7 +459,7 @@ namespace SAML2.Protocol
 
             // Check if an encoding-override exists for the IdP endpoint in question
             var issuer = GetIssuer(assertion);
-            var endpoint = RetrieveIDPConfiguration(issuer, config);
+            var endpoint = IdpSelectionUtil.RetrieveIDPConfiguration(issuer, config);
             if (!endpoint.AllowReplayAttacks) 
             {
                 CheckReplayAttack(context, doc.DocumentElement, !endpoint.AllowIdPInitiatedSso);
@@ -516,7 +516,7 @@ namespace SAML2.Protocol
             {
                 Logger.Debug(TraceMessages.ArtifactResolveReceived);
 
-                var idp = RetrieveIDPConfiguration(parser.Issuer);
+                var idp = IdpSelectionUtil.RetrieveIDPConfiguration(parser.Issuer, config);
                 if (!parser.CheckSamlMessageSignature(idp.Metadata.Keys))
                 {
                     Logger.Error(ErrorMessages.ArtifactResolveSignatureInvalid);
@@ -529,7 +529,7 @@ namespace SAML2.Protocol
             {
                 Logger.Debug(TraceMessages.ArtifactResolveReceived);
 
-                var idp = RetrieveIDPConfiguration(parser.Issuer);
+                var idp = IdpSelectionUtil.RetrieveIDPConfiguration(parser.Issuer, config);
                 if (!parser.CheckSamlMessageSignature(idp.Metadata.Keys))
                 {
                     Logger.Error(ErrorMessages.ArtifactResponseSignatureInvalid);

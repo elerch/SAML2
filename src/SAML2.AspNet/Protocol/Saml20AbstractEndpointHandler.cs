@@ -156,25 +156,6 @@ namespace SAML2.Protocol
         }
 
         /// <summary>
-        /// Looks through the Identity Provider configurations and
-        /// </summary>
-        /// <param name="idpId">The identity provider id.</param>
-        /// <returns>The <see cref="IdentityProvider"/>.</returns>
-        public IdentityProvider RetrieveIDPConfiguration(string idpId)
-        {
-            return RetrieveIDPConfiguration(idpId, null);
-        }
-        /// <summary>
-        /// Looks through the Identity Provider configurations and
-        /// </summary>
-        /// <param name="idpId">The identity provider id.</param>
-        /// <returns>The <see cref="IdentityProvider"/>.</returns>
-        public IdentityProvider RetrieveIDPConfiguration(string idpId, Saml2Configuration config)
-        {
-            return config.IdentityProviders.FirstOrDefault(x => x.Id == idpId);
-        }
-
-        /// <summary>
         /// Determine which endpoint to use based on the protocol defaults, configuration data and metadata.
         /// </summary>
         /// <param name="defaultBinding">The binding to use if none has been specified in the configuration and the metadata allows all bindings.</param>

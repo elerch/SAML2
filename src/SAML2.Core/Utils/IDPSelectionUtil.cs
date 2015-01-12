@@ -1,4 +1,5 @@
 ﻿using SAML2.Config;
+using System.Linq;
 
 namespace SAML2.Utils
 {
@@ -45,5 +46,16 @@ namespace SAML2.Utils
         {
             return IdpSelectionEvent != null ? IdpSelectionEvent(endpoints) : null;
         }
+
+        /// <summary>
+        /// Looks through the Identity Provider configurations and
+        /// </summary>
+        /// <param name="idpId">The identity provider id.</param>
+        /// <returns>The <see cref="IdentityProvider"/>.</returns>
+        public static IdentityProvider RetrieveIDPConfiguration(string idpId, Saml2Configuration config)
+        {
+            return config.IdentityProviders.FirstOrDefault(x => x.Id == idpId);
+        }
+
     }
 }

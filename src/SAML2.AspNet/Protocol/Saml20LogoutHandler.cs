@@ -81,7 +81,7 @@ namespace SAML2.Protocol
                 // context.Session[IDPLoginSessionKey] may be null if IIS has been restarted
                 if (context.Session[IdpSessionIdKey] != null)
                 {
-                    idpEndpoint = RetrieveIDPConfiguration((string)context.Session[IdpLoginSessionKey]);
+                    idpEndpoint = IdpSelectionUtil.RetrieveIDPConfiguration((string)context.Session[IdpLoginSessionKey], config);
                 }
 
                 if (idpEndpoint == null)
@@ -146,7 +146,7 @@ namespace SAML2.Protocol
 
             var config = ConfigurationFactory.Instance.Configuration;
             var builder = new HttpArtifactBindingBuilder(context, config);
-            var idp = RetrieveIDPConfiguration(parser.Issuer);
+            var idp = IdpSelectionUtil.RetrieveIDPConfiguration(parser.Issuer, config);
             
             if (parser.IsArtifactResolve)
             {
@@ -191,7 +191,7 @@ namespace SAML2.Protocol
                                            InResponseTo = req.Id
                                        };
 
-                    var endpoint = RetrieveIDPConfiguration((string)context.Session[IdpLoginSessionKey]);
+                    var endpoint = IdpSelectionUtil.RetrieveIDPConfiguration((string)context.Session[IdpLoginSessionKey], config);
                     var destination = DetermineEndpointConfiguration(BindingType.Redirect, endpoint.Endpoints.DefaultLogoutEndpoint, endpoint.Metadata.IDPSLOEndpoints);
 
                     builder.RedirectFromLogout(destination, response);
@@ -246,7 +246,7 @@ namespace SAML2.Protocol
             Logger.DebugFormat(TraceMessages.LogoutRequestReceived);
 
             // Fetch the endpoint configuration
-            var idp = RetrieveIDPConfiguration((string)context.Session[IdpLoginSessionKey]);
+            var idp = IdpSelectionUtil.RetrieveIDPConfiguration((string)context.Session[IdpLoginSessionKey], ConfigurationFactory.Instance.Configuration);
             var destination = DetermineEndpointConfiguration(BindingType.Redirect, idp.Endpoints.DefaultLogoutEndpoint, idp.Metadata.IDPSLOEndpoints);
 
             // Fetch config object
@@ -369,76 +369,10 @@ namespace SAML2.Protocol
         /// <param name="context">The context.</param>
         private void HandleResponse(HttpContext context, Saml2Configuration config)
         {
-            Logger.DebugFormat(TraceMessages.LogoutResponseReceived);
-
-            var message = string.Empty;
-            LogoutResponse response = null;
-            if (context.Request.RequestType == "GET")
-            {
-                var parser = new HttpRedirectBindingParser(context.Request.Url);
-                response = Serialization.DeserializeFromXmlString<LogoutResponse>(parser.Message);
-
-                Logger.DebugFormat(TraceMessages.LogoutResponseRedirectBindingParse, parser.Message, parser.SignatureAlgorithm, parser.Signature);
-
-                var idp = RetrieveIDPConfiguration(response.Issuer.Value);
-                if (idp.Metadata == null)
-                {
-                    Logger.ErrorFormat(ErrorMessages.UnknownIdentityProvider, idp.Id);
-                    throw new Saml20Exception(string.Format(ErrorMessages.UnknownIdentityProvider, idp.Id));
-                }
-
-                if (!parser.VerifySignature(idp.Metadata.Keys))
-                {
-                    Logger.Error(ErrorMessages.ResponseSignatureInvalid);
-                    throw new Saml20Exception(ErrorMessages.ResponseSignatureInvalid);
-                }
-
-                message = parser.Message;
-            }
-            else if (context.Request.RequestType == "POST")
-            {
-                var parser = new HttpPostBindingParser(context.Request.Params);
-                Logger.DebugFormat(TraceMessages.LogoutResponsePostBindingParse, parser.Message);
-
-                response = Serialization.DeserializeFromXmlString<LogoutResponse>(parser.Message);
-
-                var idp = RetrieveIDPConfiguration(response.Issuer.Value);
-                if (idp.Metadata == null)
-                {
-                    Logger.ErrorFormat(ErrorMessages.UnknownIdentityProvider, idp.Id);
-                    throw new Saml20Exception(string.Format(ErrorMessages.UnknownIdentityProvider, idp.Id));
-                }
-
-                if (!parser.IsSigned)
-                {
-                    Logger.Error(ErrorMessages.ResponseSignatureMissing);
-                    throw new Saml20Exception(ErrorMessages.ResponseSignatureMissing);
-                }
-
-                // signature on final message in logout
-                if (!parser.CheckSignature(idp.Metadata.Keys))
-                {
-                    Logger.Error(ErrorMessages.ResponseSignatureInvalid);
-                    throw new Saml20Exception(ErrorMessages.ResponseSignatureInvalid);
-                }
-
-                message = parser.Message;
-            }
-
-            if (response == null)
-            {
-                Logger.ErrorFormat(ErrorMessages.UnsupportedRequestType, context.Request.RequestType);
-                throw new Saml20Exception(string.Format(ErrorMessages.UnsupportedRequestType, context.Request.RequestType));
-            }
-
-            Logger.DebugFormat(TraceMessages.LogoutResponseParsed, message);
-
-            if (response.Status.StatusCode.Value != Saml20Constants.StatusCodes.Success)
-            {
-                Logger.ErrorFormat(ErrorMessages.ResponseStatusNotSuccessful, response.Status.StatusCode.Value);
-                throw new Saml20Exception(string.Format(ErrorMessages.ResponseStatusNotSuccessful, response.Status.StatusCode.Value));
-            }
-
+            var requestType = context.Request.RequestType;
+            var requestParams = context.Request.Params;
+            var requestUrl = context.Request.Url;
+            new Logout(Logger, config).ValidateLogoutRequest(requestType, requestParams, requestUrl);
             // Log the user out locally
             DoLogout(context, false, config);
         }
