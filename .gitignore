@@ -184,3 +184,9 @@ FakesAssemblies/
 
 .hg/
 *.StyleCop
+
+# Backup files
+*.orig
+
+# Designer generated files
+*.Designer.cs
