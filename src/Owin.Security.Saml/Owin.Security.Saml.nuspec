@@ -12,5 +12,8 @@
     <releaseNotes></releaseNotes>
     <copyright>Copyright 2015</copyright>
     <tags>SAML2 Owin library</tags>
+    <dependencies>
+      <dependency id="Saml2.Core" version="0.5.0.1" />
+    </dependencies>
   </metadata>
 </package>
