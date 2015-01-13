@@ -181,7 +181,7 @@ namespace SAML2
             {
                 result.NameIdPolicy = new NameIdPolicy
                                           {
-                                              AllowCreate = config.ServiceProvider.NameIdFormats.AllowCreate,
+                                              AllowCreate = false,
                                               Format = config.ServiceProvider.NameIdFormats[0].Format
                                           };
 

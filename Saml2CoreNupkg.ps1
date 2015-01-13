@@ -1,12 +1,12 @@
 param(
-	[string]$project = ".\src\SAML2\SAML2.csproj",
+	[string]$project = ".\src\SAML2.Core\SAML2.Core.csproj",
 	[string]$solution = ".\src\SAML2.sln",
-	[string]$assemblyInfoFile = ".\src\SAML2\Properties\AssemblyInfo.cs",
-	[string]$nuspecFile = ".\src\SAML2\SAML2.nuspec"
+	[string]$assemblyInfoFile = ".\src\SAML2.Core\Properties\AssemblyInfo.cs",
+	[string]$nuspecFile = ".\src\SAML2.Core\SAML2.Core.nuspec"
 )
 
 # Tool locations
-$nuget = ".\src\.nuget\NuGet.exe"
+$nuget = ".\tools\NuGet.exe"
 $msbuild = "C:\Windows\Microsoft.NET\Framework64\v4.0.30319\MSBuild.exe"
 
 # RegEx strings
@@ -14,7 +14,7 @@ $assemblyVersionPattern = '^\[assembly: AssemblyVersion\("[0-9]+(\.([0-9]+|\*)){
 $fileVersionPattern = '^\[assembly: AssemblyFileVersion\("[0-9]+(\.([0-9]+|\*)){1,3}"\)\]$'
 
 # Get version for package
-$version = Read-Host 'Version (major.minor): '
+$version = Read-Host 'Version (major.minor)'
 if (($version -eq '/?') -or ($version -notmatch "[0-9]+(\.([0-9]+|\*)){1,3}"))
 {
 	Write-Host "Incorrect format for version"
@@ -22,7 +22,7 @@ if (($version -eq '/?') -or ($version -notmatch "[0-9]+(\.([0-9]+|\*)){1,3}"))
 }
 
 # Get release notes for package
-$releaseNotes = Read-Host 'Release notes: '
+$releaseNotes = Read-Host 'Release notes'
 
 # Set new assembly and file version strings
 $zeroPad = ""

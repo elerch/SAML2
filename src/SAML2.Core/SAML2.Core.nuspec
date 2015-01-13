@@ -6,11 +6,11 @@
     <title>$title$</title>
     <authors>$author$</authors>
     <owners>$author$</owners>
-    <licenseUrl>https://saml2.codeplex.com/license</licenseUrl>
-    <projectUrl>https://saml2.codeplex.com/</projectUrl>
+    <licenseUrl>https://github.com/elerch/SAML2/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/elerch/SAML2</projectUrl>
     <description>$description$</description>
     <releaseNotes></releaseNotes>
-    <copyright>Copyright 2013</copyright>
-    <tags>SAML SSO</tags>
+    <copyright>Copyright 2015</copyright>
+    <tags>SAML2 Core library</tags>
   </metadata>
 </package>
