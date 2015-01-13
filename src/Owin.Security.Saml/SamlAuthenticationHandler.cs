@@ -46,12 +46,11 @@ namespace Owin.Security.Saml
                 return;
             }
 
-            SamlMessage SamlMessage = new SamlMessage
-            {
-                // WS Fed was "TokenAddress". Not sure this is the right endpoint
-                IssuerAddress = Options.Configuration.ServiceProvider.Endpoints.DefaultLogoutEndpoint.RedirectUrl ?? string.Empty,
-                Reply = string.Empty
-            };
+            SamlMessage SamlMessage = await SamlMessageFromRequest();
+
+            // WS Fed was "TokenAddress". Not sure this is the right endpoint
+            SamlMessage.IssuerAddress = Options.Configuration.ServiceProvider.Endpoints.DefaultLogoutEndpoint.RedirectUrl ?? string.Empty;
+            SamlMessage.Reply = string.Empty;
 
             // Set Wreply in order:
             // 1. properties.Redirect
@@ -119,7 +118,7 @@ namespace Owin.Security.Saml
                 properties.RedirectUri = currentUri;
             }
 
-            SamlMessage SamlMessage = new SamlMessage()
+            SamlMessage SamlMessage = await SamlMessageFromRequest();
             {
                 //IssuerAddress = _configuration.TokenEndpoint ?? string.Empty,
                 //Wtrealm = Options.Wtrealm,
@@ -198,9 +197,7 @@ namespace Owin.Security.Saml
             //    return null;
             //}
 
-            SamlMessage SamlMessage = null;
-
-            SamlMessage = await SamlMessageFromRequest(SamlMessage);
+            var SamlMessage = await SamlMessageFromRequest();
 
             if (SamlMessage == null || !SamlMessage.IsSignInMessage()) {
                 return null;
@@ -318,8 +315,9 @@ namespace Owin.Security.Saml
             return null;
         }
 
-        private async Task<SamlMessage> SamlMessageFromRequest(SamlMessage SamlMessage)
+        private async Task<SamlMessage> SamlMessageFromRequest()
         {
+            var samlMessage = new SamlMessage(null, Context, Options.Configuration);
             // assumption: if the ContentType is "application/x-www-form-urlencoded" it should be safe to read as it is small.
             if (string.Equals(Request.Method, "POST", StringComparison.OrdinalIgnoreCase)
               && !string.IsNullOrWhiteSpace(Request.ContentType)
@@ -338,10 +336,10 @@ namespace Owin.Security.Saml
                 Request.Body.Seek(0, SeekOrigin.Begin);
 
                 // TODO: a delegate on SamlAuthenticationOptions would allow for users to hook their own custom message.
-                SamlMessage = new SamlMessage(form, Request.Headers, Request.QueryString);
+                samlMessage = new SamlMessage(form, Context, Options.Configuration);
             }
 
-            return SamlMessage;
+            return samlMessage;
         }
 
         private static AuthenticationTicket GetHandledResponseTicket()

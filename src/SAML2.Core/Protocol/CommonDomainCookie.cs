@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Web;
 
 namespace SAML2.Protocol
 {
@@ -15,12 +14,6 @@ namespace SAML2.Protocol
         /// </summary>
         public const string CommonDomainCookieName = "_samlIdp";
 
-        #region Private variables
-
-        /// <summary>
-        /// The cookie collection.
-        /// </summary>
-        private readonly HttpCookieCollection _cookies;
 
         /// <summary>
         /// The <c>KnownIdps</c> backing field.
@@ -42,19 +35,6 @@ namespace SAML2.Protocol
         /// </summary>
         private bool _isSet;
 
-        #endregion
-
-        #region Constructor functions
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CommonDomainCookie"/> class.
-        /// </summary>
-        /// <param name="cookies">The cookies.</param>
-        public CommonDomainCookie(HttpCookieCollection cookies)
-        {
-            _cookies = cookies;
-            this._knownIdps = new List<string>();
-        }
         /// <summary>
         /// Initializes a new instance of the <see cref="CommonDomainCookie"/> class.
         /// </summary>
@@ -64,10 +44,6 @@ namespace SAML2.Protocol
             this._samlIdp = samlIdp;
             this._knownIdps = new List<string>();
         }
-
-        #endregion
-
-        #region Properties
 
         /// <summary>
         /// Gets a value indicating whether the Common Domain Cookie was set (had valid values).
@@ -111,10 +87,6 @@ namespace SAML2.Protocol
             }
         }
 
-        #endregion
-
-        #region Private utility functions
-
         /// <summary>
         /// Ensures the cookie is set.
         /// </summary>
@@ -132,11 +104,6 @@ namespace SAML2.Protocol
         /// </summary>
         private void Load()
         {
-            if (_cookies != null)
-            {
-                LoadCookie();
-            }
-
             if (!string.IsNullOrEmpty(this._samlIdp))
             {
                 LoadFromString();
@@ -157,30 +124,12 @@ namespace SAML2.Protocol
         }
 
         /// <summary>
-        /// Loads the cookie.
-        /// </summary>
-        private void LoadCookie()
-        {
-            if (!_isLoaded)
-            {
-                var cdc = _cookies[CommonDomainCookieName];
-                if (cdc != null)
-                {
-                    ParseCookie(cdc.Value);
-                    _isSet = true;
-                }
-
-                _isLoaded = true;
-            }
-        }
-
-        /// <summary>
         /// Parses the cookie.
         /// </summary>
         /// <param name="rawValue">The raw value.</param>
         private void ParseCookie(string rawValue)
         {
-            var value = HttpUtility.UrlDecode(rawValue);
+            var value = Uri.UnescapeDataString(rawValue);
             var idps = value.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
             foreach (var base64idp in idps)
             {
@@ -189,7 +138,5 @@ namespace SAML2.Protocol
                 _knownIdps.Add(idp);                
             }
         }
-
-        #endregion
     }
 }

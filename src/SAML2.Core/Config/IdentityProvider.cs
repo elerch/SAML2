@@ -119,5 +119,9 @@ namespace SAML2.Config
             get { return Id; }
         }
 
+        public IdentityProvider()
+        {
+            Endpoints = new IdentityProviderEndpoints();
+        }
     }
 }

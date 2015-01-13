@@ -595,9 +595,12 @@ namespace SAML2.Protocol
             if (!string.IsNullOrEmpty(returnUrl) && context.Session != null)
             {
                 context.Session["RedirectUrl"] = returnUrl;
-            }            
+            }
 
-            var idp = RetrieveIDP(context, config);
+            var isRedirected = false;
+            var selectionUtil = new IdpSelectionUtil(Logger);
+            var idp = selectionUtil.RetrieveIDP(context.Request.Params, context.Request.QueryString, config, s => { context.Response.Redirect(s); isRedirected = true; });
+            if (isRedirected) return;
             if (idp == null)
             {
                 // Display a page to the user where she can pick the IDP
@@ -628,7 +631,7 @@ namespace SAML2.Protocol
             context.Items[IdpTempSessionKey] = identityProvider.Id;
 
             // Determine which endpoint to use from the configuration file or the endpoint metadata.
-            var destination = DetermineEndpointConfiguration(BindingType.Redirect, identityProvider.Endpoints.DefaultSignOnEndpoint, identityProvider.Metadata.SSOEndpoints);
+            var destination = IdpSelectionUtil.DetermineEndpointConfiguration(BindingType.Redirect, identityProvider.Endpoints.DefaultSignOnEndpoint, identityProvider.Metadata.SSOEndpoints);
             request.Destination = destination.Url;
 
             if (identityProvider.ForceAuth)

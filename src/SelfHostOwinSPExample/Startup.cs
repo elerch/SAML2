@@ -36,8 +36,8 @@ namespace SelfHostOwinSPExample
                 {
                     SigningCertificate = new System.Security.Cryptography.X509Certificates.X509Certificate2(FileEmbeddedResource("SelfHostOwinSPExample.sts_dev_certificate.pfx"), "test1234"),
                     Server = "https://localhost:44333/core",
-                    Id = "https://localhost:44333/core",
-                }
+                    Id = "https://localhost:44333/core"
+                },
             };
             myconfig.ServiceProvider.Endpoints.Add(new ServiceProviderEndpoint
             {
@@ -56,6 +56,17 @@ namespace SelfHostOwinSPExample
                 Type = EndpointType.Metadata,
                 LocalPath = "/core/metadata"
             });
+            myconfig.IdentityProviders.MetadataLocation = "..\\..\\Metadata";
+            var shib = myconfig.IdentityProviders.FirstOrDefault(p => p.Id == "https://idp.testshib.org/idp/shibboleth");
+            if (shib != null) {
+                //shib.Metadata.SSOEndpoints
+                shib.Endpoints.Add(new IdentityProviderEndpoint { Binding = BindingType.Redirect, Type = EndpointType.SignOn, Url = "https://idp.testshib.org/idp/profile/Shibboleth/SSO" });
+            }
+            //myconfig.IdentityProviders.Add(new IdentityProvider
+            //{
+            //    Id = "https://idp.testshib.org/idp/shibboleth",
+            //    Name = "Test shib"
+            //});
             SAML2.Logging.LoggerProvider.Configuration = myconfig;
             return myconfig;
         }
