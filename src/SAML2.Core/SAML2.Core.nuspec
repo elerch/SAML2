@@ -9,7 +9,7 @@
     <licenseUrl>https://github.com/elerch/SAML2/blob/master/LICENSE</licenseUrl>
     <projectUrl>https://github.com/elerch/SAML2</projectUrl>
     <description>$description$</description>
-    <releaseNotes></releaseNotes>
+    <releaseNotes>Initial implementation - OWIN support limited to metadata only (title change)</releaseNotes>
     <copyright>Copyright 2015</copyright>
     <tags>SAML2 Core library</tags>
   </metadata>
