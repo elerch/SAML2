@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("SAML2")]
+[assembly: AssemblyTitle("SAML2.Core")]
 [assembly: AssemblyDescription("Based on http://www.nuget.org/packages/SAML2/, this removes dependencies on System.Web. Packages SAML2.AspNet and Owin.Security.Saml will implement SAML in those environments")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Emil Lerch")]
