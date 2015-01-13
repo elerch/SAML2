@@ -41,7 +41,7 @@ namespace SAML2.Config
         public Metadata()
         {
             RequestedAttributes = new List<Attribute>();
-            Organization = new Organization();
+            //Organization = new Organization(); // The Organization element appears to break metaadata (missing required lang attribute)
             Contacts = new List<Contact>();
         }
     }

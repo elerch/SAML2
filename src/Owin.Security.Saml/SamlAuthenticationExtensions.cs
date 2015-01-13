@@ -25,7 +25,7 @@ namespace Owin
             if (options == null) throw new ArgumentNullException("options");
             app.Map(options.MetadataPath, metadataapp => {
                 metadataapp.Run(new SamlMetadataWriter(options.Configuration).WriteMetadataDocument);
-            });
+            });           
             return app.Use<SamlAuthenticationMiddleware>(app, options);
         }
     }

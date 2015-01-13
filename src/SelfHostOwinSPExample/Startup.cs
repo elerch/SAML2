@@ -36,9 +36,26 @@ namespace SelfHostOwinSPExample
                 {
                     SigningCertificate = new System.Security.Cryptography.X509Certificates.X509Certificate2(FileEmbeddedResource("SelfHostOwinSPExample.sts_dev_certificate.pfx"), "test1234"),
                     Server = "https://localhost:44333/core",
-                    Id = "https://localhost:44333/core"
+                    Id = "https://localhost:44333/core",
                 }
             };
+            myconfig.ServiceProvider.Endpoints.Add(new ServiceProviderEndpoint
+            {
+                Type = EndpointType.SignOn,
+                LocalPath = "/core/login",
+                RedirectUrl = "/core"
+            });
+            myconfig.ServiceProvider.Endpoints.Add(new ServiceProviderEndpoint
+            {
+                Type = EndpointType.Logout,
+                LocalPath = "/core/logout",
+                RedirectUrl = "/core"
+            });
+            myconfig.ServiceProvider.Endpoints.Add(new ServiceProviderEndpoint
+            {
+                Type = EndpointType.Metadata,
+                LocalPath = "/core/metadata"
+            });
             SAML2.Logging.LoggerProvider.Configuration = myconfig;
             return myconfig;
         }
