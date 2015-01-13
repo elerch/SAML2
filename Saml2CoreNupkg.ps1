@@ -34,8 +34,8 @@ switch ($version.Split(".").Length)
 	2 { $zeroPad = ".0.0" }
 }
 
-$assemblyVersion = "[assembly: AssemblyVersion(`"$version$zeroPad`")]"
-$fileVersion = "[assembly: AssemblyFileVersion(`"$version$starPad`")]"
+$assemblyVersion = "[assembly: AssemblyVersion(`"$version$starPad`")]"
+$fileVersion = "[assembly: AssemblyFileVersion(`"$version$zeroPad`")]"
 
 # Change version number
 $assemblyInfo = Get-Content -Encoding UTF8 $assemblyInfoFile

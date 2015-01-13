@@ -83,7 +83,6 @@
     <Compile Include="Config\WritableConfigurationElement.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Protocol\AbstractEndpointHandler.cs" />
-    <Compile Include="Protocol\CommonDomainCookie.cs" />
     <Compile Include="Protocol\Pages\BasePage.cs">
       <SubType>aspxcodebehind</SubType>
     </Compile>
