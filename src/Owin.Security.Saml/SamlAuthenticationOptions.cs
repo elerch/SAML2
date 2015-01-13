@@ -14,7 +14,7 @@ namespace Owin.Security.Saml
             MetadataPath = "/metadata";
         }
         public Saml2Configuration Configuration { get; set; }
-        public string MetadataPath { get; internal set; }
+        public string MetadataPath { get; set; }
         public SamlAuthenticationNotifications Notifications { get; set; }
     }
 }
