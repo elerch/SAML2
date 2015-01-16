@@ -118,6 +118,7 @@ namespace SAML2.AspNet.Config
         /// </summary>
         public void Refresh()
         {
+            // Is this really absolutely necessary? Are people changing metadata at runtime?
             if (MetadataLocation == null)
             {
                 return;
@@ -159,7 +160,7 @@ namespace SAML2.AspNet.Config
                     continue;
                 }
 
-                metadataDoc = ParseFile(file);
+                metadataDoc = SAML2.Config.IdentityProviders.ParseFile(file, GetEncodings);
 
                 if (metadataDoc != null)
                 {
@@ -258,105 +259,5 @@ namespace SAML2.AspNet.Config
             return _encodings;
         }
 
-        /// <summary>
-        /// Loads a file into an XmlDocument. If the loading or the signature check fails, the method will retry using another encoding.
-        /// </summary>
-        /// <param name="filename">The filename.</param>
-        /// <returns>The XML document.</returns>
-        private XmlDocument LoadFileAsXmlDocument(string filename)
-        {
-            var doc = new XmlDocument { PreserveWhitespace = true };
-
-            try
-            {
-                // First attempt a standard load, where the XML document is expected to declare its encoding by itself.
-                doc.Load(filename);
-                try
-                {
-                    if (XmlSignatureUtils.IsSigned(doc) && !XmlSignatureUtils.CheckSignature(doc))
-                    {
-                        // Bad, bad, bad... never use exceptions for control flow! Who wrote this?
-                        // Throw an exception to get into quirksmode.
-                        throw new InvalidOperationException("Invalid file signature");
-                    }
-                }
-                catch (CryptographicException)
-                {
-                    // Ignore cryptographic exception caused by Geneva server's inability to generate a
-                    // .NET compliant xml signature
-                    return ParseGenevaServerMetadata(doc);
-                }
-
-                return doc;
-            }
-            catch (XmlException)
-            {
-                // Enter quirksmode
-                foreach (var encoding in GetEncodings())
-                {
-                    StreamReader reader = null;
-                    try
-                    {
-                        reader = new StreamReader(filename, encoding);
-                        doc.Load(reader);
-                        if (XmlSignatureUtils.IsSigned(doc) && !XmlSignatureUtils.CheckSignature(doc))
-                        {
-                            continue;
-                        }
-                    }
-                    catch (XmlException)
-                    {
-                        continue;
-                    }
-                    finally
-                    {
-                        if (reader != null)
-                        {
-                            reader.Close();
-                        }
-                    }
-
-                    return doc;
-                }
-            }
-
-            return null;
-        }
-
-        /// <summary>
-        /// Parses the metadata files found in the directory specified in the configuration.
-        /// </summary>
-        /// <param name="file">The file.</param>
-        /// <returns>The parsed <see cref="Saml20MetadataDocument"/>.</returns>
-        private Saml20MetadataDocument ParseFile(string file)
-        {
-            var doc = LoadFileAsXmlDocument(file);
-
-            try
-            {
-                foreach (var child in doc.ChildNodes.Cast<XmlNode>().Where(child => child.NamespaceURI == Saml20Constants.Metadata))
-                {
-                    if (child.LocalName == EntityDescriptor.ElementName)
-                    {
-                        return new Saml20MetadataDocument(doc);
-                    }
-
-                    // TODO Decide how to handle several entities in one metadata file.
-                    if (child.LocalName == EntitiesDescriptor.ElementName)
-                    {
-                        throw new NotImplementedException();
-                    }
-                }
-
-                // No entity descriptor found. 
-                throw new InvalidDataException();
-            }
-            catch (Exception e)
-            {
-                // Probably not a metadata file.
-                Logging.LoggerProvider.LoggerFor(GetType()).Error("Problem parsing metadata file", e);
-                return null;
-            }
-        }
     }
 }

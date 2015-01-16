@@ -149,7 +149,7 @@ namespace SAML2.Config
                     continue;
                 }
 
-                metadataDoc = ParseFile(file);
+                metadataDoc = ParseFile(file, GetEncodings);
 
                 if (metadataDoc != null)
                 {
@@ -253,7 +253,7 @@ namespace SAML2.Config
         /// </summary>
         /// <param name="filename">The filename.</param>
         /// <returns>The XML document.</returns>
-        private XmlDocument LoadFileAsXmlDocument(string filename)
+        private static XmlDocument LoadFileAsXmlDocument(string filename, Func<List<Encoding>> getEncodings)
         {
             var doc = new XmlDocument { PreserveWhitespace = true };
 
@@ -282,7 +282,7 @@ namespace SAML2.Config
             catch (XmlException)
             {
                 // Enter quirksmode
-                foreach (var encoding in GetEncodings())
+                foreach (var encoding in getEncodings())
                 {
                     StreamReader reader = null;
                     try
@@ -318,9 +318,9 @@ namespace SAML2.Config
         /// </summary>
         /// <param name="file">The file.</param>
         /// <returns>The parsed <see cref="Saml20MetadataDocument"/>.</returns>
-        private Saml20MetadataDocument ParseFile(string file)
+        public static Saml20MetadataDocument ParseFile(string file, Func<List<Encoding>> getEncodings)
         {
-            var doc = LoadFileAsXmlDocument(file);
+            var doc = LoadFileAsXmlDocument(file, getEncodings);
 
             try
             {
@@ -344,7 +344,8 @@ namespace SAML2.Config
             catch (Exception e)
             {
                 // Probably not a metadata file.
-                throw new FormatException("Problem parsing metadata file", e);
+                Logging.LoggerProvider.LoggerFor(typeof(IdentityProviders)).Error("Problem parsing metadata file", e);
+                return null;
             }
         }
     }
