@@ -190,3 +190,4 @@ FakesAssemblies/
 
 # Designer generated files
 *.Designer.cs
+*.dll
