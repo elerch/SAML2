@@ -20,7 +20,6 @@ namespace SAML2.AspNet
                 throw new ConfigurationErrorsException(string.Format("Configuration section \"{0}\" not found", typeof(Saml2Section).Name));
             }
 
-            _config.IdentityProviders.Refresh();
             return new Saml2Configuration
             {
                 AllowedAudienceUris = _config.AllowedAudienceUris.Select(u => ToAllowedAudienceUri(u)).ToList(),
@@ -35,12 +34,13 @@ namespace SAML2.AspNet
 
         private IdentityProviders ToIdentityProviders(IEnumerable<IdentityProvider> providers, IdentityProviderCollection config)
         {
-            return new IdentityProviders(providers)
+            var idps = new IdentityProviders(providers)
             {
                 Encodings = config.Encodings,
-                MetadataLocation = config.MetadataLocation,
                 SelectionUrl = config.SelectionUrl
             };
+            idps.AddByMetadataDirectory(config.MetadataLocation);
+            return idps;
         }
 
         private ServiceProvider ToServiceProvider(ServiceProviderElement serviceProvider)

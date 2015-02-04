@@ -46,11 +46,6 @@ namespace SAML2.Bindings
                 throw new ArgumentOutOfRangeException("config", ErrorMessages.ConfigMissingIdentityProvidersElement);
             }
 
-            if (config.IdentityProviders.MetadataLocation == null)
-            {
-                throw new ArgumentOutOfRangeException("config", ErrorMessages.ConfigMissingMetadataLocation);
-            }
-
             return true;
         }
     }

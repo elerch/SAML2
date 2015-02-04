@@ -7,6 +7,14 @@ namespace SAML2.Config
     /// </summary>
     public class ServiceProviderEndpoint
     {
+        public ServiceProviderEndpoint() { }
+        public ServiceProviderEndpoint(EndpointType type, string localPath, string redirectUrl = null) : this()
+        {
+            Type = type;
+            LocalPath = localPath;
+            RedirectUrl = redirectUrl;
+        }
+
         /// <summary>
         /// Gets or sets the binding.
         /// </summary>

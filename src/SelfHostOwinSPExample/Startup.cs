@@ -39,24 +39,12 @@ namespace SelfHostOwinSPExample
                     Id = "https://localhost:44333/core"
                 },
             };
-            myconfig.ServiceProvider.Endpoints.Add(new ServiceProviderEndpoint
-            {
-                Type = EndpointType.SignOn,
-                LocalPath = "/core/login",
-                RedirectUrl = "/core"
+            myconfig.ServiceProvider.Endpoints.AddRange(new[] {
+                new ServiceProviderEndpoint(EndpointType.SignOn, "/core/login", "/core"),
+                new ServiceProviderEndpoint(EndpointType.Logout, "/core/logout", "/core"),
+                new ServiceProviderEndpoint(EndpointType.Metadata, "/core/metadata")
             });
-            myconfig.ServiceProvider.Endpoints.Add(new ServiceProviderEndpoint
-            {
-                Type = EndpointType.Logout,
-                LocalPath = "/core/logout",
-                RedirectUrl = "/core"
-            });
-            myconfig.ServiceProvider.Endpoints.Add(new ServiceProviderEndpoint
-            {
-                Type = EndpointType.Metadata,
-                LocalPath = "/core/metadata"
-            });
-            myconfig.IdentityProviders.MetadataLocation = "..\\..\\Metadata";
+            myconfig.IdentityProviders.AddByMetadataDirectory("..\\..\\Metadata");
             var shib = myconfig.IdentityProviders.FirstOrDefault(p => p.Id == "https://idp.testshib.org/idp/shibboleth");
             if (shib != null) {
                 //shib.Metadata.SSOEndpoints

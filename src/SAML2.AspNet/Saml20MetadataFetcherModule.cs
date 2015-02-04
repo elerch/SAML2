@@ -59,21 +59,20 @@ namespace SAML2
 
             var config = ConfigurationFactory.Instance.Configuration;
 
-            var metadataLocation = config.IdentityProviders.MetadataLocation;
             var identityProviders = config.IdentityProviders;
 
-            if (!Directory.Exists(metadataLocation))
-            {
-                throw new DirectoryNotFoundException("Metadata directory does not exist: " + metadataLocation);
-            }
+            // This is a neat feature but I'm not sure about the security ramifications of the app having write
+            // access to the metadata directory or automatically gathering metadata for a provider.
+            //FetchMetadata(logger, identityProviders, metadataLocation);
+        }
 
+        private static void FetchMetadata(Logging.IInternalLogger logger, IdentityProviders identityProviders, string metadataLocation)
+        {
             // Get new metadata files
-            foreach (var identityProvider in identityProviders)
-            {
+            foreach (var identityProvider in identityProviders) {
                 logger.DebugFormat("Attempting to fetch SAML metadata file for identity provider {0}", identityProvider.Id);
                 var metadataEndpoint = identityProvider.Endpoints.FirstOrDefault(x => x.Type == EndpointType.Metadata);
-                if (metadataEndpoint == null)
-                {
+                if (metadataEndpoint == null) {
                     continue;
                 }
 
@@ -81,14 +80,12 @@ namespace SAML2
                 var metadataFile = Path.Combine(metadataLocation, identityProvider.Id + ".xml");
 
                 // Fetch new file
-                try
-                {
+                try {
                     var client = new WebClient();
                     client.DownloadFile(metadataEndpointUrl, metadataFile + ".new");
 
                     // Wipe old file
-                    if (File.Exists(metadataFile))
-                    {
+                    if (File.Exists(metadataFile)) {
                         File.Delete(metadataFile);
                     }
 
@@ -96,9 +93,8 @@ namespace SAML2
                     File.Move(metadataFile + ".new", metadataFile);
                     logger.DebugFormat("Successfully updated SAML metadata file for identity provider {0}", identityProvider.Id);
                 }
-                catch (WebException ex)
-                {
-                    logger.Warn(string.Format("Unable to fetch SAML metadata file for identity provider {0}", identityProvider.Id), ex);                    
+                catch (WebException ex) {
+                    logger.Warn(string.Format("Unable to fetch SAML metadata file for identity provider {0}", identityProvider.Id), ex);
                 }
             }
         }
