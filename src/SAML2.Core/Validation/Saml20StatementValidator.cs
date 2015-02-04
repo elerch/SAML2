@@ -174,13 +174,15 @@ namespace SAML2.Validation
                         }
 
                         authnContextDeclRefFound = true;
-                        // I don't believe this is a valid check.  See: https://lists.oasis-open.org/archives/security-services/200703/msg00004.html
-                        //if (!Uri.IsWellFormedUriString((string)authnContext.Items[i], UriKind.Absolute))
-                        //{
-                        //    throw new Saml20FormatException("AuthnContextDeclRef has a value which is not a wellformed absolute uri");
-                        //}
 
-                        break;
+                        // There is some concern about this being a valid check.
+                        // See: https://lists.oasis-open.org/archives/security-services/200703/msg00004.html
+                        // http://saml2.codeplex.com/SourceControl/network/forks/etlerch/saml2/contribution/5740
+                        if (!Uri.IsWellFormedUriString((string)authnContext.Items[i], UriKind.Absolute)) {
+                            throw new Saml20FormatException("AuthnContextDeclRef has a value which is not a wellformed absolute uri");
+                        }
+
+                    break;
                     case Schema.Core.AuthnContextType.AuthnContextDecl:
                         throw new Saml20FormatException("AuthnContextDecl elements are not allowed in this implementation");
                     default:
