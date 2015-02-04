@@ -45,7 +45,10 @@ namespace Owin
             }
 
             context.Response.ContentType = "text/xml"; //Saml20Constants.MetadataMimetype; - that will prompt a download
-            //context.Response.Headers["Content-Disposition"] = "attachment; filename=\"metadata.xml\"";
+
+            var filename = context.Request.Query.Get("file");
+            if (!string.IsNullOrWhiteSpace(filename))
+                context.Response.Headers["Content-Disposition"] = string.Format("attachment; filename=\"{0}\"", filename);
 
             var metautil = new MetadataUtils(configuration, logger);
             return context.Response.WriteAsync(metautil.CreateMetadataDocument(encoding, sign));
