@@ -406,7 +406,7 @@ namespace SAML2.Tests.Validation
             /// Tests that <c>AuthnStatement</c> objects must have a SessionNotOnOrAfter attribute set in the future.
             /// </summary>
             /// <remarks>
-            /// TODO: test data needs fixing
+            /// TODO: test data needs fixing (was also ignored in Hg)
             /// </remarks>
             [Test]
             [Ignore]

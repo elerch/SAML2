@@ -34,6 +34,8 @@ namespace SAML2.Tests
                 // Arrange
                 var assertion = new Saml20Assertion(AssertionUtil.LoadXmlDocument(@"Assertions\Saml2Assertion_01").DocumentElement, null, false, TestConfiguration.Configuration);
                 var attributes = assertion.Attributes;
+
+                // This needs to be addressed and is why the test is ignored. See the original Hg project
                 attributes.Add(new SamlAttribute());
 
                 var cert = AssertionUtil.GetCertificate();
