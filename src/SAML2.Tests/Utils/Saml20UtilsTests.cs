@@ -64,14 +64,14 @@ namespace SAML2.Tests.Utils
             public void CanConvertToString()
             {
                 // Arrange
-                var now = DateTime.UtcNow;
+                var now = DateTime.Parse("2015-02-04T20:43:40.8618531Z");
                 var localtime = now.ToString("o");
 
                 // Act
                 var result = Saml20Utils.ToUtcString(now);
 
                 // Assert
-                Assert.AreEqual(localtime, result);
+                Assert.AreEqual("2015-02-04T20:43:40.8618531Z", result);
             }
         }
     }
