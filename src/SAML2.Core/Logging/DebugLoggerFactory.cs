@@ -2,9 +2,11 @@
 
 namespace SAML2.Logging
 {
-    public class DebugLoggerFactory
+    public class DebugLoggerFactory : ILoggerFactory
     {
-        private readonly IInternalLogger verboseLogger = new VerboseLogger(s => System.Diagnostics.Debug.WriteLine(s));
+        private readonly IInternalLogger verboseLogger = new VerboseLogger(s => {
+            System.Diagnostics.Debug.WriteLine(s);
+        });
 
         public IInternalLogger LoggerFor(Type type)
         {
