@@ -8,11 +8,12 @@ namespace SAML2.Config
     public class ServiceProviderEndpoint
     {
         public ServiceProviderEndpoint() { }
-        public ServiceProviderEndpoint(EndpointType type, string localPath, string redirectUrl = null) : this()
+        public ServiceProviderEndpoint(EndpointType type, string localPath, string redirectUrl = null, BindingType bindingType = BindingType.NotSet) : this()
         {
             Type = type;
             LocalPath = localPath;
             RedirectUrl = redirectUrl;
+            Binding = bindingType;
         }
 
         /// <summary>
