@@ -6,14 +6,18 @@ using System.IO;
 
 namespace SelfHostOwinSPExample
 {
-    internal class Startup
+    internal partial class Startup
     {
         public void Configuration(IAppBuilder appBuilder)
         {
+            var config = GetSamlConfiguration();
+#if TEST
+            config = TestEnvironmentConfiguration();
+#endif
             appBuilder.UseSamlAuthentication(new Owin.Security.Saml.SamlAuthenticationOptions
             {
                 AuthenticationMode = Microsoft.Owin.Security.AuthenticationMode.Active,
-                Configuration = GetSamlConfiguration()
+                Configuration = config
             });
             appBuilder.Run(c => {
                 if (c.Authentication.User != null &&
@@ -34,27 +38,18 @@ namespace SelfHostOwinSPExample
             {
                 ServiceProvider = new ServiceProvider
                 {
-                    SigningCertificate = new System.Security.Cryptography.X509Certificates.X509Certificate2(FileEmbeddedResource("SelfHostOwinSPExample.sts_dev_certificate.pfx"), "test1234"),
+                    SigningCertificate = new System.Security.Cryptography.X509Certificates.X509Certificate2(FileEmbeddedResource("SelfHostOwinSPExample.sts_dev_certificate.pfx"), "test1234", System.Security.Cryptography.X509Certificates.X509KeyStorageFlags.MachineKeySet),
                     Server = "https://localhost:44333/core",
                     Id = "https://localhost:44333/core"
                 },
             };
             myconfig.ServiceProvider.Endpoints.AddRange(new[] {
-                new ServiceProviderEndpoint(EndpointType.SignOn, "/core/login", "/core"),
-                new ServiceProviderEndpoint(EndpointType.Logout, "/core/logout", "/core"),
+                new ServiceProviderEndpoint(EndpointType.SignOn, "/core/login", "/core", BindingType.Redirect),
+                new ServiceProviderEndpoint(EndpointType.Logout, "/core/logout", "/core", BindingType.Redirect),
                 new ServiceProviderEndpoint(EndpointType.Metadata, "/core/metadata")
             });
             myconfig.IdentityProviders.AddByMetadataDirectory("..\\..\\Metadata");
-            var shib = myconfig.IdentityProviders.FirstOrDefault(p => p.Id == "https://idp.testshib.org/idp/shibboleth");
-            if (shib != null) {
-                //shib.Metadata.SSOEndpoints
-                shib.Endpoints.Add(new IdentityProviderEndpoint { Binding = BindingType.Redirect, Type = EndpointType.SignOn, Url = "https://idp.testshib.org/idp/profile/Shibboleth/SSO" });
-            }
-            //myconfig.IdentityProviders.Add(new IdentityProvider
-            //{
-            //    Id = "https://idp.testshib.org/idp/shibboleth",
-            //    Name = "Test shib"
-            //});
+            myconfig.LoggingFactoryType = "SAML2.Logging.DebugLoggerFactory";
             SAML2.Logging.LoggerProvider.Configuration = myconfig;
             return myconfig;
         }
