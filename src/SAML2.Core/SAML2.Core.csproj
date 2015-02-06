@@ -92,6 +92,7 @@
     <Compile Include="Identity\ISaml20Identity.cs" />
     <Compile Include="Identity\Saml20Identity.cs" />
     <Compile Include="ISaml20IdpTokenAccessor.cs" />
+    <Compile Include="Logging\DebugLoggerFactory.cs" />
     <Compile Include="Logging\IInternalLogger.cs" />
     <Compile Include="Logging\ILoggerFactory.cs" />
     <Compile Include="Logging\LoggerProvider.cs" />
