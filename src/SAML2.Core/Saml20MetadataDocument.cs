@@ -723,6 +723,9 @@ namespace SAML2
                                 case Saml20Constants.ProtocolBindings.HttpSoap:
                                     binding = BindingType.Artifact;
                                     break;
+                                case "urn:mace:shibboleth:1.0:profiles:AuthnRequest":
+                                    // This is a SAML 1.1 binding, it is silly, we shall ignore it
+                                    continue;
                                 default:
                                     throw new InvalidOperationException("Binding not supported: " + endpoint.Binding);
                             }
