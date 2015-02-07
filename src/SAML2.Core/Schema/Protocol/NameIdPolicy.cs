@@ -39,7 +39,7 @@ namespace SAML2.Schema.Protocol
         [XmlAttribute("AllowCreate")]
         public string AllowCreateString
         {
-            get { return AllowCreate.HasValue ? AllowCreate.ToString() : null; }
+            get { return AllowCreate.HasValue ? AllowCreate.ToString().ToLower() : null; }
             set { AllowCreate = string.IsNullOrEmpty(value) ? (bool?)null : Convert.ToBoolean(value); }
         }
 
