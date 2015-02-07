@@ -1,6 +1,4 @@
 ﻿using System;
-using Microsoft.Owin.Security;
-using SAML2.Config;
 using Owin.Security.Saml;
 
 namespace Owin
@@ -25,7 +23,10 @@ namespace Owin
             if (options == null) throw new ArgumentNullException("options");
             app.Map(options.MetadataPath, metadataapp => {
                 metadataapp.Run(new SamlMetadataWriter(options.Configuration).WriteMetadataDocument);
-            });           
+            });
+            app.Map("/login", loginApp => {
+                loginApp.Run(ctx => ctx.Response.WriteAsync("login endpoint reached"));
+            });
             return app.Use<SamlAuthenticationMiddleware>(app, options);
         }
     }
