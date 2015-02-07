@@ -44,8 +44,8 @@ namespace SelfHostOwinSPExample
                 },
             };
             myconfig.ServiceProvider.Endpoints.AddRange(new[] {
-                new ServiceProviderEndpoint(EndpointType.SignOn, "/core/login", "/core", BindingType.Redirect),
-                new ServiceProviderEndpoint(EndpointType.Logout, "/core/logout", "/core", BindingType.Redirect),
+                new ServiceProviderEndpoint(EndpointType.SignOn, "/core/login", "/core"),
+                new ServiceProviderEndpoint(EndpointType.Logout, "/core/logout", "/core"),
                 new ServiceProviderEndpoint(EndpointType.Metadata, "/core/metadata")
             });
             myconfig.IdentityProviders.AddByMetadataDirectory("..\\..\\Metadata");
