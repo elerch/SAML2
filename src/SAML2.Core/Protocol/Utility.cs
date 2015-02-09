@@ -149,5 +149,34 @@ namespace SAML2.Protocol
 
             return doc;
         }
+
+        /// <summary>
+        /// Gets the decrypted assertion.
+        /// </summary>
+        /// <param name="elem">The elem.</param>
+        /// <returns>The decrypted <see cref="Saml20EncryptedAssertion"/>.</returns>
+        public static Saml20EncryptedAssertion GetDecryptedAssertion(XmlElement elem, Saml2Configuration config)
+        {
+            Logger.Debug(TraceMessages.EncryptedAssertionDecrypting);
+
+            var decryptedAssertion = new Saml20EncryptedAssertion((RSA)config.ServiceProvider.SigningCertificate.PrivateKey);
+            decryptedAssertion.LoadXml(elem);
+            decryptedAssertion.Decrypt();
+
+            Logger.DebugFormat(TraceMessages.EncryptedAssertionDecrypted, decryptedAssertion.Assertion.DocumentElement.OuterXml);
+
+            return decryptedAssertion;
+        }
+
+        /// <summary>
+        /// Gets the status element.
+        /// </summary>
+        /// <param name="element">The element.</param>
+        /// <returns>The <see cref="Status" /> element.</returns>
+        public static Status GetStatusElement(XmlElement element)
+        {
+            var statElem = element.GetElementsByTagName(Status.ElementName, Saml20Constants.Protocol)[0];
+            return Serialization.DeserializeFromXmlString<Status>(statElem.OuterXml);
+        }
     }
 }
