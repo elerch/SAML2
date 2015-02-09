@@ -18,7 +18,17 @@ namespace SAML2.Protocol
 {
     public class Utility
     {
-        private static readonly IInternalLogger Logger = LoggerProvider.LoggerFor(typeof(Utility));
+        private static readonly IInternalLogger logger = LoggerProvider.LoggerFor(typeof(Utility));
+
+        /// <summary>
+        /// Expected responses if session support is not present
+        /// </summary>
+        private static readonly HashSet<string> expectedResponses = new HashSet<string>();
+
+        /// <summary>
+        /// Session key used to save the current message id with the purpose of preventing replay attacks
+        /// </summary>
+        private const string ExpectedInResponseToSessionKey = "ExpectedInResponseTo";
 
         /// <summary>
         /// Gets the trusted signers.
@@ -82,14 +92,14 @@ namespace SAML2.Protocol
         /// <returns>The assertion XML.</returns>
         public static XmlElement GetAssertion(XmlElement el, out bool isEncrypted)
         {
-            Logger.Debug(TraceMessages.AssertionParse);
+            logger.Debug(TraceMessages.AssertionParse);
 
             var encryptedList = el.GetElementsByTagName(EncryptedAssertion.ElementName, Saml20Constants.Assertion);
             if (encryptedList.Count == 1) {
                 isEncrypted = true;
                 var encryptedAssertion = (XmlElement)encryptedList[0];
 
-                Logger.DebugFormat(TraceMessages.EncryptedAssertionFound, encryptedAssertion.OuterXml);
+                logger.DebugFormat(TraceMessages.EncryptedAssertionFound, encryptedAssertion.OuterXml);
 
                 return encryptedAssertion;
             }
@@ -99,12 +109,12 @@ namespace SAML2.Protocol
                 isEncrypted = false;
                 var assertion = (XmlElement)assertionList[0];
 
-                Logger.DebugFormat(TraceMessages.AssertionFound, assertion.OuterXml);
+                logger.DebugFormat(TraceMessages.AssertionFound, assertion.OuterXml);
 
                 return assertion;
             }
 
-            Logger.Warn(ErrorMessages.AssertionNotFound);
+            logger.Warn(ErrorMessages.AssertionNotFound);
 
             isEncrypted = false;
             return null;
@@ -118,14 +128,14 @@ namespace SAML2.Protocol
         /// 
         public static void PreHandleAssertion(XmlElement elem, IdentityProvider endpoint)
         {
-            Logger.DebugFormat(TraceMessages.AssertionPrehandlerCalled);
+            logger.DebugFormat(TraceMessages.AssertionPrehandlerCalled);
 
             if (endpoint != null && endpoint.Endpoints.DefaultLogoutEndpoint != null && !string.IsNullOrEmpty(endpoint.Endpoints.DefaultLogoutEndpoint.TokenAccessor)) {
                 var idpTokenAccessor = Activator.CreateInstance(Type.GetType(endpoint.Endpoints.DefaultLogoutEndpoint.TokenAccessor, false)) as ISaml20IdpTokenAccessor;
                 if (idpTokenAccessor != null) {
-                    Logger.DebugFormat("{0}.{1} called", idpTokenAccessor.GetType(), "ReadToken");
+                    logger.DebugFormat("{0}.{1} called", idpTokenAccessor.GetType(), "ReadToken");
                     idpTokenAccessor.ReadToken(elem);
-                    Logger.DebugFormat("{0}.{1} finished", idpTokenAccessor.GetType(), "ReadToken");
+                    logger.DebugFormat("{0}.{1} finished", idpTokenAccessor.GetType(), "ReadToken");
                 }
             }
         }
@@ -138,14 +148,14 @@ namespace SAML2.Protocol
         /// <returns>The decoded SAML response XML.</returns>
         public static XmlDocument GetDecodedSamlResponse(string samlResponse, Encoding encoding)
         {
-            Logger.Debug(TraceMessages.SamlResponseDecoding);
+            logger.Debug(TraceMessages.SamlResponseDecoding);
 
 
             var doc = new XmlDocument { PreserveWhitespace = true };
             samlResponse = encoding.GetString(Convert.FromBase64String(samlResponse));
             doc.LoadXml(samlResponse);
 
-            Logger.DebugFormat(TraceMessages.SamlResponseDecoded, samlResponse);
+            logger.DebugFormat(TraceMessages.SamlResponseDecoded, samlResponse);
 
             return doc;
         }
@@ -157,13 +167,13 @@ namespace SAML2.Protocol
         /// <returns>The decrypted <see cref="Saml20EncryptedAssertion"/>.</returns>
         public static Saml20EncryptedAssertion GetDecryptedAssertion(XmlElement elem, Saml2Configuration config)
         {
-            Logger.Debug(TraceMessages.EncryptedAssertionDecrypting);
+            logger.Debug(TraceMessages.EncryptedAssertionDecrypting);
 
             var decryptedAssertion = new Saml20EncryptedAssertion((RSA)config.ServiceProvider.SigningCertificate.PrivateKey);
             decryptedAssertion.LoadXml(elem);
             decryptedAssertion.Decrypt();
 
-            Logger.DebugFormat(TraceMessages.EncryptedAssertionDecrypted, decryptedAssertion.Assertion.DocumentElement.OuterXml);
+            logger.DebugFormat(TraceMessages.EncryptedAssertionDecrypted, decryptedAssertion.Assertion.DocumentElement.OuterXml);
 
             return decryptedAssertion;
         }
@@ -177,6 +187,57 @@ namespace SAML2.Protocol
         {
             var statElem = element.GetElementsByTagName(Status.ElementName, Saml20Constants.Protocol)[0];
             return Serialization.DeserializeFromXmlString<Status>(statElem.OuterXml);
+        }
+
+        /// <summary>
+        /// Checks for replay attack.
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <param name="element">The element.</param>
+        public static void CheckReplayAttack(XmlElement element, bool requireInResponseTo, IDictionary<string, object> session)
+        {
+            logger.Debug(TraceMessages.ReplayAttackCheck);
+
+            var inResponseToAttribute = element.Attributes["InResponseTo"];
+            if (!requireInResponseTo && inResponseToAttribute == null) {
+                return;
+            }
+            if (inResponseToAttribute == null) {
+                throw new Saml20Exception(ErrorMessages.ResponseMissingInResponseToAttribute);
+            }
+
+            var inResponseTo = inResponseToAttribute.Value;
+            if (string.IsNullOrEmpty(inResponseTo)) {
+                throw new Saml20Exception(ErrorMessages.ExpectedInResponseToEmpty);
+            }
+
+            if (session != null) {
+                if (!session.ContainsKey(ExpectedInResponseToSessionKey)) {
+                    throw new Saml20Exception(ErrorMessages.ExpectedInResponseToMissing);
+                }
+                var expectedInResponseTo = (string)session[ExpectedInResponseToSessionKey];
+
+                if (inResponseTo != expectedInResponseTo) {
+                    logger.ErrorFormat(ErrorMessages.ReplayAttack, inResponseTo, expectedInResponseTo);
+                    throw new Saml20Exception(string.Format(ErrorMessages.ReplayAttack, inResponseTo, expectedInResponseTo));
+                }
+            } else {
+                if (!expectedResponses.Contains(inResponseTo)) {
+                    throw new Saml20Exception(ErrorMessages.ExpectedInResponseToMissing);
+                }
+                expectedResponses.Remove(inResponseTo);
+            }
+            logger.Debug(TraceMessages.ReplaceAttackCheckCleared);
+        }
+
+        public static void AddExpectedResponse(Saml20AuthnRequest request, IDictionary<string, object> session)
+        {
+            // Save request message id to session
+            if (session != null) {
+                session.Add(ExpectedInResponseToSessionKey, request.Id);
+            } else {
+                expectedResponses.Add(request.Id);
+            }
         }
     }
 }

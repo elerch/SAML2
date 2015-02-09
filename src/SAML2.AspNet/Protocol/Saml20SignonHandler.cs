@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Security.Cryptography;
+using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Web;
@@ -14,6 +14,7 @@ using SAML2.Schema.Metadata;
 using SAML2.Schema.Protocol;
 using SAML2.Utils;
 using SAML2.AspNet;
+using System.Web.SessionState;
 
 namespace SAML2.Protocol
 {
@@ -22,20 +23,6 @@ namespace SAML2.Protocol
     /// </summary>
     public class Saml20SignonHandler : Saml20AbstractEndpointHandler
     {
-        /// <summary>
-        /// Expected responses if session support is not present
-        /// </summary>
-        internal static HashSet<string> ExpectedResponses { get; private set; }
-
-        static Saml20SignonHandler()
-        {
-            ExpectedResponses = new HashSet<string>();
-        }
-        /// <summary>
-        /// Session key used to save the current message id with the purpose of preventing replay attacks
-        /// </summary>
-        private const string ExpectedInResponseToSessionKey = "ExpectedInResponseTo";
-
         /// <summary>
         /// The certificate for the endpoint.
         /// </summary>
@@ -104,56 +91,6 @@ namespace SAML2.Protocol
                 }
             }
         }
-
-        /// <summary>
-        /// Checks for replay attack.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        /// <param name="element">The element.</param>
-        private static void CheckReplayAttack(HttpContext context, XmlElement element, bool requireInResponseTo)
-        {
-            Logger.Debug(TraceMessages.ReplayAttackCheck);
-
-            var inResponseToAttribute = element.Attributes["InResponseTo"];
-            if (!requireInResponseTo && inResponseToAttribute == null) 
-            {
-                return;
-            }
-            if (inResponseToAttribute == null)
-            {
-                throw new Saml20Exception(ErrorMessages.ResponseMissingInResponseToAttribute);
-            }
-
-            var inResponseTo = inResponseToAttribute.Value;
-            if (string.IsNullOrEmpty(inResponseTo))
-            {
-                throw new Saml20Exception(ErrorMessages.ExpectedInResponseToEmpty);
-            }
-
-            if (context.Session != null) {
-                var expectedInResponseTo = (string)context.Session[ExpectedInResponseToSessionKey];
-                if (string.IsNullOrEmpty(expectedInResponseTo)) 
-                {
-                    throw new Saml20Exception(ErrorMessages.ExpectedInResponseToMissing);
-                }
-
-                if (inResponseTo != expectedInResponseTo) 
-                {
-                    Logger.ErrorFormat(ErrorMessages.ReplayAttack, inResponseTo, expectedInResponseTo);
-                    throw new Saml20Exception(string.Format(ErrorMessages.ReplayAttack, inResponseTo, expectedInResponseTo));
-                }
-            } 
-            else
-            {
-                if (!ExpectedResponses.Contains(inResponseTo)) 
-                {
-                    throw new Saml20Exception(ErrorMessages.ExpectedInResponseToMissing);
-                }
-                ExpectedResponses.Remove(inResponseTo);
-            }
-            Logger.Debug(TraceMessages.ReplaceAttackCheckCleared);
-        }
-
 
         /// <summary>
         /// Handles executing the login.
@@ -272,7 +209,7 @@ namespace SAML2.Protocol
             var endpoint = IdpSelectionUtil.RetrieveIDPConfiguration(issuer, config);
             if (!endpoint.AllowReplayAttacks) 
             {
-                CheckReplayAttack(context, doc.DocumentElement, !endpoint.AllowIdPInitiatedSso);
+                Utility.CheckReplayAttack(doc.DocumentElement, !endpoint.AllowIdPInitiatedSso, SessionToDictionary(context.Session));
             }
             var status = Utility.GetStatusElement(doc.DocumentElement);
             if (status.StatusCode.Value != Saml20Constants.StatusCodes.Success)
@@ -309,6 +246,13 @@ namespace SAML2.Protocol
 
             HandleAssertion(context, assertion, config);
         }
+
+        private static IDictionary<string, object> SessionToDictionary(HttpSessionState session)
+        {
+            if (session == null) return null;
+            return session.Keys.AsQueryable().Cast<string>().ToDictionary(s => s, s => session[s]);
+        }
+
 
         /// <summary>
         /// Handles the SOAP.
@@ -355,7 +299,7 @@ namespace SAML2.Protocol
 
                 if (parser.ArtifactResponse.Any.LocalName == Response.ElementName)
                 {
-                    CheckReplayAttack(context, parser.ArtifactResponse.Any, true);
+                    Utility.CheckReplayAttack(parser.ArtifactResponse.Any, true, SessionToDictionary(context.Session));
 
                     var responseStatus = Utility.GetStatusElement(parser.ArtifactResponse.Any);
                     if (responseStatus.StatusCode.Value != Saml20Constants.StatusCodes.Success)
@@ -529,12 +473,7 @@ namespace SAML2.Protocol
                 }
             }
 
-            // Save request message id to session
-            if (context.Session != null) {
-                context.Session.Add(ExpectedInResponseToSessionKey, request.Id);
-            } else {
-                ExpectedResponses.Add(request.Id);
-            }
+            Utility.AddExpectedResponse(request, SessionToDictionary(context.Session));
 
             return destination;
         }
