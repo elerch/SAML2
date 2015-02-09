@@ -45,7 +45,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bindings\HttpArtifactBindingBuilder.cs" />
-    <Compile Include="Bindings\HttpSOAPBindingBuilder.cs" />
     <Compile Include="Configuration.cs" />
     <Compile Include="Config\ActionCollection.cs" />
     <Compile Include="Config\ActionElement.cs" />

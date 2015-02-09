@@ -366,8 +366,8 @@ namespace SAML2.Protocol
         /// <param name="context">The context.</param>
         private void HandleArtifact(HttpContext context, Saml2Configuration config)
         {
-            var builder = new HttpArtifactBindingBuilder(context, config);
-            var inputStream = builder.ResolveArtifact();
+            var builder = GetBuilder(context);
+            var inputStream = builder.ResolveArtifact(context.Request.Params["SAMLart"], context.Request.Params["relayState"]);
             
             HandleSoap(context, inputStream, config);
         }
@@ -510,7 +510,7 @@ namespace SAML2.Protocol
             var parser = new HttpArtifactBindingParser(inputStream);
             Logger.DebugFormat(TraceMessages.SOAPMessageParse, parser.SamlMessage.OuterXml);
 
-            var builder = new HttpArtifactBindingBuilder(context, config);
+            var builder = GetBuilder(context);
 
             if (parser.IsArtifactResolve)
             {
@@ -523,7 +523,7 @@ namespace SAML2.Protocol
                     throw new Saml20Exception(ErrorMessages.ArtifactResolveSignatureInvalid);
                 }
 
-                builder.RespondToArtifactResolve(parser.ArtifactResolve);
+                builder.RespondToArtifactResolve(parser.ArtifactResolve, ((XmlDocument)context.Cache.Get(parser.ArtifactResolve.Artifact)).DocumentElement);
             }
             else if (parser.IsArtifactResponse)
             {
@@ -717,7 +717,7 @@ namespace SAML2.Protocol
                 case BindingType.Artifact:
                     Logger.DebugFormat(TraceMessages.AuthnRequestPrepared, identityProvider.Id, Saml20Constants.ProtocolBindings.HttpArtifact);
 
-                    var artifactBuilder = new HttpArtifactBindingBuilder(context, config);
+                    var artifactBuilder = GetBuilder(context);
 
                     // Honor the ForceProtocolBinding and only set this if it's not already set
                     if (string.IsNullOrEmpty(request.ProtocolBinding))
@@ -727,7 +727,7 @@ namespace SAML2.Protocol
 
                     Logger.DebugFormat(TraceMessages.AuthnRequestSent, request.GetXml().OuterXml);
 
-                    artifactBuilder.RedirectFromLogin(destination, request);
+                    artifactBuilder.RedirectFromLogin(destination, request, context.Request.Params["relayState"], (s, o) => context.Cache.Insert(s, o, null, DateTime.Now.AddMinutes(1), Cache.NoSlidingExpiration));
                     break;
                 default:
                     Logger.Error(ErrorMessages.EndpointBindingInvalid);

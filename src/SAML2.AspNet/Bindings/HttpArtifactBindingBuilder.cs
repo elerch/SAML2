@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Web;
-using System.Web.Caching;
 using System.Xml;
 using SAML2.Config;
 using SAML2.Schema.Protocol;
@@ -16,15 +15,25 @@ namespace SAML2.Bindings
     public class HttpArtifactBindingBuilder : HttpSoapBindingBuilder
     {
         private readonly Saml2Configuration config;
+        private readonly Action<string> redirect;
+        private readonly Action<string> sendResponseMessage;
+
+
 
         /// <summary>
         /// Initializes a new instance of the <see cref="HttpArtifactBindingBuilder"/> class.
         /// </summary>
         /// <param name="context">The current http context.</param>
-        public HttpArtifactBindingBuilder(HttpContext context, Saml2Configuration config) : base(context)
+        /// <param name="redirect">Action to perform when redirecting. Parameter will be destination URL</param>
+        /// <param name="sendResponseMessage">Action to send messages to response stream</param>
+        public HttpArtifactBindingBuilder(Saml2Configuration config, Action<string> redirect, Action<string> sendResponseMessage)
         {
             if (config == null) throw new ArgumentNullException("config");
+            if (redirect == null) throw new ArgumentNullException("redirect");
+            if (sendResponseMessage == null) throw new ArgumentNullException("sendResponseMessage"); 
+            this.redirect = redirect;
             this.config = config;
+            this.sendResponseMessage = sendResponseMessage;
         }
 
         /// <summary>
@@ -32,36 +41,28 @@ namespace SAML2.Bindings
         /// </summary>
         /// <param name="destination">The destination of the request.</param>
         /// <param name="request">The authentication request.</param>
-        public void RedirectFromLogin(IdentityProviderEndpoint destination, Saml20AuthnRequest request)
+        /// <param name="relayState">Relay state from client. May be null</param>
+        public void RedirectFromLogin(IdentityProviderEndpoint destination, Saml20AuthnRequest request, string relayState, Action<string, object> cacheInsert)
         {
             var index = (short)config.ServiceProvider.Endpoints.DefaultSignOnEndpoint.Index;
             var doc = request.GetXml();
             XmlSignatureUtils.SignDocument(doc, request.Request.Id, config.ServiceProvider.SigningCertificate);
-            ArtifactRedirect(destination, index, doc, Context.Request.Params["relayState"]);
+            ArtifactRedirect(destination, index, doc, relayState, cacheInsert);
         }
+
 
         /// <summary>
         /// Creates an artifact for the LogoutRequest and redirects the user to the IdP.
         /// </summary>
         /// <param name="destination">The destination of the request.</param>
         /// <param name="request">The logout request.</param>
-        public void RedirectFromLogout(IdentityProviderEndpoint destination, Saml20LogoutRequest request)
-        {
-            RedirectFromLogout(destination, request, Context.Request.Params["relayState"]);
-        }
-
-        /// <summary>
-        /// Creates an artifact for the LogoutRequest and redirects the user to the IdP.
-        /// </summary>
-        /// <param name="destination">The destination of the request.</param>
-        /// <param name="request">The logout request.</param>
-        /// <param name="relayState">The query string relay state value to add to the communication</param>
-        public void RedirectFromLogout(IdentityProviderEndpoint destination, Saml20LogoutRequest request, string relayState)
+        /// <param name="relayState">The query string relay state value (relayState) to add to the communication</param>
+        public void RedirectFromLogout(IdentityProviderEndpoint destination, Saml20LogoutRequest request, string relayState, Action<string, object> cacheInsert)
         {
             var index = (short)config.ServiceProvider.Endpoints.DefaultLogoutEndpoint.Index;
             var doc = request.GetXml();
             XmlSignatureUtils.SignDocument(doc, request.Request.Id, config.ServiceProvider.SigningCertificate);
-            ArtifactRedirect(destination, index, doc, relayState);
+            ArtifactRedirect(destination, index, doc, relayState, cacheInsert);
         }
 
         /// <summary>
@@ -69,22 +70,24 @@ namespace SAML2.Bindings
         /// </summary>
         /// <param name="destination">The destination of the response.</param>
         /// <param name="response">The logout response.</param>
-        public void RedirectFromLogout(IdentityProviderEndpoint destination, Saml20LogoutResponse response)
+        /// <param name="relayState">The query string relay state value to add to the communication</param>
+
+        public void RedirectFromLogout(IdentityProviderEndpoint destination, Saml20LogoutResponse response, string relayState, Action<string, object> cacheInsert)
         {
             var index = (short)config.ServiceProvider.Endpoints.DefaultLogoutEndpoint.Index;
             var doc = response.GetXml();
             XmlSignatureUtils.SignDocument(doc, response.Response.ID, config.ServiceProvider.SigningCertificate);
 
-            ArtifactRedirect(destination, index, doc, Context.Request.Params["relayState"]);
+            ArtifactRedirect(destination, index, doc, relayState, cacheInsert);
         }
 
         /// <summary>
         /// Resolves an artifact.
         /// </summary>
         /// <returns>A stream containing the artifact response from the IdP</returns>
-        public Stream ResolveArtifact()
+        /// <param name="artifact">artifact from request ("SAMLart")</param>
+        public Stream ResolveArtifact(string artifact, string relayState)
         {
-            var artifact = Context.Request.Params["SAMLart"];
             var idpEndPoint = DetermineIdp(artifact);
             if (idpEndPoint == null)
             {
@@ -111,21 +114,19 @@ namespace SAML2.Bindings
 
             Logger.DebugFormat(TraceMessages.ArtifactResolved, artifactResolveString);
 
-            return GetResponse(endpointUrl, artifactResolveString, idpEndPoint.ArtifactResolution);
+            return GetResponse(endpointUrl, artifactResolveString, idpEndPoint.ArtifactResolution, relayState);
         }
 
         /// <summary>
         /// Handles responses to an artifact resolve message.
         /// </summary>
         /// <param name="artifactResolve">The artifact resolve message.</param>
-        public void RespondToArtifactResolve(ArtifactResolve artifactResolve)
+        public void RespondToArtifactResolve(ArtifactResolve artifactResolve, XmlElement samlDoc)
         {
-            var samlDoc = (XmlDocument)Context.Cache.Get(artifactResolve.Artifact);
-            
             var response = Saml20ArtifactResponse.GetDefault(config.ServiceProvider.Id);
             response.StatusCode = Saml20Constants.StatusCodes.Success;
             response.InResponseTo = artifactResolve.Id;
-            response.SamlElement = samlDoc.DocumentElement;
+            response.SamlElement = samlDoc; //samlDoc.DocumentElement;
 
             var responseDoc = response.GetXml();
             if (responseDoc.FirstChild is XmlDeclaration)
@@ -137,7 +138,7 @@ namespace SAML2.Bindings
 
             Logger.DebugFormat(TraceMessages.ArtifactResolveResponseSent, artifactResolve.Artifact, responseDoc.OuterXml);
 
-            SendResponseMessage(responseDoc.OuterXml);
+            sendResponseMessage(responseDoc.OuterXml);
         }
 
         /// <summary>
@@ -166,7 +167,7 @@ namespace SAML2.Bindings
         /// <param name="localEndpointIndex">Index of the local endpoint.</param>
         /// <param name="signedSamlMessage">The signed SAML message.</param>
         /// <param name="relayState">The query string relay state value to add to the communication</param>
-        private void ArtifactRedirect(IdentityProviderEndpoint destination, short localEndpointIndex, XmlDocument signedSamlMessage, string relayState)
+        private void ArtifactRedirect(IdentityProviderEndpoint destination, short localEndpointIndex, XmlDocument signedSamlMessage, string relayState, Action<string, object> cacheInsert)
         {
             Logger.DebugFormat(TraceMessages.ArtifactRedirectReceived, signedSamlMessage.OuterXml);
 
@@ -175,7 +176,7 @@ namespace SAML2.Bindings
             var messageHandle = ArtifactUtil.GenerateMessageHandle();
 
             var artifact = ArtifactUtil.CreateArtifact(HttpArtifactBindingConstants.ArtifactTypeCode, localEndpointIndex, sourceIdHash, messageHandle);
-            Context.Cache.Insert(artifact, signedSamlMessage, null, DateTime.Now.AddMinutes(1), Cache.NoSlidingExpiration);
+            cacheInsert(artifact, signedSamlMessage);
 
             var destinationUrl = destination.Url + "?" + HttpArtifactBindingConstants.ArtifactQueryStringName + "=" + HttpUtility.UrlEncode(artifact);
             if (!string.IsNullOrEmpty(relayState))
@@ -185,7 +186,7 @@ namespace SAML2.Bindings
 
             Logger.DebugFormat(TraceMessages.ArtifactCreated, artifact);
 
-            Context.Response.Redirect(destinationUrl);
+            redirect(destinationUrl);
         }
 
         /// <summary>

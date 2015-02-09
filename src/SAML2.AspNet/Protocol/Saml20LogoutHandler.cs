@@ -11,6 +11,7 @@ using SAML2.Schema.Protocol;
 using SAML2.Utils;
 using System.Security.Cryptography.X509Certificates;
 using SAML2.AspNet;
+using System.Web.Caching;
 
 namespace SAML2.Protocol
 {
@@ -127,9 +128,8 @@ namespace SAML2.Protocol
         /// <param name="context">The context.</param>
         private void HandleArtifact(HttpContext context)
         {
-            var config = ConfigurationFactory.Instance.Configuration;
-            var builder = new HttpArtifactBindingBuilder(context, config);
-            var inputStream = builder.ResolveArtifact();
+            var builder = GetBuilder(context);
+            var inputStream = builder.ResolveArtifact(context.Request.Params["SAMLart"], context.Request.Params["relayState"]);
 
             HandleSoap(context, inputStream);
         }
@@ -145,7 +145,7 @@ namespace SAML2.Protocol
             Logger.DebugFormat(TraceMessages.SOAPMessageParse, parser.SamlMessage.OuterXml);
 
             var config = ConfigurationFactory.Instance.Configuration;
-            var builder = new HttpArtifactBindingBuilder(context, config);
+            var builder = GetBuilder(context);
             var idp = IdpSelectionUtil.RetrieveIDPConfiguration(parser.Issuer, config);
             
             if (parser.IsArtifactResolve)
@@ -158,7 +158,7 @@ namespace SAML2.Protocol
                     throw new Saml20Exception(ErrorMessages.ArtifactResolveSignatureInvalid);
                 }
 
-                builder.RespondToArtifactResolve(parser.ArtifactResolve);
+                builder.RespondToArtifactResolve(parser.ArtifactResolve, parser.SamlMessage);
             }
             else if (parser.IsArtifactResponse)
             {
@@ -194,7 +194,7 @@ namespace SAML2.Protocol
                     var endpoint = IdpSelectionUtil.RetrieveIDPConfiguration((string)context.Session[IdpLoginSessionKey], config);
                     var destination = IdpSelectionUtil.DetermineEndpointConfiguration(BindingType.Redirect, endpoint.Endpoints.DefaultLogoutEndpoint, endpoint.Metadata.IDPSLOEndpoints);
 
-                    builder.RedirectFromLogout(destination, response);
+                    builder.RedirectFromLogout(destination, response, context.Request.Params["relayState"], (s, o) => context.Cache.Insert(s, o, null, DateTime.Now.AddMinutes(1), Cache.NoSlidingExpiration));
                 }
                 else if (parser.ArtifactResponse.Any.LocalName == LogoutResponse.ElementName)
                 {
@@ -228,7 +228,7 @@ namespace SAML2.Protocol
                     doc.RemoveChild(doc.FirstChild);
                 }
                 
-                builder.SendResponseMessage(doc.OuterXml);
+                SendResponseMessage(doc.OuterXml, context);
             }
             else
             {
@@ -444,8 +444,8 @@ namespace SAML2.Protocol
 
                 Logger.DebugFormat(TraceMessages.LogoutRequestSent, idp.Id, "ARTIFACT", request.GetXml().OuterXml);
 
-                var builder = new HttpArtifactBindingBuilder(context, config);
-                builder.RedirectFromLogout(destination, request, Guid.NewGuid().ToString("N"));
+                var builder = GetBuilder(context);
+                builder.RedirectFromLogout(destination, request, Guid.NewGuid().ToString("N"), (s, o) => context.Cache.Insert(s, o, null, DateTime.Now.AddMinutes(1), Cache.NoSlidingExpiration));
             }
 
             Logger.Error(ErrorMessages.EndpointBindingInvalid);

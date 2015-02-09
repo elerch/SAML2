@@ -7,7 +7,6 @@ using System.Security.Cryptography.X509Certificates;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
 using System.Text;
-using System.Web;
 using System.Xml;
 using SAML2.Config;
 using SAML2.Logging;
@@ -25,20 +24,6 @@ namespace SAML2.Bindings
         protected static readonly IInternalLogger Logger = LoggerProvider.LoggerFor(MethodBase.GetCurrentMethod().DeclaringType);
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="HttpSoapBindingBuilder"/> class.
-        /// </summary>
-        /// <param name="context">The current HTTP context.</param>
-        public HttpSoapBindingBuilder(HttpContext context)
-        {
-            Context = context;
-        }
-
-        /// <summary>
-        /// Gets or sets the current http context
-        /// </summary>
-        protected HttpContext Context { get; set; }
-
-        /// <summary>
         /// Validates the server certificate.
         /// </summary>
         /// <param name="sender">The sender.</param>
@@ -52,27 +37,13 @@ namespace SAML2.Bindings
         }
 
         /// <summary>
-        /// Sends a response message.
-        /// </summary>
-        /// <param name="samlMessage">The SAML message.</param>
-        public void SendResponseMessage(string samlMessage)
-        {
-            Context.Response.ContentType = "text/xml";
-            var writer = new StreamWriter(Context.Response.OutputStream);
-            writer.Write(WrapInSoapEnvelope(samlMessage));
-            writer.Flush();
-            writer.Close();
-            Context.Response.End();
-        }
-
-        /// <summary>
         /// Gets a response from the IdP based on a message.
         /// </summary>
         /// <param name="endpoint">The IdP endpoint.</param>
         /// <param name="message">The message.</param>
         /// <param name="auth">Basic authentication settings.</param>
         /// <returns>The Stream.</returns>
-        public Stream GetResponse(string endpoint, string message, HttpAuth auth)
+        public Stream GetResponse(string endpoint, string message, HttpAuth auth, string relayState)
         {
             if (auth != null && auth.ClientCertificate != null && auth.Credentials != null)
             {
@@ -100,9 +71,9 @@ namespace SAML2.Bindings
             }
             
             request.Properties.Add(HttpRequestMessageProperty.Name, property);
-            if (Context.Request.Params["relayState"] != null)
+            if (relayState != null)
             {
-                request.Properties.Add("relayState", Context.Request.Params["relayState"]);
+                request.Properties.Add("relayState", relayState);
             }          
   
             var epa = new EndpointAddress(endpoint);
@@ -134,7 +105,7 @@ namespace SAML2.Bindings
         /// </summary>
         /// <param name="message">The message.</param>
         /// <returns>The wrapped message.</returns>
-        public string WrapInSoapEnvelope(string message)
+        public static string WrapInSoapEnvelope(string message)
         {
             var builder = new StringBuilder();
 

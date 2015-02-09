@@ -5,6 +5,7 @@ using System.Web;
 using SAML2.Config;
 using SAML2.Bindings;
 using SAML2.AspNet;
+using System.IO;
 
 namespace SAML2.Protocol
 {
@@ -97,6 +98,25 @@ namespace SAML2.Protocol
             }
 
             Validated = BindingUtility.ValidateConfiguration(ConfigurationFactory.Instance.Configuration);
+        }
+
+        protected static HttpArtifactBindingBuilder GetBuilder(HttpContext context)
+        {
+            return new HttpArtifactBindingBuilder(
+                ConfigurationFactory.Instance.Configuration,
+                context.Response.Redirect,
+                m => SendResponseMessage(m, context));
+        }
+
+        protected static void SendResponseMessage(string message, HttpContext context)
+        {
+            context.Response.ContentType = "text/xml";
+            using (var writer = new StreamWriter(context.Response.OutputStream)) {
+                writer.Write(HttpSoapBindingBuilder.WrapInSoapEnvelope(message));
+                writer.Flush();
+                writer.Close();
+            }
+            context.Response.End();
         }
     }
 }
