@@ -84,17 +84,17 @@ GetBuilder(context),
             }
 
             var requestParams = context.Request.GetRequestParameters();
-            if (!string.IsNullOrEmpty(requestParams["SAMLart"])) {
+            if (requestParams.ContainsKey("SAMLart")) {
                 HandleArtifact(context);
             }
 
-            var samlResponse = requestParams["SamlResponse"];
-            if (!string.IsNullOrEmpty(samlResponse)) {
+            if (requestParams.ContainsKey("SamlResponse")) {
+                var samlResponse = requestParams["SamlResponse"];
                 var assertion = Utility.HandleResponse(configuration, samlResponse, session, getFromCache, setInCache);
                 loginAction(assertion);
             } else {
                 if (configuration.CommonDomainCookie.Enabled && context.Request.Query["r"] == null
-                    && requestParams["cidp"] == null) {
+                    && (!requestParams.ContainsKey("cidp") || requestParams["cidp"] == null)) {
                     Logger.Debug(TraceMessages.CommonDomainCookieRedirectForDiscovery);
                     context.Response.Redirect(configuration.CommonDomainCookie.LocalReaderEndpoint);
                 } else {
@@ -188,7 +188,7 @@ GetBuilder(context),
 
                 Logger.DebugFormat(TraceMessages.AuthnRequestSent, request.GetXml().OuterXml);
 
-                artifactBuilder.RedirectFromLogin(destination, request, requestParams["relayState"], (s, o) => setInCache(s, o, DateTime.MinValue));
+                artifactBuilder.RedirectFromLogin(destination, request, requestParams.ContainsKey("relayState") ? requestParams["relayState"] : null, (s, o) => setInCache(s, o, DateTime.MinValue));
                 break;
             default:
                 Logger.Error(ErrorMessages.EndpointBindingInvalid);
