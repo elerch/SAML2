@@ -46,7 +46,7 @@ namespace SAML2.Protocol
                 Logger.Error(e.Message, e);
             }
         }
-        
+
         protected override void Handle(HttpContext context)
         {
             Handle(context, ConfigurationFactory.Instance.Configuration);
@@ -58,41 +58,47 @@ namespace SAML2.Protocol
         public void Handle(HttpContext context, Saml2Configuration config)
         {
             Logger.Debug(TraceMessages.SignOnHandlerCalled);
+            var getFromCache = new Func<string, object>(context.Cache.Get);
+            var setInCache = new Action<string, object, DateTime>((s, o, d) => context.Cache.Insert(s, o, null, d, Cache.NoSlidingExpiration));
+            var loginAction = new Action<Saml20Assertion>(a => DoSignOn(context, a, config));
+            var session = SessionToDictionary(context.Session);
 
             // Some IdP's are known to fail to set an actual value in the SOAPAction header
             // so we just check for the existence of the header field.
-            if (Array.Exists(context.Request.Headers.AllKeys, s => s == SoapConstants.SoapAction))
-            {
+            if (Array.Exists(context.Request.Headers.AllKeys, s => s == SoapConstants.SoapAction)) {
                 Utility.HandleSoap(
                     GetBuilder(context),
                     context.Request.InputStream,
                     config,
-                    a => DoSignOn(context, a, config),
-                    context.Cache.Get,
-                    (s, o, d) => context.Cache.Insert(s, o, null, d, Cache.NoSlidingExpiration),
-                    SessionToDictionary(context.Session));
+                    loginAction,
+                    getFromCache,
+                    setInCache,
+                    session);
                 return;
             }
 
-            if (!string.IsNullOrEmpty(context.Request.Params["SAMLart"]))
-            {
-                HandleArtifact(context, config, HandleSoap);
+            if (!string.IsNullOrEmpty(context.Request.Params["SAMLart"])) {
+                HandleArtifact(context, config, (c, s, conf) =>
+                    Utility.HandleSoap(
+                        GetBuilder(context),
+                        s,
+                        conf,
+                        loginAction,
+                        getFromCache,
+                        setInCache,
+                        session));
             }
-
-            if (!string.IsNullOrEmpty(context.Request.Params["SamlResponse"]))
-            {
-                HandleResponse(context, config);
-            }
-            else
-            {
+            
+            var samlResponse = context.Request.Params["SamlResponse"];
+            if (!string.IsNullOrEmpty(samlResponse)) {
+                var assertion = Utility.HandleResponse(config, samlResponse, session, getFromCache, setInCache);
+                loginAction(assertion);
+            } else {
                 if (config.CommonDomainCookie.Enabled && context.Request.QueryString["r"] == null
-                    && context.Request.Params["cidp"] == null)
-                {
+                    && context.Request.Params["cidp"] == null) {
                     Logger.Debug(TraceMessages.CommonDomainCookieRedirectForDiscovery);
                     context.Response.Redirect(config.CommonDomainCookie.LocalReaderEndpoint);
-                }
-                else
-                {
+                } else {
                     Logger.WarnFormat(ErrorMessages.UnauthenticatedAccess, context.Request.RawUrl);
                     SendRequest(context, config);
                 }
@@ -126,68 +132,6 @@ namespace SAML2.Protocol
             //}
         }
 
-        /// <summary>
-        /// Handle the authentication response from the IDP.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        private void HandleResponse(HttpContext context, Saml2Configuration config)
-        {
-            var defaultEncoding = Encoding.UTF8;
-            var doc = Utility.GetDecodedSamlResponse(context.Request.Params["SAMLResponse"], defaultEncoding);
-            Logger.DebugFormat(TraceMessages.SamlResponseReceived, doc.OuterXml);
-
-            // Determine whether the assertion should be decrypted before being validated.
-            bool isEncrypted;
-            var assertion = Utility.GetAssertion(doc.DocumentElement, out isEncrypted);
-            if (isEncrypted) 
-            {
-                assertion = Utility.GetDecryptedAssertion(assertion, config).Assertion.DocumentElement;
-            }
-
-            // Check if an encoding-override exists for the IdP endpoint in question
-            var issuer = Utility.GetIssuer(assertion);
-            var endpoint = IdpSelectionUtil.RetrieveIDPConfiguration(issuer, config);
-            if (!endpoint.AllowReplayAttacks) 
-            {
-                Utility.CheckReplayAttack(doc.DocumentElement, !endpoint.AllowIdPInitiatedSso, SessionToDictionary(context.Session));
-            }
-            var status = Utility.GetStatusElement(doc.DocumentElement);
-            if (status.StatusCode.Value != Saml20Constants.StatusCodes.Success)
-            {
-                if (status.StatusCode.Value == Saml20Constants.StatusCodes.NoPassive)
-                {
-                    Logger.Error(ErrorMessages.ResponseStatusIsNoPassive);
-                    throw new Saml20Exception(ErrorMessages.ResponseStatusIsNoPassive);
-                }
-
-                Logger.ErrorFormat(ErrorMessages.ResponseStatusNotSuccessful, status);
-                throw new Saml20Exception(string.Format(ErrorMessages.ResponseStatusNotSuccessful, status));
-            }
-
-            if (!string.IsNullOrEmpty(endpoint.ResponseEncoding))
-            {
-                Encoding encodingOverride;
-                try
-                {
-                    encodingOverride = Encoding.GetEncoding(endpoint.ResponseEncoding);
-                }
-                catch (ArgumentException ex)
-                {
-                    Logger.ErrorFormat(ErrorMessages.UnknownEncoding, endpoint.ResponseEncoding);
-                    throw new ArgumentException(string.Format(ErrorMessages.UnknownEncoding, endpoint.ResponseEncoding), ex);
-                }
-
-                if (encodingOverride.CodePage != defaultEncoding.CodePage)
-                {
-                    var doc1 = Utility.GetDecodedSamlResponse(context.Request.Params["SAMLResponse"], encodingOverride);
-                    assertion = Utility.GetAssertion(doc1.DocumentElement, out isEncrypted);
-                }
-            }
-
-            var samlAssertion = Utility.HandleAssertion(assertion, config, context.Cache.Get, (s, o, d) => context.Cache.Insert(s, o, null, d, Cache.NoSlidingExpiration));
-            DoSignOn(context, samlAssertion, config);
-        }
-
         private static IDictionary<string, object> SessionToDictionary(HttpSessionState session)
         {
             if (session == null) return null;
@@ -202,8 +146,7 @@ namespace SAML2.Protocol
         {
             // See if the "ReturnUrl" - parameter is set.
             var returnUrl = context.Request.QueryString["ReturnUrl"];
-            if (!string.IsNullOrEmpty(returnUrl) && context.Session != null)
-            {
+            if (!string.IsNullOrEmpty(returnUrl) && context.Session != null) {
                 context.Session["RedirectUrl"] = returnUrl;
             }
 
@@ -211,8 +154,7 @@ namespace SAML2.Protocol
             var selectionUtil = new IdpSelectionUtil(Logger);
             var idp = selectionUtil.RetrieveIDP(context.Request.Params, context.Request.QueryString, config, s => { context.Response.Redirect(s); isRedirected = true; });
             if (isRedirected) return;
-            if (idp == null)
-            {
+            if (idp == null) {
                 // Display a page to the user where she can pick the IDP
                 Logger.DebugFormat(TraceMessages.IdentityProviderRedirect);
 
@@ -222,7 +164,7 @@ namespace SAML2.Protocol
             }
 
             var authnRequest = Saml20AuthnRequest.GetDefault(config);
-            TransferClient(idp, authnRequest, context, config);            
+            TransferClient(idp, authnRequest, context, config);
         }
 
         /// <summary>

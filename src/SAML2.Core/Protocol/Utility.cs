@@ -366,5 +366,60 @@ namespace SAML2.Protocol
                 throw new Saml20Exception(ErrorMessages.SOAPMessageUnsupportedSamlMessage);
             }
         }
+
+
+        /// <summary>
+        /// Handle the authentication response from the IDP.
+        /// </summary>
+        /// <param name="context">The context.</param>
+        public static Saml20Assertion HandleResponse(Saml2Configuration config, string samlResponse, IDictionary<string, object> session, Func<string, object> getFromCache, Action<string, object, DateTime> setInCache)
+        {
+            var defaultEncoding = Encoding.UTF8;
+            var doc = Utility.GetDecodedSamlResponse(samlResponse, defaultEncoding);
+            logger.DebugFormat(TraceMessages.SamlResponseReceived, doc.OuterXml);
+
+            // Determine whether the assertion should be decrypted before being validated.
+            bool isEncrypted;
+            var assertion = Utility.GetAssertion(doc.DocumentElement, out isEncrypted);
+            if (isEncrypted) {
+                assertion = Utility.GetDecryptedAssertion(assertion, config).Assertion.DocumentElement;
+            }
+
+            // Check if an encoding-override exists for the IdP endpoint in question
+            var issuer = Utility.GetIssuer(assertion);
+            var endpoint = IdpSelectionUtil.RetrieveIDPConfiguration(issuer, config);
+            if (!endpoint.AllowReplayAttacks) {
+                Utility.CheckReplayAttack(doc.DocumentElement, !endpoint.AllowIdPInitiatedSso, session);
+            }
+            var status = Utility.GetStatusElement(doc.DocumentElement);
+            if (status.StatusCode.Value != Saml20Constants.StatusCodes.Success) {
+                if (status.StatusCode.Value == Saml20Constants.StatusCodes.NoPassive) {
+                    logger.Error(ErrorMessages.ResponseStatusIsNoPassive);
+                    throw new Saml20Exception(ErrorMessages.ResponseStatusIsNoPassive);
+                }
+
+                logger.ErrorFormat(ErrorMessages.ResponseStatusNotSuccessful, status);
+                throw new Saml20Exception(string.Format(ErrorMessages.ResponseStatusNotSuccessful, status));
+            }
+
+            if (!string.IsNullOrEmpty(endpoint.ResponseEncoding)) {
+                Encoding encodingOverride;
+                try {
+                    encodingOverride = Encoding.GetEncoding(endpoint.ResponseEncoding);
+                }
+                catch (ArgumentException ex) {
+                    logger.ErrorFormat(ErrorMessages.UnknownEncoding, endpoint.ResponseEncoding);
+                    throw new ArgumentException(string.Format(ErrorMessages.UnknownEncoding, endpoint.ResponseEncoding), ex);
+                }
+
+                if (encodingOverride.CodePage != defaultEncoding.CodePage) {
+                    var doc1 = GetDecodedSamlResponse(samlResponse, encodingOverride);
+                    assertion = GetAssertion(doc1.DocumentElement, out isEncrypted);
+                }
+            }
+
+            return HandleAssertion(assertion, config, getFromCache, setInCache);
+        }
+
     }
 }
