@@ -57,13 +57,13 @@ namespace SAML2.Protocol
             // so we just check for the existence of the header field.
             if (Array.Exists(context.Request.Headers.AllKeys, s => s == SoapConstants.SoapAction))
             {
-                HandleSoap(context, context.Request.InputStream);
+                HandleSoap(context, context.Request.InputStream, config);
                 return;
             }
 
             if (!string.IsNullOrEmpty(context.Request.Params["SAMLart"]))
             {
-                HandleArtifact(context);
+                HandleArtifact(context, ConfigurationFactory.Instance.Configuration, HandleSoap);
                 return;
             }
 
@@ -122,29 +122,17 @@ namespace SAML2.Protocol
             //}
         }
 
-        /// <summary>
-        /// Handles the artifact.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        private void HandleArtifact(HttpContext context)
-        {
-            var builder = GetBuilder(context);
-            var inputStream = builder.ResolveArtifact(context.Request.Params["SAMLart"], context.Request.Params["relayState"], ConfigurationFactory.Instance.Configuration);
-
-            HandleSoap(context, inputStream);
-        }
 
         /// <summary>
         /// Handles the SOAP message.
         /// </summary>
         /// <param name="context">The context.</param>
         /// <param name="inputStream">The input stream.</param>
-        private void HandleSoap(HttpContext context, Stream inputStream)
+        private void HandleSoap(HttpContext context, Stream inputStream, Saml2Configuration config)
         {
             var parser = new HttpArtifactBindingParser(inputStream);
             Logger.DebugFormat(TraceMessages.SOAPMessageParse, parser.SamlMessage.OuterXml);
 
-            var config = ConfigurationFactory.Instance.Configuration;
             var builder = GetBuilder(context);
             var idp = IdpSelectionUtil.RetrieveIDPConfiguration(parser.Issuer, config);
             

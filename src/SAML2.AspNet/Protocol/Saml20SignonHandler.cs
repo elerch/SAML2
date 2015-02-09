@@ -160,7 +160,7 @@ namespace SAML2.Protocol
 
             if (!string.IsNullOrEmpty(context.Request.Params["SAMLart"]))
             {
-                HandleArtifact(context, config);
+                HandleArtifact(context, config, HandleSoap);
             }
 
             if (!string.IsNullOrEmpty(context.Request.Params["SamlResponse"]))
@@ -358,18 +358,6 @@ namespace SAML2.Protocol
 
             //    Logger.DebugFormat("{0}.{1} finished", action.GetType(), "LoginAction()");
             //}
-        }
-
-        /// <summary>
-        /// Handles the artifact.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        private void HandleArtifact(HttpContext context, Saml2Configuration config)
-        {
-            var builder = GetBuilder(context);
-            var inputStream = builder.ResolveArtifact(context.Request.Params["SAMLart"], context.Request.Params["relayState"], ConfigurationFactory.Instance.Configuration);
-            
-            HandleSoap(context, inputStream, config);
         }
 
         /// <summary>

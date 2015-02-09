@@ -118,5 +118,17 @@ namespace SAML2.Protocol
             }
             context.Response.End();
         }
+
+        /// <summary>
+        /// Handles the artifact.
+        /// </summary>
+        /// <param name="context">The context.</param>
+        protected void HandleArtifact(HttpContext context, Saml2Configuration config, Action<HttpContext, Stream, Saml2Configuration> handleSoap)
+        {
+            var builder = GetBuilder(context);
+            var inputStream = builder.ResolveArtifact(context.Request.Params["SAMLart"], context.Request.Params["relayState"], ConfigurationFactory.Instance.Configuration);
+
+            handleSoap(context, inputStream, config);
+        }
     }
 }
