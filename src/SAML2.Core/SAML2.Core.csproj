@@ -49,6 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bindings\BindingUtility.cs" />
+    <Compile Include="Bindings\HttpArtifactBindingBuilder.cs" />
     <Compile Include="Bindings\HttpArtifactBindingConstants.cs" />
     <Compile Include="Bindings\HttpArtifactBindingParser.cs" />
     <Compile Include="Bindings\HttpPostBindingBuilder.cs" />

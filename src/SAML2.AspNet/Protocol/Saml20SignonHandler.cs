@@ -367,7 +367,7 @@ namespace SAML2.Protocol
         private void HandleArtifact(HttpContext context, Saml2Configuration config)
         {
             var builder = GetBuilder(context);
-            var inputStream = builder.ResolveArtifact(context.Request.Params["SAMLart"], context.Request.Params["relayState"]);
+            var inputStream = builder.ResolveArtifact(context.Request.Params["SAMLart"], context.Request.Params["relayState"], ConfigurationFactory.Instance.Configuration);
             
             HandleSoap(context, inputStream, config);
         }

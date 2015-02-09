@@ -1,11 +1,9 @@
 ﻿using System;
 using System.IO;
-using System.Web;
 using System.Xml;
 using SAML2.Config;
 using SAML2.Schema.Protocol;
 using SAML2.Utils;
-using SAML2.AspNet;
 
 namespace SAML2.Bindings
 {
@@ -86,7 +84,7 @@ namespace SAML2.Bindings
         /// </summary>
         /// <returns>A stream containing the artifact response from the IdP</returns>
         /// <param name="artifact">artifact from request ("SAMLart")</param>
-        public Stream ResolveArtifact(string artifact, string relayState)
+        public Stream ResolveArtifact(string artifact, string relayState, Saml2Configuration config)
         {
             var idpEndPoint = DetermineIdp(artifact);
             if (idpEndPoint == null)
@@ -98,7 +96,7 @@ namespace SAML2.Bindings
             var endpointUrl = idpEndPoint.Metadata.GetIDPARSEndpoint(endpointIndex);
 
             Logger.DebugFormat(TraceMessages.ArtifactResolveForKnownIdentityProvider, artifact, idpEndPoint.Id, endpointUrl);
-            var config = ConfigurationFactory.Instance.Configuration;
+            
             var resolve = Saml20ArtifactResolve.GetDefault(config.ServiceProvider.Id);
             resolve.Artifact = artifact;
 
@@ -178,7 +176,7 @@ namespace SAML2.Bindings
             var artifact = ArtifactUtil.CreateArtifact(HttpArtifactBindingConstants.ArtifactTypeCode, localEndpointIndex, sourceIdHash, messageHandle);
             cacheInsert(artifact, signedSamlMessage);
 
-            var destinationUrl = destination.Url + "?" + HttpArtifactBindingConstants.ArtifactQueryStringName + "=" + HttpUtility.UrlEncode(artifact);
+            var destinationUrl = destination.Url + "?" + HttpArtifactBindingConstants.ArtifactQueryStringName + "=" + Uri.EscapeDataString(artifact);
             if (!string.IsNullOrEmpty(relayState))
             {
                 destinationUrl += "&relayState=" + relayState;
