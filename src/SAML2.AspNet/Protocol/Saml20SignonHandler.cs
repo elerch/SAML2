@@ -63,7 +63,14 @@ namespace SAML2.Protocol
             // so we just check for the existence of the header field.
             if (Array.Exists(context.Request.Headers.AllKeys, s => s == SoapConstants.SoapAction))
             {
-                HandleSoap(context, context.Request.InputStream, config);
+                Utility.HandleSoap(
+                    GetBuilder(context),
+                    context.Request.InputStream,
+                    config,
+                    a => DoSignOn(context, a, config),
+                    context.Cache.Get,
+                    (s, o, d) => context.Cache.Insert(s, o, null, d, Cache.NoSlidingExpiration),
+                    SessionToDictionary(context.Session));
                 return;
             }
 
@@ -117,73 +124,6 @@ namespace SAML2.Protocol
 
             //    Logger.DebugFormat("{0}.{1} finished", action.GetType(), "LoginAction()");
             //}
-        }
-
-        /// <summary>
-        /// Deserializes an assertion, verifies its signature and logs in the user if the assertion is valid.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        /// <param name="elem">The elem.</param>
-        private void HandleAssertion(HttpContext context, XmlElement elem, Saml2Configuration config)
-        {
-            Logger.DebugFormat(TraceMessages.AssertionProcessing, elem.OuterXml);
-
-            var issuer = Utility.GetIssuer(elem);
-            var endp = IdpSelectionUtil.RetrieveIDPConfiguration(issuer, config);
-
-            Utility.PreHandleAssertion(elem, endp);
-
-            if (endp == null || endp.Metadata == null)
-            {
-                Logger.Error(ErrorMessages.AssertionIdentityProviderUnknown);
-                throw new Saml20Exception(ErrorMessages.AssertionIdentityProviderUnknown);
-            }
-
-            var quirksMode = endp.QuirksMode;
-            var assertion = new Saml20Assertion(elem, null, quirksMode, config);
-
-            // Check signatures
-            if (!endp.OmitAssertionSignatureCheck)
-            {
-                if (!assertion.CheckSignature(Utility.GetTrustedSigners(endp.Metadata.GetKeys(KeyTypes.Signing), endp)))
-                {
-                    Logger.Error(ErrorMessages.AssertionSignatureInvalid);
-                    throw new Saml20Exception(ErrorMessages.AssertionSignatureInvalid);
-                }
-            }
-
-            // Check expiration
-            if (assertion.IsExpired)
-            {
-                Logger.Error(ErrorMessages.AssertionExpired);
-                throw new Saml20Exception(ErrorMessages.AssertionExpired);
-            }
-
-            // Check one time use
-            if (assertion.IsOneTimeUse)
-            {
-                if (context.Cache[assertion.Id] != null)
-                {
-                    Logger.Error(ErrorMessages.AssertionOneTimeUseExceeded);
-                    throw new Saml20Exception(ErrorMessages.AssertionOneTimeUseExceeded);
-                }
-
-                context.Cache.Insert(assertion.Id, string.Empty, null, assertion.NotOnOrAfter, Cache.NoSlidingExpiration);
-            }
-
-            Logger.DebugFormat(TraceMessages.AssertionParsed, assertion.Id);
-
-            DoSignOn(context, assertion, config);
-        }
-
-        /// <summary>
-        /// Decrypts an encrypted assertion, and sends the result to the HandleAssertion method.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        /// <param name="elem">The elem.</param>
-        private void HandleEncryptedAssertion(HttpContext context, XmlElement elem, Saml2Configuration config)
-        {
-            HandleAssertion(context, Utility.GetDecryptedAssertion(elem, config).Assertion.DocumentElement, config);
         }
 
         /// <summary>
@@ -244,98 +184,14 @@ namespace SAML2.Protocol
                 }
             }
 
-            HandleAssertion(context, assertion, config);
+            var samlAssertion = Utility.HandleAssertion(assertion, config, context.Cache.Get, (s, o, d) => context.Cache.Insert(s, o, null, d, Cache.NoSlidingExpiration));
+            DoSignOn(context, samlAssertion, config);
         }
 
         private static IDictionary<string, object> SessionToDictionary(HttpSessionState session)
         {
             if (session == null) return null;
             return session.Keys.AsQueryable().Cast<string>().ToDictionary(s => s, s => session[s]);
-        }
-
-
-        /// <summary>
-        /// Handles the SOAP.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        /// <param name="inputStream">The input stream.</param>
-        private void HandleSoap(HttpContext context, Stream inputStream, Saml2Configuration config)
-        {
-            var parser = new HttpArtifactBindingParser(inputStream);
-            Logger.DebugFormat(TraceMessages.SOAPMessageParse, parser.SamlMessage.OuterXml);
-
-            var builder = GetBuilder(context);
-
-            if (parser.IsArtifactResolve)
-            {
-                Logger.Debug(TraceMessages.ArtifactResolveReceived);
-
-                var idp = IdpSelectionUtil.RetrieveIDPConfiguration(parser.Issuer, config);
-                if (!parser.CheckSamlMessageSignature(idp.Metadata.Keys))
-                {
-                    Logger.Error(ErrorMessages.ArtifactResolveSignatureInvalid);
-                    throw new Saml20Exception(ErrorMessages.ArtifactResolveSignatureInvalid);
-                }
-
-                builder.RespondToArtifactResolve(parser.ArtifactResolve, ((XmlDocument)context.Cache.Get(parser.ArtifactResolve.Artifact)).DocumentElement);
-            }
-            else if (parser.IsArtifactResponse)
-            {
-                Logger.Debug(TraceMessages.ArtifactResolveReceived);
-
-                var idp = IdpSelectionUtil.RetrieveIDPConfiguration(parser.Issuer, config);
-                if (!parser.CheckSamlMessageSignature(idp.Metadata.Keys))
-                {
-                    Logger.Error(ErrorMessages.ArtifactResponseSignatureInvalid);
-                    throw new Saml20Exception(ErrorMessages.ArtifactResponseSignatureInvalid);
-                }
-
-                var status = parser.ArtifactResponse.Status;
-                if (status.StatusCode.Value != Saml20Constants.StatusCodes.Success)
-                {
-                    Logger.ErrorFormat(ErrorMessages.ArtifactResponseStatusCodeInvalid, status.StatusCode.Value);
-                    throw new Saml20Exception(string.Format(ErrorMessages.ArtifactResponseStatusCodeInvalid, status.StatusCode.Value));
-                }
-
-                if (parser.ArtifactResponse.Any.LocalName == Response.ElementName)
-                {
-                    Utility.CheckReplayAttack(parser.ArtifactResponse.Any, true, SessionToDictionary(context.Session));
-
-                    var responseStatus = Utility.GetStatusElement(parser.ArtifactResponse.Any);
-                    if (responseStatus.StatusCode.Value != Saml20Constants.StatusCodes.Success)
-                    {
-                        Logger.ErrorFormat(ErrorMessages.ArtifactResponseStatusCodeInvalid, responseStatus.StatusCode.Value);
-                        throw new Saml20Exception(string.Format(ErrorMessages.ArtifactResponseStatusCodeInvalid, responseStatus.StatusCode.Value));
-                    }
-
-                    bool isEncrypted;
-                    var assertion = Utility.GetAssertion(parser.ArtifactResponse.Any, out isEncrypted);
-                    if (assertion == null)
-                    {
-                        Logger.Error(ErrorMessages.ArtifactResponseMissingAssertion);
-                        throw new Saml20Exception(ErrorMessages.ArtifactResponseMissingAssertion);
-                    }
-
-                    if (isEncrypted)
-                    {
-                        HandleEncryptedAssertion(context, assertion, config);
-                    }
-                    else
-                    {
-                        HandleAssertion(context, assertion, config);
-                    }
-                }
-                else
-                {
-                    Logger.ErrorFormat(ErrorMessages.ArtifactResponseMissingResponse);
-                    throw new Saml20Exception(ErrorMessages.ArtifactResponseMissingResponse);
-                }
-            }
-            else
-            {
-                Logger.ErrorFormat(ErrorMessages.SOAPMessageUnsupportedSamlMessage);
-                throw new Saml20Exception(ErrorMessages.SOAPMessageUnsupportedSamlMessage);
-            }
         }
 
         /// <summary>
