@@ -29,12 +29,12 @@ namespace Owin.Security.Saml
         /// <summary>
         /// Defines login path for all bindings. Defaults to /saml2/login
         /// </summary>
-        public string LoginPath { get; private set; }
+        public string LoginPath { get; set; }
 
         /// <summary>
         /// Defines logout path for all bindings. Defaults to /saml2/logout
         /// </summary>
-        public string LogoutPath { get; private set; }
+        public string LogoutPath { get; set; }
         /// <summary>
         /// Defines path used to acquire metadata. Defaults to /saml2/metadata
         /// </summary>
