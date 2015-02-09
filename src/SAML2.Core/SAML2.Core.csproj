@@ -103,6 +103,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Protocol\CommonDomainCookie.cs" />
     <Compile Include="Protocol\Logout.cs" />
+    <Compile Include="Protocol\Utility.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

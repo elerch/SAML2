@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
-using System.Security.Cryptography.Xml;
 using System.Text;
 using System.Web;
 using System.Web.Caching;
@@ -12,10 +10,8 @@ using System.Xml;
 using SAML2.Bindings;
 using SAML2.Config;
 using SAML2.Protocol.Pages;
-using SAML2.Schema.Core;
 using SAML2.Schema.Metadata;
 using SAML2.Schema.Protocol;
-using SAML2.Specification;
 using SAML2.Utils;
 using SAML2.AspNet;
 
@@ -63,80 +59,6 @@ namespace SAML2.Protocol
                 Logger.Error(e.Message, e);
             }
         }
-
-        /// <summary>
-        /// Gets the trusted signers.
-        /// </summary>
-        /// <param name="keys">The keys.</param>
-        /// <param name="identityProvider">The identity provider.</param>
-        /// <returns>List of trusted certificate signers.</returns>
-        public static IEnumerable<AsymmetricAlgorithm> GetTrustedSigners(ICollection<KeyDescriptor> keys, IdentityProvider identityProvider)
-        {
-            if (keys == null)
-            {
-                throw new ArgumentNullException("keys");
-            }
-
-            var result = new List<AsymmetricAlgorithm>(keys.Count);
-            foreach (var keyDescriptor in keys)
-            {
-                foreach (KeyInfoClause clause in (KeyInfo)keyDescriptor.KeyInfo)
-                {
-                    // Check certificate specifications
-                    if (clause is KeyInfoX509Data)
-                    {
-                        var cert = XmlSignatureUtils.GetCertificateFromKeyInfo((KeyInfoX509Data)clause);
-                        if (!CertificateSatisfiesSpecifications(identityProvider, cert))
-                        {
-                            continue;
-                        }
-                    }
-
-                    var key = XmlSignatureUtils.ExtractKey(clause);
-                    result.Add(key);
-                }
-            }
-
-            return result;
-        }
-
-        /// <summary>
-        /// Gets the assertion.
-        /// </summary>
-        /// <param name="el">The el.</param>
-        /// <param name="isEncrypted">if set to <c>true</c> [is encrypted].</param>
-        /// <returns>The assertion XML.</returns>
-        internal static XmlElement GetAssertion(XmlElement el, out bool isEncrypted)
-        {
-            Logger.Debug(TraceMessages.AssertionParse);
-
-            var encryptedList = el.GetElementsByTagName(EncryptedAssertion.ElementName, Saml20Constants.Assertion);
-            if (encryptedList.Count == 1)
-            {
-                isEncrypted = true;
-                var encryptedAssertion = (XmlElement)encryptedList[0];
-
-                Logger.DebugFormat(TraceMessages.EncryptedAssertionFound, encryptedAssertion.OuterXml);
-
-                return encryptedAssertion;
-            }
-
-            var assertionList = el.GetElementsByTagName(Assertion.ElementName, Saml20Constants.Assertion);
-            if (assertionList.Count == 1)
-            {
-                isEncrypted = false;
-                var assertion = (XmlElement)assertionList[0];
-
-                Logger.DebugFormat(TraceMessages.AssertionFound, assertion.OuterXml);
-
-                return assertion;
-            }
-
-            Logger.Warn(ErrorMessages.AssertionNotFound);
-
-            isEncrypted = false;
-            return null;
-        }
         
         protected override void Handle(HttpContext context)
         {
@@ -181,39 +103,6 @@ namespace SAML2.Protocol
                     SendRequest(context, config);
                 }
             }
-        }
-
-        /// <summary>
-        /// Is called before the assertion is made into a strongly typed representation
-        /// </summary>
-        /// <param name="context">The HttpContext.</param>
-        /// <param name="elem">The assertion element.</param>
-        /// <param name="endpoint">The endpoint.</param>
-        protected virtual void PreHandleAssertion(HttpContext context, XmlElement elem, IdentityProvider endpoint)
-        {
-            Logger.DebugFormat(TraceMessages.AssertionPrehandlerCalled);
-
-            if (endpoint != null && endpoint.Endpoints.DefaultLogoutEndpoint != null && !string.IsNullOrEmpty(endpoint.Endpoints.DefaultLogoutEndpoint.TokenAccessor))
-            {
-                var idpTokenAccessor = Activator.CreateInstance(Type.GetType(endpoint.Endpoints.DefaultLogoutEndpoint.TokenAccessor, false)) as ISaml20IdpTokenAccessor;
-                if (idpTokenAccessor != null)
-                {
-                    Logger.DebugFormat("{0}.{1} called", idpTokenAccessor.GetType(), "ReadToken");
-                    idpTokenAccessor.ReadToken(elem);
-                    Logger.DebugFormat("{0}.{1} finished", idpTokenAccessor.GetType(), "ReadToken");
-                }
-            }
-        }
-
-        /// <summary>
-        /// Determines whether the certificate is satisfied by all specifications.
-        /// </summary>
-        /// <param name="idp">The identity provider.</param>
-        /// <param name="cert">The cert.</param>
-        /// <returns><c>true</c> if certificate is satisfied by all specifications; otherwise, <c>false</c>.</returns>
-        private static bool CertificateSatisfiesSpecifications(IdentityProvider idp, X509Certificate2 cert)
-        {
-            return SpecificationFactory.GetCertificateSpecifications(idp).All(spec => spec.IsSatisfiedBy(cert));
         }
 
         /// <summary>
@@ -265,73 +154,6 @@ namespace SAML2.Protocol
             Logger.Debug(TraceMessages.ReplaceAttackCheckCleared);
         }
 
-        /// <summary>
-        /// Gets the decoded SAML response.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        /// <param name="encoding">The encoding.</param>
-        /// <returns>The decoded SAML response XML.</returns>
-        private static XmlDocument GetDecodedSamlResponse(HttpContext context, Encoding encoding)
-        {
-            Logger.Debug(TraceMessages.SamlResponseDecoding);
-
-            var base64 = context.Request.Params["SAMLResponse"];
-
-            var doc = new XmlDocument { PreserveWhitespace = true };
-            var samlResponse = encoding.GetString(Convert.FromBase64String(base64));
-            doc.LoadXml(samlResponse);
-
-            Logger.DebugFormat(TraceMessages.SamlResponseDecoded, samlResponse);
-
-            return doc;
-        }
-
-        /// <summary>
-        /// Gets the decrypted assertion.
-        /// </summary>
-        /// <param name="elem">The elem.</param>
-        /// <returns>The decrypted <see cref="Saml20EncryptedAssertion"/>.</returns>
-        private static Saml20EncryptedAssertion GetDecryptedAssertion(XmlElement elem, Saml2Configuration config)
-        {
-            Logger.Debug(TraceMessages.EncryptedAssertionDecrypting);
-
-            var decryptedAssertion = new Saml20EncryptedAssertion((RSA)config.ServiceProvider.SigningCertificate.PrivateKey);
-            decryptedAssertion.LoadXml(elem);
-            decryptedAssertion.Decrypt();
-
-            Logger.DebugFormat(TraceMessages.EncryptedAssertionDecrypted, decryptedAssertion.Assertion.DocumentElement.OuterXml);
-
-            return decryptedAssertion;
-        }
-
-        /// <summary>
-        /// Retrieves the name of the issuer from an XmlElement containing an assertion.
-        /// </summary>
-        /// <param name="assertion">An XmlElement containing an assertion</param>
-        /// <returns>The identifier of the Issuer</returns>
-        private static string GetIssuer(XmlElement assertion)
-        {
-            var result = string.Empty;
-            var list = assertion.GetElementsByTagName("Issuer", Saml20Constants.Assertion);
-            if (list.Count > 0)
-            {
-                var issuer = (XmlElement)list[0];
-                result = issuer.InnerText;
-            }
-
-            return result;
-        }
-
-        /// <summary>
-        /// Gets the status element.
-        /// </summary>
-        /// <param name="element">The element.</param>
-        /// <returns>The <see cref="Status" /> element.</returns>
-        private static Status GetStatusElement(XmlElement element)
-        {
-            var statElem = element.GetElementsByTagName(Status.ElementName, Saml20Constants.Protocol)[0];
-            return Serialization.DeserializeFromXmlString<Status>(statElem.OuterXml);
-        }
 
         /// <summary>
         /// Handles executing the login.
@@ -369,10 +191,10 @@ namespace SAML2.Protocol
         {
             Logger.DebugFormat(TraceMessages.AssertionProcessing, elem.OuterXml);
 
-            var issuer = GetIssuer(elem);
+            var issuer = Utility.GetIssuer(elem);
             var endp = IdpSelectionUtil.RetrieveIDPConfiguration(issuer, config);
 
-            PreHandleAssertion(context, elem, endp);
+            Utility.PreHandleAssertion(elem, endp);
 
             if (endp == null || endp.Metadata == null)
             {
@@ -386,7 +208,7 @@ namespace SAML2.Protocol
             // Check signatures
             if (!endp.OmitAssertionSignatureCheck)
             {
-                if (!assertion.CheckSignature(GetTrustedSigners(endp.Metadata.GetKeys(KeyTypes.Signing), endp)))
+                if (!assertion.CheckSignature(Utility.GetTrustedSigners(endp.Metadata.GetKeys(KeyTypes.Signing), endp)))
                 {
                     Logger.Error(ErrorMessages.AssertionSignatureInvalid);
                     throw new Saml20Exception(ErrorMessages.AssertionSignatureInvalid);
@@ -424,7 +246,7 @@ namespace SAML2.Protocol
         /// <param name="elem">The elem.</param>
         private void HandleEncryptedAssertion(HttpContext context, XmlElement elem, Saml2Configuration config)
         {
-            HandleAssertion(context, GetDecryptedAssertion(elem, config).Assertion.DocumentElement, config);
+            HandleAssertion(context, Utility.GetDecryptedAssertion(elem, config).Assertion.DocumentElement, config);
         }
 
         /// <summary>
@@ -434,25 +256,25 @@ namespace SAML2.Protocol
         private void HandleResponse(HttpContext context, Saml2Configuration config)
         {
             var defaultEncoding = Encoding.UTF8;
-            var doc = GetDecodedSamlResponse(context, defaultEncoding);
+            var doc = Utility.GetDecodedSamlResponse(context.Request.Params["SAMLResponse"], defaultEncoding);
             Logger.DebugFormat(TraceMessages.SamlResponseReceived, doc.OuterXml);
 
             // Determine whether the assertion should be decrypted before being validated.
             bool isEncrypted;
-            var assertion = GetAssertion(doc.DocumentElement, out isEncrypted);
+            var assertion = Utility.GetAssertion(doc.DocumentElement, out isEncrypted);
             if (isEncrypted) 
             {
-                assertion = GetDecryptedAssertion(assertion, config).Assertion.DocumentElement;
+                assertion = Utility.GetDecryptedAssertion(assertion, config).Assertion.DocumentElement;
             }
 
             // Check if an encoding-override exists for the IdP endpoint in question
-            var issuer = GetIssuer(assertion);
+            var issuer = Utility.GetIssuer(assertion);
             var endpoint = IdpSelectionUtil.RetrieveIDPConfiguration(issuer, config);
             if (!endpoint.AllowReplayAttacks) 
             {
                 CheckReplayAttack(context, doc.DocumentElement, !endpoint.AllowIdPInitiatedSso);
             }
-            var status = GetStatusElement(doc.DocumentElement);
+            var status = Utility.GetStatusElement(doc.DocumentElement);
             if (status.StatusCode.Value != Saml20Constants.StatusCodes.Success)
             {
                 if (status.StatusCode.Value == Saml20Constants.StatusCodes.NoPassive)
@@ -480,8 +302,8 @@ namespace SAML2.Protocol
 
                 if (encodingOverride.CodePage != defaultEncoding.CodePage)
                 {
-                    var doc1 = GetDecodedSamlResponse(context, encodingOverride);
-                    assertion = GetAssertion(doc1.DocumentElement, out isEncrypted);
+                    var doc1 = Utility.GetDecodedSamlResponse(context.Request.Params["SAMLResponse"], encodingOverride);
+                    assertion = Utility.GetAssertion(doc1.DocumentElement, out isEncrypted);
                 }
             }
 
@@ -535,7 +357,7 @@ namespace SAML2.Protocol
                 {
                     CheckReplayAttack(context, parser.ArtifactResponse.Any, true);
 
-                    var responseStatus = GetStatusElement(parser.ArtifactResponse.Any);
+                    var responseStatus = Utility.GetStatusElement(parser.ArtifactResponse.Any);
                     if (responseStatus.StatusCode.Value != Saml20Constants.StatusCodes.Success)
                     {
                         Logger.ErrorFormat(ErrorMessages.ArtifactResponseStatusCodeInvalid, responseStatus.StatusCode.Value);
@@ -543,7 +365,7 @@ namespace SAML2.Protocol
                     }
 
                     bool isEncrypted;
-                    var assertion = GetAssertion(parser.ArtifactResponse.Any, out isEncrypted);
+                    var assertion = Utility.GetAssertion(parser.ArtifactResponse.Any, out isEncrypted);
                     if (assertion == null)
                     {
                         Logger.Error(ErrorMessages.ArtifactResponseMissingAssertion);
@@ -611,9 +433,65 @@ namespace SAML2.Protocol
         /// <param name="context">The context.</param>
         private void TransferClient(IdentityProvider identityProvider, Saml20AuthnRequest request, HttpContext context, Saml2Configuration config)
         {
+            IdentityProviderEndpoint destination = ConfigureRequest(identityProvider, request, context);
+
+            switch (destination.Binding) {
+            case BindingType.Redirect:
+                Logger.DebugFormat(TraceMessages.AuthnRequestPrepared, identityProvider.Id, Saml20Constants.ProtocolBindings.HttpRedirect);
+
+                var redirectBuilder = new HttpRedirectBindingBuilder
+                {
+                    SigningKey = _certificate.PrivateKey,
+                    Request = request.GetXml().OuterXml
+                };
+
+                Logger.DebugFormat(TraceMessages.AuthnRequestSent, redirectBuilder.Request);
+
+                var redirectLocation = request.Destination + "?" + redirectBuilder.ToQuery();
+                context.Response.Redirect(redirectLocation, true);
+                break;
+            case BindingType.Post:
+                Logger.DebugFormat(TraceMessages.AuthnRequestPrepared, identityProvider.Id, Saml20Constants.ProtocolBindings.HttpPost);
+
+                var postBuilder = new HttpPostBindingBuilder(destination);
+
+                // Honor the ForceProtocolBinding and only set this if it's not already set
+                if (string.IsNullOrEmpty(request.ProtocolBinding)) {
+                    request.ProtocolBinding = Saml20Constants.ProtocolBindings.HttpPost;
+                }
+
+                var requestXml = request.GetXml();
+                XmlSignatureUtils.SignDocument(requestXml, request.Id, config.ServiceProvider.SigningCertificate);
+                postBuilder.Request = requestXml.OuterXml;
+
+                Logger.DebugFormat(TraceMessages.AuthnRequestSent, postBuilder.Request);
+
+                context.Response.Write(postBuilder.GetPage());
+                break;
+            case BindingType.Artifact:
+                Logger.DebugFormat(TraceMessages.AuthnRequestPrepared, identityProvider.Id, Saml20Constants.ProtocolBindings.HttpArtifact);
+
+                var artifactBuilder = GetBuilder(context);
+
+                // Honor the ForceProtocolBinding and only set this if it's not already set
+                if (string.IsNullOrEmpty(request.ProtocolBinding)) {
+                    request.ProtocolBinding = Saml20Constants.ProtocolBindings.HttpArtifact;
+                }
+
+                Logger.DebugFormat(TraceMessages.AuthnRequestSent, request.GetXml().OuterXml);
+
+                artifactBuilder.RedirectFromLogin(destination, request, context.Request.Params["relayState"], (s, o) => context.Cache.Insert(s, o, null, DateTime.Now.AddMinutes(1), Cache.NoSlidingExpiration));
+                break;
+            default:
+                Logger.Error(ErrorMessages.EndpointBindingInvalid);
+                throw new Saml20Exception(ErrorMessages.EndpointBindingInvalid);
+            }
+        }
+
+        private static IdentityProviderEndpoint ConfigureRequest(IdentityProvider identityProvider, Saml20AuthnRequest request, HttpContext context)
+        {
             // Set the last IDP we attempted to login at.
-            if (context.Session != null) 
-            {
+            if (context.Session != null) {
                 context.Session[IdpTempSessionKey] = identityProvider.Id;
             }
             context.Items[IdpTempSessionKey] = identityProvider.Id;
@@ -622,106 +500,43 @@ namespace SAML2.Protocol
             var destination = IdpSelectionUtil.DetermineEndpointConfiguration(BindingType.Redirect, identityProvider.Endpoints.DefaultSignOnEndpoint, identityProvider.Metadata.SSOEndpoints);
             request.Destination = destination.Url;
 
-            if (identityProvider.ForceAuth)
-            {
+            if (identityProvider.ForceAuth) {
                 request.ForceAuthn = true;
             }
 
             // Check isPassive status
             var isPassiveFlag = context.Session != null ? context.Session[IdpIsPassive] : null;
-            if (isPassiveFlag != null && (bool)isPassiveFlag)
-            {
+            if (isPassiveFlag != null && (bool)isPassiveFlag) {
                 request.IsPassive = true;
                 context.Session[IdpIsPassive] = null;
             }
 
-            if (identityProvider.IsPassive)
-            {
+            if (identityProvider.IsPassive) {
                 request.IsPassive = true;
             }
 
             // Check if request should forceAuthn
-            var forceAuthnFlag =  context.Session != null ? context.Session[IdpForceAuthn] : null;
-            if (forceAuthnFlag != null && (bool)forceAuthnFlag)
-            {
+            var forceAuthnFlag = context.Session != null ? context.Session[IdpForceAuthn] : null;
+            if (forceAuthnFlag != null && (bool)forceAuthnFlag) {
                 request.ForceAuthn = true;
                 context.Session[IdpForceAuthn] = null;
             }
 
             // Check if protocol binding should be forced
-            if (identityProvider.Endpoints.DefaultSignOnEndpoint != null)
-            {
-                if (!string.IsNullOrEmpty(identityProvider.Endpoints.DefaultSignOnEndpoint.ForceProtocolBinding))
-                {
+            if (identityProvider.Endpoints.DefaultSignOnEndpoint != null) {
+                if (!string.IsNullOrEmpty(identityProvider.Endpoints.DefaultSignOnEndpoint.ForceProtocolBinding)) {
                     request.ProtocolBinding = identityProvider.Endpoints.DefaultSignOnEndpoint.ForceProtocolBinding;
                 }
             }
 
             // Save request message id to session
-            if (context.Session != null) 
-            {
+            if (context.Session != null) {
                 context.Session.Add(ExpectedInResponseToSessionKey, request.Id);
-            } 
-            else 
-            {
+            } else {
                 ExpectedResponses.Add(request.Id);
             }
 
-            switch (destination.Binding)
-            {
-                case BindingType.Redirect:
-                    Logger.DebugFormat(TraceMessages.AuthnRequestPrepared, identityProvider.Id, Saml20Constants.ProtocolBindings.HttpRedirect);
-
-                    var redirectBuilder = new HttpRedirectBindingBuilder
-                                      {
-                                          SigningKey = _certificate.PrivateKey,
-                                          Request = request.GetXml().OuterXml
-                                      };
-
-                    Logger.DebugFormat(TraceMessages.AuthnRequestSent, redirectBuilder.Request);
-
-                    var redirectLocation = request.Destination + "?" + redirectBuilder.ToQuery();
-                    context.Response.Redirect(redirectLocation, true);
-                    break;
-                case BindingType.Post:
-                    Logger.DebugFormat(TraceMessages.AuthnRequestPrepared, identityProvider.Id, Saml20Constants.ProtocolBindings.HttpPost);
-
-                    var postBuilder = new HttpPostBindingBuilder(destination);
-
-                    // Honor the ForceProtocolBinding and only set this if it's not already set
-                    if (string.IsNullOrEmpty(request.ProtocolBinding))
-                    {
-                        request.ProtocolBinding = Saml20Constants.ProtocolBindings.HttpPost;
-                    }
-
-                    var requestXml = request.GetXml();
-                    XmlSignatureUtils.SignDocument(requestXml, request.Id, config.ServiceProvider.SigningCertificate);
-                    postBuilder.Request = requestXml.OuterXml;
-
-                    Logger.DebugFormat(TraceMessages.AuthnRequestSent, postBuilder.Request);
-
-                    context.Response.Write(postBuilder.GetPage());
-                    break;
-                case BindingType.Artifact:
-                    Logger.DebugFormat(TraceMessages.AuthnRequestPrepared, identityProvider.Id, Saml20Constants.ProtocolBindings.HttpArtifact);
-
-                    var artifactBuilder = GetBuilder(context);
-
-                    // Honor the ForceProtocolBinding and only set this if it's not already set
-                    if (string.IsNullOrEmpty(request.ProtocolBinding))
-                    {
-                        request.ProtocolBinding = Saml20Constants.ProtocolBindings.HttpArtifact;
-                    }
-
-                    Logger.DebugFormat(TraceMessages.AuthnRequestSent, request.GetXml().OuterXml);
-
-                    artifactBuilder.RedirectFromLogin(destination, request, context.Request.Params["relayState"], (s, o) => context.Cache.Insert(s, o, null, DateTime.Now.AddMinutes(1), Cache.NoSlidingExpiration));
-                    break;
-                default:
-                    Logger.Error(ErrorMessages.EndpointBindingInvalid);
-                    throw new Saml20Exception(ErrorMessages.EndpointBindingInvalid);
-            }
+            return destination;
         }
-
     }
 }
