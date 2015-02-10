@@ -284,7 +284,7 @@ GetBuilder(context),
             //context.Items[IdpSessionIdKey] = assertion.SessionIndex;
             //context.Items[IdpNameIdFormat] = assertion.Subject.Format;
             //context.Items[IdpNameId] = assertion.Subject.Value;
-
+            //context.Authentication.AuthenticationResponseGrant = new Microsoft.Owin.Security.AuthenticationResponseGrant()
             Logger.DebugFormat(TraceMessages.SignOnProcessed, assertion.SessionIndex, assertion.Subject.Value, assertion.Subject.Format);
 
             Logger.Debug(TraceMessages.SignOnActionsExecuting);

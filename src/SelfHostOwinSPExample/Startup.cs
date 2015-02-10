@@ -42,6 +42,7 @@ namespace SelfHostOwinSPExample
                     Server = "https://localhost:44333/core",
                     Id = "https://localhost:44333/core"
                 },
+                AllowedAudienceUris = new System.Collections.Generic.List<Uri>(new[] { new Uri("https://localhost:44333/core") })
             };
             myconfig.ServiceProvider.Endpoints.AddRange(new[] {
                 new ServiceProviderEndpoint(EndpointType.SignOn, "/core/login", "/core"),
@@ -49,7 +50,7 @@ namespace SelfHostOwinSPExample
                 new ServiceProviderEndpoint(EndpointType.Metadata, "/core/metadata")
             });
             myconfig.IdentityProviders.AddByMetadataDirectory("..\\..\\Metadata");
-            
+            myconfig.IdentityProviders.First().OmitAssertionSignatureCheck = true;
             myconfig.LoggingFactoryType = "SAML2.Logging.DebugLoggerFactory";
             return myconfig;
         }
