@@ -6,6 +6,7 @@ using SAML2.Config;
 using SAML2;
 using System.Collections.Generic;
 using SAML2.Bindings;
+using SAML2.Protocol;
 
 namespace Microsoft.IdentityModel.Protocols
 {
@@ -51,20 +52,11 @@ namespace Microsoft.IdentityModel.Protocols
         /// </summary>
         public const string IdpTempSessionKey = "TempIDPId";
 
-        /// <summary>
-        /// Expected responses if session support is not present
-        /// </summary>
-        internal static HashSet<string> ExpectedResponses { get; private set; }
-
         private IFormCollection form;
         private IOwinContext context;
         private readonly Saml2Configuration config;
 
-        public SamlMessage()
-        {
-            ExpectedResponses = new HashSet<string>();
-        }
-        public SamlMessage(IFormCollection form) : this()
+        public SamlMessage(IFormCollection form)
         {
             this.form = form;
         }
@@ -144,7 +136,7 @@ namespace Microsoft.IdentityModel.Protocols
             }
 
             // Save request message id to session
-            ExpectedResponses.Add(request.Id);
+            Utility.AddExpectedResponseId(request.Id);
 
             switch (destination.Binding) {
             case BindingType.Redirect:

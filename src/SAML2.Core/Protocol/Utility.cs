@@ -122,6 +122,12 @@ namespace SAML2.Protocol
             return null;
         }
 
+        public static void AddExpectedResponseId(string id)
+        {
+            expectedResponses.Add(id);
+        }
+
+
         /// <summary>
         /// Is called before the assertion is made into a strongly typed representation
         /// </summary>
