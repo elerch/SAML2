@@ -21,6 +21,9 @@ namespace Owin
                 throw new ArgumentNullException("app");
             }
             if (options == null) throw new ArgumentNullException("options");
+
+            SAML2.Logging.LoggerProvider.Configuration = SAML2.Logging.LoggerProvider.Configuration ?? options.Configuration;
+
             app.Map(options.MetadataPath, metadataapp => {
                 metadataapp.Run(new SamlMetadataWriter(options.Configuration).WriteMetadataDocument);
             });
