@@ -10,6 +10,7 @@ using SAML2.Utils;
 using SAML2.Protocol;
 using System.Collections.Generic;
 using Owin.Security.Saml;
+using System.Collections.Specialized;
 
 namespace Owin
 {
@@ -83,18 +84,18 @@ GetBuilder(context),
                 return Task.FromResult((object)null);
             }
 
-            var requestParams = context.Request.GetRequestParameters();
-            if (requestParams.ContainsKey("SAMLart")) {
+            var requestParams = context.Request.GetRequestParameters().ToNameValueCollection();
+            if (!string.IsNullOrWhiteSpace(requestParams["SAMLart"])) {
                 HandleArtifact(context);
             }
 
-            if (requestParams.ContainsKey("SamlResponse")) {
-                var samlResponse = requestParams["SamlResponse"];
+            var samlResponse = requestParams["SamlResponse"];
+            if (!string.IsNullOrWhiteSpace(samlResponse)) {
                 var assertion = Utility.HandleResponse(configuration, samlResponse, session, getFromCache, setInCache);
                 loginAction(assertion);
             } else {
                 if (configuration.CommonDomainCookie.Enabled && context.Request.Query["r"] == null
-                    && (!requestParams.ContainsKey("cidp") || requestParams["cidp"] == null)) {
+                    && requestParams["cidp"] == null) {
                     Logger.Debug(TraceMessages.CommonDomainCookieRedirectForDiscovery);
                     context.Response.Redirect(configuration.CommonDomainCookie.LocalReaderEndpoint);
                 } else {
@@ -108,7 +109,7 @@ GetBuilder(context),
         /// Send an authentication request to the IDP.
         /// </summary>
         /// <param name="context">The context.</param>
-        private void SendRequest(IOwinContext context, Saml2Configuration config, IDictionary<string, string> requestParams)
+        private void SendRequest(IOwinContext context, Saml2Configuration config, NameValueCollection requestParams)
         {
             // See if the "ReturnUrl" - parameter is set.
             var returnUrl = context.Request.Query["ReturnUrl"];
@@ -118,7 +119,7 @@ GetBuilder(context),
 
             var isRedirected = false;
             var selectionUtil = new IdpSelectionUtil(Logger);
-            var idp = selectionUtil.RetrieveIDP(requestParams.ToNameValueCollection(), context.Request.Query.ToNameValueCollection(), config, s => { context.Response.Redirect(s); isRedirected = true; });
+            var idp = selectionUtil.RetrieveIDP(requestParams, context.Request.Query.ToNameValueCollection(), config, s => { context.Response.Redirect(s); isRedirected = true; });
             if (isRedirected) return;
             if (idp == null) {
                 // Display a page to the user where she can pick the IDP
@@ -139,7 +140,7 @@ GetBuilder(context),
         /// <param name="identityProvider">The identity provider.</param>
         /// <param name="request">The request.</param>
         /// <param name="context">The context.</param>
-        private void TransferClient(IdentityProvider identityProvider, Saml20AuthnRequest request, IOwinContext context, IDictionary<string, string> requestParams)
+        private void TransferClient(IdentityProvider identityProvider, Saml20AuthnRequest request, IOwinContext context, NameValueCollection requestParams)
         {
             IdentityProviderEndpoint destination = ConfigureRequest(identityProvider, request, context);
 
@@ -188,7 +189,7 @@ GetBuilder(context),
 
                 Logger.DebugFormat(TraceMessages.AuthnRequestSent, request.GetXml().OuterXml);
 
-                artifactBuilder.RedirectFromLogin(destination, request, requestParams.ContainsKey("relayState") ? requestParams["relayState"] : null, (s, o) => setInCache(s, o, DateTime.MinValue));
+                artifactBuilder.RedirectFromLogin(destination, request, requestParams["relayState"], (s, o) => setInCache(s, o, DateTime.MinValue));
                 break;
             default:
                 Logger.Error(ErrorMessages.EndpointBindingInvalid);
