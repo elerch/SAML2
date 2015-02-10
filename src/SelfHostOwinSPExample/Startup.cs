@@ -49,8 +49,8 @@ namespace SelfHostOwinSPExample
                 new ServiceProviderEndpoint(EndpointType.Metadata, "/core/metadata")
             });
             myconfig.IdentityProviders.AddByMetadataDirectory("..\\..\\Metadata");
+            
             myconfig.LoggingFactoryType = "SAML2.Logging.DebugLoggerFactory";
-            SAML2.Logging.LoggerProvider.Configuration = myconfig;
             return myconfig;
         }
 
