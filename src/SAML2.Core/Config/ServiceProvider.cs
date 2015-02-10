@@ -51,7 +51,6 @@ namespace SAML2.Config
         public ServiceProvider()
         {
             NameIdFormats = new NameIdFormats();
-            NameIdFormats.Add(new NameIdFormat { Format = Saml20Constants.NameIdentifierFormats.Persistent });
             Endpoints = new ServiceProviderEndpoints();
             AuthenticationContexts = new AuthenticationContexts();
         }
