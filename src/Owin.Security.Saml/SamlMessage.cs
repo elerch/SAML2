@@ -4,11 +4,11 @@ using SAML2.Utils;
 using System.Collections.Specialized;
 using SAML2.Config;
 using SAML2;
-using System.Collections.Generic;
 using SAML2.Bindings;
 using SAML2.Protocol;
+using Microsoft.IdentityModel.Protocols;
 
-namespace Microsoft.IdentityModel.Protocols
+namespace Owin.Security.Saml
 {
     public class SamlMessage : AuthenticationProtocolMessage
     {
@@ -67,7 +67,13 @@ namespace Microsoft.IdentityModel.Protocols
             this.config = config;
         }
 
+        public SamlMessage(IOwinContext context, Saml2Configuration config, Saml20Assertion assertion) : this(null, context, config)
+        {
+            Assertion = assertion;
+        }
+
         public string Reply { get; internal set; }
+        public Saml20Assertion Assertion { get; private set; }
 
         public bool IsSignInMessage()
         {
