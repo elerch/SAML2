@@ -59,6 +59,8 @@
     <Compile Include="IReadableStringCollectionExtensions.cs" />
     <Compile Include="OwinRequestExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Saml20AssertionExtensions.cs" />
+    <Compile Include="SamlAttributeExtensions.cs" />
     <Compile Include="SamlAuthenticationDefaults.cs" />
     <Compile Include="SamlAuthenticationExtensions.cs" />
     <Compile Include="SamlAuthenticationHandler.cs" />

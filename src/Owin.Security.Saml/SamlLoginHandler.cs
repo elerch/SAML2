@@ -148,8 +148,14 @@ namespace Owin
             var assertion = context.Get<Saml20Assertion>("Saml2:assertion");
             if (assertion == null)
                 throw new InvalidOperationException("no assertion found with which to create a ticket");
-            // TODO: Get this for real
-            return Task.FromResult(new AuthenticationTicket(new System.Security.Claims.ClaimsIdentity(), new AuthenticationProperties()));
+            
+            return Task.FromResult(new AuthenticationTicket(assertion.ToClaimsIdentity(options.AuthenticationType), new AuthenticationProperties
+            {
+                ExpiresUtc = assertion.NotOnOrAfter,
+                // IssuedUtc = DateTimeOffset.UtcNow,
+                IsPersistent = true,
+                AllowRefresh = true
+            }));
         }
 
         private Task HandleResponse(IOwinContext context)
