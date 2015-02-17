@@ -371,13 +371,6 @@ namespace Owin
         private void DoSignOn(IOwinContext context, Saml20Assertion assertion)
         {
             context.Set("Saml2:assertion", assertion);
-            // TODO: This needs to signal to OWIN that the user has logged in
-            // User is now logged in at IDP specified in tmp
-            //context.Items[IdpLoginSessionKey] = context.Session != null ? context.Session[IdpTempSessionKey] : context.Items[IdpTempSessionKey];
-            //context.Items[IdpSessionIdKey] = assertion.SessionIndex;
-            //context.Items[IdpNameIdFormat] = assertion.Subject.Format;
-            //context.Items[IdpNameId] = assertion.Subject.Value;
-            //context.Authentication.AuthenticationResponseGrant = new Microsoft.Owin.Security.AuthenticationResponseGrant()
             var subject = assertion.Subject ?? new SAML2.Schema.Core.NameId();
             Logger.DebugFormat(TraceMessages.SignOnProcessed, assertion.SessionIndex, subject.Value, subject.Format);
         }
