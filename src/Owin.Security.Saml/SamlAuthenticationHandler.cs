@@ -192,127 +192,12 @@ namespace Owin.Security.Saml
         protected override async Task<AuthenticationTicket> AuthenticateCoreAsync()
         {
             // Allow login to be constrained to a specific path.
-            //if (Options.CallbackPath.HasValue && Options.CallbackPath != (Request.PathBase + Request.Path))
-            //{
-            //    return null;
-            //}
-
-            var SamlMessage = await SamlMessageFromRequest();
-
-            if (SamlMessage == null || !SamlMessage.IsSignInMessage()) {
+            if (Options.LoginPath != Request.Path.Value) {
                 return null;
             }
 
-            ExceptionDispatchInfo authFailedEx = null;
-            try {
-                var messageReceivedNotification = new MessageReceivedNotification<SamlMessage, SamlAuthenticationOptions>(Context, Options)
-                {
-                    ProtocolMessage = SamlMessage
-                };
-                await Options.Notifications.MessageReceived(messageReceivedNotification);
-                if (messageReceivedNotification.HandledResponse) {
-                    return GetHandledResponseTicket();
-                }
-                if (messageReceivedNotification.Skipped) {
-                    return null;
-                }
+            return await new SamlLoginHandler(Options).Invoke(Request.Context);
 
-                //if (SamlMessage.Wresult == null) {
-                //    _logger.WriteWarning("Received a sign-in message without a WResult.");
-                //    return null;
-                //}
-
-                string token = SamlMessage.GetToken();
-                if (string.IsNullOrWhiteSpace(token)) {
-                    _logger.WriteWarning("Received a sign-in message without a token.");
-                    return null;
-                }
-
-                var securityTokenReceivedNotification = new SecurityTokenReceivedNotification<SamlMessage, SamlAuthenticationOptions>(Context, Options)
-                {
-                    ProtocolMessage = SamlMessage
-                };
-                await Options.Notifications.SecurityTokenReceived(securityTokenReceivedNotification);
-                if (securityTokenReceivedNotification.HandledResponse) {
-                    return GetHandledResponseTicket();
-                }
-                if (securityTokenReceivedNotification.Skipped) {
-                    return null;
-                }
-
-
-                // Copy and augment to avoid cross request race conditions for updated configurations.
-
-                ClaimsPrincipal principal = null;
-                ClaimsIdentity claimsIdentity = principal.Identity as ClaimsIdentity;
-
-                // Retrieve our cached redirect uri
-                // string state = SamlMessage.Wctx;
-                // WsFed allows for uninitiated logins, state may be missing.
-                AuthenticationProperties properties = null;// GetPropertiesFromWctx(state);
-                AuthenticationTicket ticket = new AuthenticationTicket(claimsIdentity, properties);
-
-                //if (Options.UseTokenLifetime) {
-                //    // Override any session persistence to match the token lifetime.
-                //    DateTime issued = parsedToken.ValidFrom;
-                //    if (issued != DateTime.MinValue) {
-                //        ticket.Properties.IssuedUtc = issued.ToUniversalTime();
-                //    }
-                //    DateTime expires = parsedToken.ValidTo;
-                //    if (expires != DateTime.MinValue) {
-                //        ticket.Properties.ExpiresUtc = expires.ToUniversalTime();
-                //    }
-                //    ticket.Properties.AllowRefresh = false;
-                //}
-
-                var securityTokenValidatedNotification = new SecurityTokenValidatedNotification<SamlMessage, SamlAuthenticationOptions>(Context, Options)
-                {
-                    AuthenticationTicket = ticket,
-                    ProtocolMessage = SamlMessage,
-                };
-
-                await Options.Notifications.SecurityTokenValidated(securityTokenValidatedNotification);
-                if (securityTokenValidatedNotification.HandledResponse) {
-                    return GetHandledResponseTicket();
-                }
-                if (securityTokenValidatedNotification.Skipped) {
-                    return null;
-                }
-                // Flow possible changes
-                ticket = securityTokenValidatedNotification.AuthenticationTicket;
-
-                return ticket;
-            }
-            catch (Exception exception) {
-                // We can't await inside a catch block, capture and handle outside.
-                authFailedEx = ExceptionDispatchInfo.Capture(exception);
-            }
-
-            if (authFailedEx != null) {
-                _logger.WriteError("Exception occurred while processing message: ", authFailedEx.SourceException);
-
-                // Refresh the configuration for exceptions that may be caused by key rollovers. The user can also request a refresh in the notification.
-                //if (Options.RefreshOnIssuerKeyNotFound && authFailedEx.SourceException.GetType().Equals(typeof(SecurityTokenSignatureKeyNotFoundException))) {
-                //    Options.ConfigurationManager.RequestRefresh();
-                //}
-
-                var authenticationFailedNotification = new AuthenticationFailedNotification<SamlMessage, SamlAuthenticationOptions>(Context, Options)
-                {
-                    ProtocolMessage = SamlMessage,
-                    Exception = authFailedEx.SourceException
-                };
-                await Options.Notifications.AuthenticationFailed(authenticationFailedNotification);
-                if (authenticationFailedNotification.HandledResponse) {
-                    return GetHandledResponseTicket();
-                }
-                if (authenticationFailedNotification.Skipped) {
-                    return null;
-                }
-
-                authFailedEx.Throw();
-            }
-
-            return null;
         }
 
         private async Task<SamlMessage> SamlMessageFromRequest()

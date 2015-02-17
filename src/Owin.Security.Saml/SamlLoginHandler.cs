@@ -68,7 +68,7 @@ namespace Owin
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public async Task Invoke(IOwinContext context)
+        public async Task<AuthenticationTicket> Invoke(IOwinContext context)
         {
             Logger.Debug(TraceMessages.SignOnHandlerCalled);
             ExceptionDispatchInfo authFailedEx = null;
@@ -79,10 +79,10 @@ namespace Owin
                 };
                 await options.Notifications.MessageReceived(messageReceivedNotification);
                 if (messageReceivedNotification.HandledResponse) {
-                    return; // GetHandledResponseTicket()
+                    return null; // GetHandledResponseTicket()
                 }
                 if (messageReceivedNotification.Skipped) {
-                    return;
+                    return null;
                 }
                 await HandleResponse(context);
                 var assertion = context.Get<Saml20Assertion>("Saml2:assertion");
@@ -92,10 +92,10 @@ namespace Owin
                 };
                 await options.Notifications.SecurityTokenReceived(securityTokenReceivedNotification);
                 if (securityTokenReceivedNotification.HandledResponse) {
-                    return; // GetHandledResponseTicket();
+                    return null; // GetHandledResponseTicket();
                 }
                 if (securityTokenReceivedNotification.Skipped) {
-                    return; // null;
+                    return null;
                 }
 
                 var ticket = await GetAuthenticationTicket(context);
@@ -108,15 +108,16 @@ namespace Owin
 
                 await options.Notifications.SecurityTokenValidated(securityTokenValidatedNotification);
                 if (securityTokenValidatedNotification.HandledResponse) {
-                    return; // GetHandledResponseTicket();
+                    return null; // GetHandledResponseTicket();
                 }
                 if (securityTokenValidatedNotification.Skipped) {
-                    return; // null;
+                    return null; // null;
                 }
                 // Flow possible changes
                 ticket = securityTokenValidatedNotification.AuthenticationTicket;
 
-                // TODO: get this out to the cookie middleware somehow...
+                //context.Authentication.AuthenticationResponseGrant = new AuthenticationResponseGrant(ticket.Identity, ticket.Properties);                
+                return ticket;
             }
             catch (Exception ex) {
                 authFailedEx = ExceptionDispatchInfo.Capture(ex);
@@ -131,14 +132,15 @@ namespace Owin
                 };
                 await options.Notifications.AuthenticationFailed(authenticationFailedNotification);
                 if (authenticationFailedNotification.HandledResponse) {
-                    return;//GetHandledResponseTicket();
+                    return null;//GetHandledResponseTicket();
                 }
                 if (authenticationFailedNotification.Skipped) {
-                    return; //null
+                    return null; //null
                 }
 
                 authFailedEx.Throw();
             }
+            return null;
         }
 
         private Task<AuthenticationTicket> GetAuthenticationTicket(IOwinContext context)
