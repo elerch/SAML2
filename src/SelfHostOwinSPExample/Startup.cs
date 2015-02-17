@@ -17,12 +17,13 @@ namespace SelfHostOwinSPExample
 
             appBuilder.UseCookieAuthentication(new Microsoft.Owin.Security.Cookies.CookieAuthenticationOptions
             {
-
+                AuthenticationType = "SAML2",
+                AuthenticationMode = Microsoft.Owin.Security.AuthenticationMode.Active
             });
             appBuilder.UseSamlAuthentication(new Owin.Security.Saml.SamlAuthenticationOptions
             {
-                AuthenticationMode = Microsoft.Owin.Security.AuthenticationMode.Active,
                 Configuration = config,
+                RedirectAfterLogin = "/core",
             });
             appBuilder.Run(async c => {
                 if (c.Authentication.User != null &&

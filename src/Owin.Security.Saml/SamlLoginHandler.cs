@@ -154,7 +154,8 @@ namespace Owin
                 ExpiresUtc = assertion.NotOnOrAfter,
                 // IssuedUtc = DateTimeOffset.UtcNow,
                 IsPersistent = true,
-                AllowRefresh = true
+                AllowRefresh = true,
+                RedirectUri = options.RedirectAfterLogin
             }));
         }
 

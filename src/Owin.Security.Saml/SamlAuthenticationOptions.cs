@@ -40,6 +40,12 @@ namespace Owin.Security.Saml
         /// </summary>
         public string MetadataPath { get; set; }
         public SamlAuthenticationNotifications Notifications { get; set; }
+        /// <summary>
+        /// Defines path used for redirection after a login occurs. This should be considered temporary
+        /// until a better solution is developed for redirection to the original path
+        /// </summary>
+        public string RedirectAfterLogin { get; set; }
+
 
         /// <summary>
         /// Session state (handy for validating responses are as expected in multi-server environments). Optional, default null
