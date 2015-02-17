@@ -1,18 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IdentityModel.Tokens;
 using System.IO;
-using System.Linq;
-using System.Runtime.ExceptionServices;
-using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.IdentityModel.Extensions;
-using Microsoft.IdentityModel.Protocols;
 using Microsoft.Owin.Logging;
 using Microsoft.Owin.Security.Infrastructure;
 using Microsoft.Owin.Security.Notifications;
 using Microsoft.Owin.Security;
-using SAML2.Config;
 
 namespace Owin.Security.Saml
 {
