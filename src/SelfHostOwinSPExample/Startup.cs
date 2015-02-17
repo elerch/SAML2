@@ -14,21 +14,30 @@ namespace SelfHostOwinSPExample
 #if TEST
             config = TestEnvironmentConfiguration();
 #endif
+
+            appBuilder.UseCookieAuthentication(new Microsoft.Owin.Security.Cookies.CookieAuthenticationOptions
+            {
+
+            });
             appBuilder.UseSamlAuthentication(new Owin.Security.Saml.SamlAuthenticationOptions
             {
                 AuthenticationMode = Microsoft.Owin.Security.AuthenticationMode.Active,
-                Configuration = config
+                Configuration = config,
             });
-            appBuilder.Run(c => {
+            appBuilder.Run(async c => {
                 if (c.Authentication.User != null &&
                     c.Authentication.User.Identity != null &&
                     c.Authentication.User.Identity.IsAuthenticated) {
-                    return c.Response.WriteAsync("hello world - authenticated");
+                    await c.Response.WriteAsync(c.Authentication.User.Identity.Name + "\r\n");
+                    await c.Response.WriteAsync(c.Authentication.User.Identity.AuthenticationType + "\r\n");
+                    foreach (var claim in c.Authentication.User.Identities.SelectMany(i => i.Claims))
+                        await c.Response.WriteAsync(claim.Value + "\r\n");
+                    await c.Response.WriteAsync("authenticated");
                 } else {
                     // trigger authentication
                     c.Authentication.Challenge(c.Authentication.GetAuthenticationTypes().Select(d => d.AuthenticationType).ToArray());
-                    return System.Threading.Tasks.Task.Delay(0);
                 }
+                return;
             });
         }
 
@@ -45,9 +54,9 @@ namespace SelfHostOwinSPExample
                 AllowedAudienceUris = new System.Collections.Generic.List<Uri>(new[] { new Uri("https://localhost:44333/core") })
             };
             myconfig.ServiceProvider.Endpoints.AddRange(new[] {
-                new ServiceProviderEndpoint(EndpointType.SignOn, "/core/login", "/core"),
-                new ServiceProviderEndpoint(EndpointType.Logout, "/core/logout", "/core"),
-                new ServiceProviderEndpoint(EndpointType.Metadata, "/core/metadata")
+                new ServiceProviderEndpoint(EndpointType.SignOn, "/core/saml2/login", "/core"),
+                new ServiceProviderEndpoint(EndpointType.Logout, "/core/saml2/logout", "/core"),
+                new ServiceProviderEndpoint(EndpointType.Metadata, "/core/saml2/metadata")
             });
             myconfig.IdentityProviders.AddByMetadataDirectory("..\\..\\Metadata");
             myconfig.IdentityProviders.First().OmitAssertionSignatureCheck = true;
