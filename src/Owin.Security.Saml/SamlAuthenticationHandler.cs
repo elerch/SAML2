@@ -112,17 +112,7 @@ namespace Owin.Security.Saml
             }
 
             SamlMessage SamlMessage = await SamlMessageFromRequest();
-            {
-                //IssuerAddress = _configuration.TokenEndpoint ?? string.Empty,
-                //Wtrealm = Options.Wtrealm,
-                //Wctx = SamlAuthenticationDefaults.WctxKey + "=" + Uri.EscapeDataString(Options.StateDataFormat.Protect(properties)),
-                //Wa = SamlActions.SignIn,
-            };
-
-            //if (!string.IsNullOrWhiteSpace(Options.Wreply))
-            //{
-            //    SamlMessage.Wreply = Options.Wreply;
-            //}
+            
 
             var notification = new RedirectToIdentityProviderNotification<SamlMessage, SamlAuthenticationOptions>(Context, Options)
             {
