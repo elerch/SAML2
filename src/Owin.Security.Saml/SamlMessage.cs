@@ -153,7 +153,12 @@ namespace Owin.Security.Saml
                     SigningKey = config.ServiceProvider.SigningCertificate.PrivateKey,
                     Request = request.GetXml().OuterXml
                 };
-
+                if (context.Authentication != null &&
+                    context.Authentication.AuthenticationResponseChallenge != null &&
+                    context.Authentication.AuthenticationResponseChallenge.Properties != null &&
+                    context.Authentication.AuthenticationResponseChallenge.Properties.Dictionary != null &&
+                    context.Authentication.AuthenticationResponseChallenge.Properties.Dictionary.Count > 0)
+                    redirectBuilder.RelayState = context.Authentication.AuthenticationResponseChallenge.Properties.Dictionary.ToDelimitedString();
                 logger.DebugFormat(TraceMessages.AuthnRequestSent, redirectBuilder.Request);
 
                 var redirectLocation = request.Destination + "?" + redirectBuilder.ToQuery();
