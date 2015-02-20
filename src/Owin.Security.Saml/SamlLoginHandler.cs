@@ -85,7 +85,7 @@ namespace Owin
                 if (messageReceivedNotification.Skipped) {
                     return null;
                 }
-                await HandleResponse(context);
+                var requestParams = await HandleResponse(context);
                 var assertion = context.Get<Saml20Assertion>("Saml2:assertion");
                 var securityTokenReceivedNotification = new SecurityTokenReceivedNotification<SamlMessage, SamlAuthenticationOptions>(context, options)
                 {
@@ -99,7 +99,7 @@ namespace Owin
                     return null;
                 }
 
-                var ticket = await GetAuthenticationTicket(context);
+                var ticket = await GetAuthenticationTicket(context, requestParams);
 
                 var securityTokenValidatedNotification = new SecurityTokenValidatedNotification<SamlMessage, SamlAuthenticationOptions>(context, options)
                 {
@@ -144,23 +144,32 @@ namespace Owin
             return null;
         }
 
-        private Task<AuthenticationTicket> GetAuthenticationTicket(IOwinContext context)
+        private Task<AuthenticationTicket> GetAuthenticationTicket(IOwinContext context, NameValueCollection requestParams)
         {
             var assertion = context.Get<Saml20Assertion>("Saml2:assertion");
             if (assertion == null)
                 throw new InvalidOperationException("no assertion found with which to create a ticket");
-            
-            return Task.FromResult(new AuthenticationTicket(assertion.ToClaimsIdentity(options.AuthenticationType), new AuthenticationProperties
+
+            var authenticationProperties = new AuthenticationProperties
             {
                 ExpiresUtc = assertion.NotOnOrAfter,
                 // IssuedUtc = DateTimeOffset.UtcNow,
                 IsPersistent = true,
                 AllowRefresh = true,
                 RedirectUri = options.RedirectAfterLogin
-            }));
+            };
+
+            var relayState = requestParams["RelayState"];
+            if (relayState != null) {
+                var challengeProperties = new AuthenticationProperties(Compression.DeflateDecompress(relayState).FromDelimitedString().ToDictionary(k => k.Key, v => v.Value));
+                if (challengeProperties.RedirectUri != null) authenticationProperties.RedirectUri = challengeProperties.RedirectUri;
+                foreach (var kvp in challengeProperties.Dictionary.Except(authenticationProperties.Dictionary))
+                    authenticationProperties.Dictionary.Add(kvp);
+            }
+            return Task.FromResult(new AuthenticationTicket(assertion.ToClaimsIdentity(options.AuthenticationType), authenticationProperties));
         }
 
-        private Task HandleResponse(IOwinContext context)
+        private Task<NameValueCollection> HandleResponse(IOwinContext context)
         { 
             Action<Saml20Assertion> loginAction = a => DoSignOn(context, a);
 
@@ -175,7 +184,7 @@ namespace Owin
                     getFromCache,
                     setInCache,
                     session);
-                return Task.FromResult((object)null);
+                return Task.FromResult(context.Request.GetRequestParameters().ToNameValueCollection());
             }
 
             var requestParams = context.Request.GetRequestParameters().ToNameValueCollection();
@@ -197,7 +206,7 @@ namespace Owin
                     throw new InvalidOperationException("Response request recieved without any response data");
                 }
             }
-            return Task.FromResult((object)null);
+            return Task.FromResult(requestParams);
         }
 
         private void HandleArtifact(IOwinContext context)
