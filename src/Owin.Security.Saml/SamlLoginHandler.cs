@@ -14,6 +14,7 @@ using System.Collections.Specialized;
 using System.Runtime.ExceptionServices;
 using Microsoft.Owin.Security.Notifications;
 using Microsoft.Owin.Security;
+using System.Linq;
 
 namespace Owin
 {
@@ -116,7 +117,7 @@ namespace Owin
                 // Flow possible changes
                 ticket = securityTokenValidatedNotification.AuthenticationTicket;
 
-                //context.Authentication.AuthenticationResponseGrant = new AuthenticationResponseGrant(ticket.Identity, ticket.Properties);                
+                context.Authentication.AuthenticationResponseGrant = new AuthenticationResponseGrant(ticket.Identity, ticket.Properties);                
                 return ticket;
             }
             catch (Exception ex) {
@@ -193,147 +194,10 @@ namespace Owin
                     context.Response.Redirect(configuration.CommonDomainCookie.LocalReaderEndpoint);
                 } else {
                     Logger.WarnFormat(ErrorMessages.UnauthenticatedAccess, context.Request.Uri.OriginalString);
-                    SendRequest(context, configuration, requestParams);
+                    throw new InvalidOperationException("Response request recieved without any response data");
                 }
             }
             return Task.FromResult((object)null);
-        }
-        /// <summary>
-        /// Send an authentication request to the IDP.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        private void SendRequest(IOwinContext context, Saml2Configuration config, NameValueCollection requestParams)
-        {
-            // See if the "ReturnUrl" - parameter is set.
-            var returnUrl = context.Request.Query["ReturnUrl"];
-            if (!string.IsNullOrEmpty(returnUrl) && session != null) {
-                session["RedirectUrl"] = returnUrl;
-            }
-
-            var isRedirected = false;
-            var selectionUtil = new IdpSelectionUtil(Logger);
-            var idp = selectionUtil.RetrieveIDP(requestParams, context.Request.Query.ToNameValueCollection(), config, s => { context.Response.Redirect(s); isRedirected = true; });
-            if (isRedirected) return;
-            if (idp == null) {
-                // Display a page to the user where she can pick the IDP
-                Logger.DebugFormat(TraceMessages.IdentityProviderRedirect);
-                throw new NotImplementedException("IdP Selection screen not implemented");
-                //var page = new SelectSaml20IDP();
-                //page.ProcessRequest(context);
-                //return;
-            }
-
-            var authnRequest = Saml20AuthnRequest.GetDefault(config);
-            TransferClient(idp, authnRequest, context, requestParams);
-        }
-
-        /// <summary>
-        /// Transfers the client.
-        /// </summary>
-        /// <param name="identityProvider">The identity provider.</param>
-        /// <param name="request">The request.</param>
-        /// <param name="context">The context.</param>
-        private void TransferClient(IdentityProvider identityProvider, Saml20AuthnRequest request, IOwinContext context, NameValueCollection requestParams)
-        {
-            IdentityProviderEndpoint destination = ConfigureRequest(identityProvider, request, context);
-
-            switch (destination.Binding) {
-            case BindingType.Redirect:
-                Logger.DebugFormat(TraceMessages.AuthnRequestPrepared, identityProvider.Id, Saml20Constants.ProtocolBindings.HttpRedirect);
-
-                var redirectBuilder = new HttpRedirectBindingBuilder
-                {
-                    SigningKey =  configuration.ServiceProvider.SigningCertificate.PrivateKey,
-                    Request = request.GetXml().OuterXml
-                };
-
-                Logger.DebugFormat(TraceMessages.AuthnRequestSent, redirectBuilder.Request);
-
-                var redirectLocation = request.Destination + "?" + redirectBuilder.ToQuery();
-                context.Response.Redirect(redirectLocation);
-                break;
-            case BindingType.Post:
-                Logger.DebugFormat(TraceMessages.AuthnRequestPrepared, identityProvider.Id, Saml20Constants.ProtocolBindings.HttpPost);
-
-                var postBuilder = new HttpPostBindingBuilder(destination);
-
-                // Honor the ForceProtocolBinding and only set this if it's not already set
-                if (string.IsNullOrEmpty(request.ProtocolBinding)) {
-                    request.ProtocolBinding = Saml20Constants.ProtocolBindings.HttpPost;
-                }
-
-                var requestXml = request.GetXml();
-                XmlSignatureUtils.SignDocument(requestXml, request.Id, configuration.ServiceProvider.SigningCertificate);
-                postBuilder.Request = requestXml.OuterXml;
-
-                Logger.DebugFormat(TraceMessages.AuthnRequestSent, postBuilder.Request);
-
-                context.Response.Write(postBuilder.GetPage());
-                break;
-            case BindingType.Artifact:
-                Logger.DebugFormat(TraceMessages.AuthnRequestPrepared, identityProvider.Id, Saml20Constants.ProtocolBindings.HttpArtifact);
-
-                var artifactBuilder = GetBuilder(context);
-
-                // Honor the ForceProtocolBinding and only set this if it's not already set
-                if (string.IsNullOrEmpty(request.ProtocolBinding)) {
-                    request.ProtocolBinding = Saml20Constants.ProtocolBindings.HttpArtifact;
-                }
-
-                Logger.DebugFormat(TraceMessages.AuthnRequestSent, request.GetXml().OuterXml);
-
-                artifactBuilder.RedirectFromLogin(destination, request, requestParams["relayState"], (s, o) => setInCache(s, o, DateTime.MinValue));
-                break;
-            default:
-                Logger.Error(ErrorMessages.EndpointBindingInvalid);
-                throw new Saml20Exception(ErrorMessages.EndpointBindingInvalid);
-            }
-        }
-
-        private IdentityProviderEndpoint ConfigureRequest(IdentityProvider identityProvider, Saml20AuthnRequest request, IOwinContext context)
-        {
-            // Set the last IDP we attempted to login at.
-            if (session != null) {
-                session[IdpTempSessionKey] = identityProvider.Id;
-            }
-            context.Set(IdpTempSessionKey, identityProvider.Id);
-
-            // Determine which endpoint to use from the configuration file or the endpoint metadata.
-            var destination = IdpSelectionUtil.DetermineEndpointConfiguration(BindingType.Redirect, identityProvider.Endpoints.DefaultSignOnEndpoint, identityProvider.Metadata.SSOEndpoints);
-            request.Destination = destination.Url;
-
-            if (identityProvider.ForceAuth) {
-                request.ForceAuthn = true;
-            }
-
-            // Check isPassive status
-            var isPassiveFlag = session != null ? session[IdpIsPassive] : null;
-            if (isPassiveFlag != null && (bool)isPassiveFlag) {
-                request.IsPassive = true;
-                session[IdpIsPassive] = null;
-            }
-
-            if (identityProvider.IsPassive) {
-                request.IsPassive = true;
-            }
-
-            // Check if request should forceAuthn
-            var forceAuthnFlag = session != null ? session[IdpForceAuthn] : null;
-            if (forceAuthnFlag != null && (bool)forceAuthnFlag) {
-                request.ForceAuthn = true;
-                session[IdpForceAuthn] = null;
-            }
-
-            // Check if protocol binding should be forced
-            if (identityProvider.Endpoints.DefaultSignOnEndpoint != null) {
-                if (!string.IsNullOrEmpty(identityProvider.Endpoints.DefaultSignOnEndpoint.ForceProtocolBinding)) {
-                    request.ProtocolBinding = identityProvider.Endpoints.DefaultSignOnEndpoint.ForceProtocolBinding;
-                }
-            }
-
-            Utility.AddExpectedResponse(request, session);
-
-            return destination;
         }
 
         private void HandleArtifact(IOwinContext context)
