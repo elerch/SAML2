@@ -250,6 +250,7 @@
       <DependentUpon>TraceMessages.resx</DependentUpon>
     </Compile>
     <Compile Include="Utils\ArtifactUtil.cs" />
+    <Compile Include="Utils\Compression.cs" />
     <Compile Include="Utils\IdpSelectionUtil.cs" />
     <Compile Include="Utils\MetadataUtils.cs" />
     <Compile Include="Utils\Saml20Utils.cs" />

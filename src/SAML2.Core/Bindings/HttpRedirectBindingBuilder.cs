@@ -1,10 +1,7 @@
 using System;
-using System.IO;
-using System.IO.Compression;
 using System.Security.Cryptography;
 using System.Security.Cryptography.Xml;
 using System.Text;
-using System.Web;
 using CONSTS = SAML2.Bindings.HttpRedirectBindingConstants;
 
 namespace SAML2.Bindings
@@ -109,23 +106,6 @@ namespace SAML2.Bindings
         }
 
         /// <summary>
-        /// Uses DEFLATE compression to compress the input value. Returns the result as a Base64 encoded string.
-        /// </summary>
-        /// <param name="val">The val.</param>
-        /// <returns>The compressed string.</returns>
-        private static string DeflateEncode(string val)
-        {
-            var memoryStream = new MemoryStream();
-            using (var writer = new StreamWriter(new DeflateStream(memoryStream, CompressionMode.Compress, true), new UTF8Encoding(false)))
-            {
-                writer.Write(val);
-                writer.Close();
-
-                return Convert.ToBase64String(memoryStream.GetBuffer(), 0, (int)memoryStream.Length, Base64FormattingOptions.None);
-            }
-        }
-
-        /// <summary>
         /// Uppercase the URL-encoded parts of the string. Needed because Ping does not seem to be able to handle lower-cased URL-encodings.
         /// </summary>
         /// <param name="value">The value.</param>
@@ -159,7 +139,7 @@ namespace SAML2.Bindings
             result.Append("&RelayState=");
 
             // Encode the relay state if we're building a request. Otherwise, append unmodified.
-            result.Append(_request != null ? Uri.EscapeDataString(DeflateEncode(RelayState)) : RelayState);
+            result.Append(_request != null ? Uri.EscapeDataString(Utils.Compression.DeflateEncode(RelayState)) : RelayState);
         }
 
         /// <summary>
@@ -233,7 +213,7 @@ namespace SAML2.Bindings
                 value = _response;
             }
 
-            var encoded = DeflateEncode(value);
+            var encoded = Utils.Compression.DeflateEncode(value);
             result.Append(UpperCaseUrlEncode(Uri.EscapeDataString(encoded)));
         }
     }

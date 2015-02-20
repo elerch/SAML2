@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.IO.Compression;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Security.Cryptography.Xml;
@@ -87,7 +85,7 @@ namespace SAML2.Bindings
         /// </summary>
         public string RelayStateDecoded
         {
-            get { return _relaystateDecoded ?? (_relaystateDecoded = DeflateDecompress(RelayState)); }
+            get { return _relaystateDecoded ?? (_relaystateDecoded = Utils.Compression.DeflateDecompress(RelayState)); }
         }
 
         /// <summary>
@@ -162,33 +160,6 @@ namespace SAML2.Bindings
         }
 
         /// <summary>
-        /// Take a Base64-encoded string, decompress the result using the DEFLATE algorithm and return the resulting
-        /// string.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        /// <returns>The decompressed value.</returns>
-        private static string DeflateDecompress(string value)
-        {
-            var encoded = Convert.FromBase64String(value);
-            var memoryStream = new MemoryStream(encoded);
-
-            var result = new StringBuilder();
-            using (var stream = new DeflateStream(memoryStream, CompressionMode.Decompress))
-            {
-                var testStream = new StreamReader(new BufferedStream(stream), Encoding.UTF8);
-
-                // It seems we need to "peek" on the StreamReader to get it started. If we don't do this, the first call to 
-                // ReadToEnd() will return string.empty.
-                testStream.Peek();
-                result.Append(testStream.ReadToEnd());
-
-                stream.Close();
-            }
-
-            return result.ToString();
-        }
-
-        /// <summary>
         /// Converts the URI to dictionary.
         /// </summary>
         /// <param name="uri">The URI.</param>
@@ -253,7 +224,7 @@ namespace SAML2.Bindings
         /// </summary>
         private void ReadMessageParameter()
         {
-            Message = DeflateDecompress(Message);
+            Message = Compression.DeflateDecompress(Message);
         }
 
         /// <summary>
