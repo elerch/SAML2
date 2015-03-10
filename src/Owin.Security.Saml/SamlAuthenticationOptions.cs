@@ -16,6 +16,7 @@ namespace Owin.Security.Saml
                 AuthenticationType = "SAML2",
                 Caption = "Saml 2.0 Authentication protocol for OWIN"
             };
+			SignInAsAuthenticationType = "SAML2";
             MetadataPath = "/saml2/metadata";
             LoginPath = "/saml2/login";
             LogoutPath = "/saml2/logout";
@@ -45,6 +46,27 @@ namespace Owin.Security.Saml
         /// until a better solution is developed for redirection to the original path
         /// </summary>
         public string RedirectAfterLogin { get; set; }
+
+		/// <summary>
+		/// The authentication type that will be used to sign in with. Typically this will be "ExternalCookie"
+		/// to be picked up by the external cookie authentication middleware that persists the identity in a cookie.
+		/// </summary>
+		public string SignInAsAuthenticationType { get; set; }
+
+		/// <summary>
+		/// Passthrough property to Description.Caption.
+		/// </summary>
+		public string Caption
+		{
+			get
+			{
+				return Description.Caption;
+			}
+			set
+			{
+				Description.Caption = value;
+			}
+		}
 
 
         /// <summary>

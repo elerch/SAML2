@@ -166,7 +166,7 @@ namespace Owin
                 foreach (var kvp in challengeProperties.Dictionary.Except(authenticationProperties.Dictionary))
                     authenticationProperties.Dictionary.Add(kvp);
             }
-            return Task.FromResult(new AuthenticationTicket(assertion.ToClaimsIdentity(options.AuthenticationType), authenticationProperties));
+			return Task.FromResult(new AuthenticationTicket(assertion.ToClaimsIdentity(options.SignInAsAuthenticationType), authenticationProperties));
         }
 
         private Task<NameValueCollection> HandleResponse(IOwinContext context)
