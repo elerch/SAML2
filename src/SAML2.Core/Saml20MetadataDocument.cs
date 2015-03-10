@@ -126,22 +126,21 @@ namespace SAML2
 
             try {
                 var doc = LoadFileAsXmlDocument(file, encodings ?? DefaultEncodings());
-                if (doc == null) throw new InvalidOperationException("Metadata not a valid document");
-                var isInitialized = false;
-                foreach (var child in doc.ChildNodes.Cast<XmlNode>().Where(child => child.NamespaceURI == Saml20Constants.Metadata)) {
-                    if (child.LocalName == EntityDescriptor.ElementName) {
-                        Initialize(doc);
-                        isInitialized = true;
-                    }
+                InitializeDocument(doc);
+            }
+            catch (Exception e) {
+                // Probably not a metadata file.
+                Logging.LoggerProvider.LoggerFor(typeof(IdentityProviders)).Error("Problem parsing metadata file", e);
+                throw;
+            }
+        }
+        public Saml20MetadataDocument(Stream document, IEnumerable<Encoding> encodings)
+        {
+            if (document == null) throw new ArgumentNullException("file");
 
-                    // TODO Decide how to handle several entities in one metadata file.
-                    if (child.LocalName == EntitiesDescriptor.ElementName) {
-                        throw new NotImplementedException();
-                    }
-                }
-
-                // No entity descriptor found. 
-                if (!isInitialized) throw new InvalidDataException();
+            try {
+                var doc = LoadStreamAsXmlDocument(document, encodings ?? DefaultEncodings());
+                InitializeDocument(doc);
             }
             catch (Exception e) {
                 // Probably not a metadata file.
@@ -150,9 +149,49 @@ namespace SAML2
             }
         }
 
+        private void InitializeDocument(XmlDocument doc)
+        {
+            if (doc == null) throw new InvalidOperationException("Metadata not a valid document");
+            var isInitialized = false;
+            foreach (var child in doc.ChildNodes.Cast<XmlNode>().Where(child => child.NamespaceURI == Saml20Constants.Metadata)) {
+                if (child.LocalName == EntityDescriptor.ElementName) {
+                    Initialize(doc);
+                    isInitialized = true;
+                }
+
+                // TODO Decide how to handle several entities in one metadata file.
+                if (child.LocalName == EntitiesDescriptor.ElementName) {
+                    throw new NotImplementedException();
+                }
+            }
+
+            // No entity descriptor found. 
+            if (!isInitialized) throw new InvalidDataException();
+        }
+
         private static IEnumerable<Encoding> DefaultEncodings()
         {
             return new [] { Encoding.UTF8, Encoding.GetEncoding("iso-8859-1") };
+        }
+
+        private static XmlDocument LoadStreamAsXmlDocument(Stream stream, IEnumerable<Encoding> encodings)
+        {
+            return LoadAsXmlDocument(encodings,
+                d => d.Load(stream),
+                (d, e) => {
+                    var reader = new StreamReader(stream, e);
+                    d.Load(reader);
+                });
+        }
+
+        private static XmlDocument LoadFileAsXmlDocument(string filename, IEnumerable<Encoding> encodings)
+        {
+            return LoadAsXmlDocument(encodings,
+                d => d.Load(filename),
+                (d,e) => {
+                    var reader = new StreamReader(filename, e);
+                    d.Load(reader);
+            });
         }
 
         /// <summary>
@@ -160,13 +199,13 @@ namespace SAML2
         /// </summary>
         /// <param name="filename">The filename.</param>
         /// <returns>The XML document.</returns>
-        private static XmlDocument LoadFileAsXmlDocument(string filename, IEnumerable<Encoding> encodings)
+        private static XmlDocument LoadAsXmlDocument(IEnumerable<Encoding> encodings, Action<XmlDocument> docLoad, Action<XmlDocument, Encoding> quirksModeDocLoad)
         {
             var doc = new XmlDocument { PreserveWhitespace = true };
 
             try {
                 // First attempt a standard load, where the XML document is expected to declare its encoding by itself.
-                doc.Load(filename);
+                docLoad(doc);
                 try {
                     if (XmlSignatureUtils.IsSigned(doc) && !XmlSignatureUtils.CheckSignature(doc)) {
                         // Bad, bad, bad... never use exceptions for control flow! Who wrote this?
@@ -187,8 +226,7 @@ namespace SAML2
                 foreach (var encoding in encodings) {
                     StreamReader reader = null;
                     try {
-                        reader = new StreamReader(filename, encoding);
-                        doc.Load(reader);
+                        quirksModeDocLoad(doc, encoding);
                         if (XmlSignatureUtils.IsSigned(doc) && !XmlSignatureUtils.CheckSignature(doc)) {
                             continue;
                         }

@@ -49,6 +49,32 @@ namespace SAML2.Tests
             }
 
             /// <summary>
+            /// Verify that certificates can be extracted.
+            /// </summary>
+            [Test]
+            public void CanExtractCertificatesOnStream()
+            {
+                Saml20MetadataDocument metadata;
+                // Arrange
+                using (var ms = new MemoryStream()) {
+                    using (var reader = File.OpenText(@"Protocol\MetadataDocs\metadata-ADLER.xml")) {
+                        reader.BaseStream.CopyTo(ms);
+                        reader.Close();
+                    }
+                    ms.Seek(0, SeekOrigin.Begin);
+                    metadata = new Saml20MetadataDocument(ms, null);
+                }
+
+                // Assert
+                Assert.That(metadata.GetKeys(KeyTypes.Signing).Count == 1);
+                Assert.That(metadata.GetKeys(KeyTypes.Encryption).Count == 1);
+                Assert.That(metadata.Keys[0].Use == KeyTypes.Signing);
+                Assert.That(metadata.Keys[1].Use == KeyTypes.Encryption);
+
+                Assert.AreEqual("ADLER_SAML20_ID", metadata.EntityId);
+            }
+
+            /// <summary>
             /// Verify that IDP endpoints can be extracted.
             /// </summary>
             [Test]

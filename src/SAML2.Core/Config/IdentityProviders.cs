@@ -50,6 +50,24 @@ namespace SAML2.Config
         /// </summary>
         public string SelectionUrl { get; set; }
 
+        public void AddByMetadataUrl(Uri url)
+        {
+            var request = System.Net.WebRequest.Create(url);
+            // It may be more efficient to pass the stream directly, but
+            // it's likely a bit safer to pull the data off the response
+            // stream and create a new memorystream with the data
+            using (var ms = new MemoryStream()) {
+                using (var response = request.GetResponse().GetResponseStream()) {
+                    response.CopyTo(ms);
+                    response.Close();
+                }
+                ms.Seek(0, SeekOrigin.Begin); // Rewind memorystream back to the beginning
+                // We want to allow exceptions to bubble up in this case
+                var metadataDoc = new Saml20MetadataDocument(ms, GetEncodings());
+                AdjustIdpListWithNewMetadata(metadataDoc);
+            }
+        }
+
         public void AddByMetadataDirectory(string path)
         {
             AddByMetadata(Directory.GetFiles(path));
@@ -65,23 +83,27 @@ namespace SAML2.Config
         {
             try {
                 var metadataDoc = new Saml20MetadataDocument(file, GetEncodings());
-
-                var endp = this.FirstOrDefault(x => x.Id == metadataDoc.EntityId);
-                if (endp == null) {
-                    // If the endpoint does not exist, create it.
-                    endp = new IdentityProvider();
-                    Add(endp);
-                }
-
-                endp.Id = endp.Name = metadataDoc.EntityId;
-                endp.Metadata = metadataDoc;
-
+                AdjustIdpListWithNewMetadata(metadataDoc);
                 return true;
             }
             catch (Exception) {
                 return false;
             }
         }
+
+        private void AdjustIdpListWithNewMetadata(Saml20MetadataDocument metadataDoc)
+        {
+            var endp = this.FirstOrDefault(x => x.Id == metadataDoc.EntityId);
+            if (endp == null) {
+                // If the endpoint does not exist, create it.
+                endp = new IdentityProvider();
+                Add(endp);
+            }
+
+            endp.Id = endp.Name = metadataDoc.EntityId;
+            endp.Metadata = metadataDoc;
+        }
+
 
         /// <summary>
         /// Returns a list of the encodings that should be tried when a metadata file does not contain a valid signature
