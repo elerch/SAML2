@@ -328,7 +328,7 @@ namespace SAML2.Protocol
 
                 Logger.DebugFormat(TraceMessages.LogoutResponseSent, builder.Response);
 
-                context.Response.Redirect(destination.Url + "?" + builder.ToQuery(), true);
+                context.Response.Redirect(destination.Url + (destination.Url.Contains("?") ? "&" : "?") + builder.ToQuery(), true);
                 return;
             }
 
@@ -415,7 +415,7 @@ namespace SAML2.Protocol
                                       SigningKey = config.ServiceProvider.SigningCertificate.PrivateKey
                                   };
 
-                var redirectUrl = destination.Url + "?" + builder.ToQuery();
+                var redirectUrl = destination.Url + (destination.Url.Contains("?") ? "&" : "?") + builder.ToQuery();
                 Logger.DebugFormat(TraceMessages.LogoutRequestSent, idp.Id, "REDIRECT", redirectUrl);
 
                 context.Response.Redirect(redirectUrl, true);
