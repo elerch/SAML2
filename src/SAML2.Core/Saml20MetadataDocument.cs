@@ -194,12 +194,14 @@ namespace SAML2
             });
         }
 
-        /// <summary>
-        /// Loads a file into an XmlDocument. If the loading or the signature check fails, the method will retry using another encoding.
-        /// </summary>
-        /// <param name="filename">The filename.</param>
-        /// <returns>The XML document.</returns>
-        private static XmlDocument LoadAsXmlDocument(IEnumerable<Encoding> encodings, Action<XmlDocument> docLoad, Action<XmlDocument, Encoding> quirksModeDocLoad)
+	    /// <summary>
+	    /// Loads a file into an XmlDocument. If the loading or the signature check fails, the method will retry using another encoding.
+	    /// </summary>
+	    /// <param name="encodings"></param>
+	    /// <param name="docLoad"></param>
+	    /// <param name="quirksModeDocLoad"></param>
+	    /// <returns>The XML document.</returns>
+	    private static XmlDocument LoadAsXmlDocument(IEnumerable<Encoding> encodings, Action<XmlDocument> docLoad, Action<XmlDocument, Encoding> quirksModeDocLoad)
         {
             var doc = new XmlDocument { PreserveWhitespace = true };
 
@@ -517,11 +519,12 @@ namespace SAML2
             return result;
         }
 
-        /// <summary>
-        /// Signs the document.
-        /// </summary>
-        /// <param name="doc">The doc.</param>
-        private static void SignDocument(XmlDocument doc, X509Certificate2 certificate)
+	    /// <summary>
+	    /// Signs the document.
+	    /// </summary>
+	    /// <param name="doc">The doc.</param>
+	    /// <param name="certificate"></param>
+	    private static void SignDocument(XmlDocument doc, X509Certificate2 certificate)
         {
             if (!certificate.HasPrivateKey)
             {
@@ -561,7 +564,9 @@ namespace SAML2
         {
             var entity = CreateDefaultEntity();
             entity.EntityID = config.ServiceProvider.Id;
-            entity.ValidUntil = DateTime.Now.AddDays(7);
+			
+			if( config.Metadata.ValidForDays.HasValue ) 
+				entity.ValidUntil = DateTime.Now.AddDays(config.Metadata.ValidForDays.Value);
 
             var serviceProviderDescriptor = new SpSsoDescriptor
                                    {

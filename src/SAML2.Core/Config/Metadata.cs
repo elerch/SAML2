@@ -9,8 +9,6 @@ namespace SAML2.Config
     /// </summary>
     public class Metadata 
     {
-        
-
         /// <summary>
         /// Gets or sets a value indicating whether to exclude artifact endpoints in metadata generation.
         /// </summary>
@@ -37,6 +35,11 @@ namespace SAML2.Config
         /// </summary>
         /// <value>The requested attributes.</value>
         public IList<Attribute> RequestedAttributes { get; set; }
+
+		/// <summary>
+		/// Set Metadata validUntil attribute to be the days from now. The default is to ignore the validUntil attribute so the metadata will not expire.
+		/// </summary>
+		public int? ValidForDays { get; set; }
 
         public Metadata()
         {
