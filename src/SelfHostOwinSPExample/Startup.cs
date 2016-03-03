@@ -14,7 +14,7 @@ namespace SelfHostOwinSPExample
 #if TEST
             config = TestEnvironmentConfiguration();
 #endif
-
+			appBuilder.Use<SeekableRequestBodyMiddleware>();
             appBuilder.UseCookieAuthentication(new Microsoft.Owin.Security.Cookies.CookieAuthenticationOptions
             {
                 AuthenticationType = "SAML2",
@@ -50,9 +50,9 @@ namespace SelfHostOwinSPExample
                 {
                     SigningCertificate = new System.Security.Cryptography.X509Certificates.X509Certificate2(FileEmbeddedResource("SelfHostOwinSPExample.sts_dev_certificate.pfx"), "test1234", System.Security.Cryptography.X509Certificates.X509KeyStorageFlags.MachineKeySet),
                     Server = "https://localhost:44333/core",
-                    Id = "https://localhost:44333/core"
+                    Id = "https://www.testsamlgithub.com"
                 },
-                AllowedAudienceUris = new System.Collections.Generic.List<Uri>(new[] { new Uri("https://localhost:44333/core") })
+				AllowedAudienceUris = new System.Collections.Generic.List<Uri>( new[] { new Uri( "https://www.testsamlgithub.com" ) } )
             };
             myconfig.ServiceProvider.Endpoints.AddRange(new[] {
                 new ServiceProviderEndpoint(EndpointType.SignOn, "/core/saml2/login", "/core"),

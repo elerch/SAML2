@@ -161,8 +161,8 @@ namespace Owin.Security.Saml
                     redirectBuilder.RelayState = context.Authentication.AuthenticationResponseChallenge.Properties.Dictionary.ToDelimitedString();
                 logger.DebugFormat(TraceMessages.AuthnRequestSent, redirectBuilder.Request);
 
-                var redirectLocation = request.Destination + "?" + redirectBuilder.ToQuery();
-                return redirectLocation;
+				var redirectLocation = string.Format( "{0}{1}{2}", request.Destination, ( request.Destination.EndsWith( "?" ) ? "&" : "?" ), redirectBuilder.ToQuery() );
+				return redirectLocation;
             case BindingType.Post:
                 throw new NotImplementedException();
                 //logger.DebugFormat(TraceMessages.AuthnRequestPrepared, identityProvider.Id, Saml20Constants.ProtocolBindings.HttpPost);
@@ -201,7 +201,6 @@ namespace Owin.Security.Saml
                 logger.Error(SAML2.ErrorMessages.EndpointBindingInvalid);
                 throw new Saml20Exception(SAML2.ErrorMessages.EndpointBindingInvalid);
             }
-            throw new NotImplementedException();
         }
 
         private static NameValueCollection BuildParams(IReadableStringCollection query)

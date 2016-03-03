@@ -161,7 +161,7 @@ namespace SAML2
 
                 // TODO Decide how to handle several entities in one metadata file.
                 if (child.LocalName == EntitiesDescriptor.ElementName) {
-                    throw new NotImplementedException();
+					throw new NotImplementedException( "Decide how to handle several entities in one metadata file" );
                 }
             }
 

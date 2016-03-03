@@ -328,7 +328,7 @@ namespace SAML2.Protocol
 
                 Logger.DebugFormat(TraceMessages.LogoutResponseSent, builder.Response);
 
-                context.Response.Redirect(destination.Url + "?" + builder.ToQuery(), true);
+                context.Response.Redirect(string.Format( "{0}{1}{2}", destination.Url, destination.Url.EndsWith("?") ? "&" : "?" , builder.ToQuery()), true);
                 return;
             }
 
