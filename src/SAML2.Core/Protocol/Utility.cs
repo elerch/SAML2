@@ -168,12 +168,13 @@ namespace SAML2.Protocol
             return doc;
         }
 
-        /// <summary>
-        /// Gets the decrypted assertion.
-        /// </summary>
-        /// <param name="elem">The elem.</param>
-        /// <returns>The decrypted <see cref="Saml20EncryptedAssertion"/>.</returns>
-        public static Saml20EncryptedAssertion GetDecryptedAssertion(XmlElement elem, Saml2Configuration config)
+	    /// <summary>
+	    /// Gets the decrypted assertion.
+	    /// </summary>
+	    /// <param name="elem">The elem.</param>
+	    /// <param name="config"></param>
+	    /// <returns>The decrypted <see cref="Saml20EncryptedAssertion"/>.</returns>
+	    public static Saml20EncryptedAssertion GetDecryptedAssertion(XmlElement elem, Saml2Configuration config)
         {
             logger.Debug(TraceMessages.EncryptedAssertionDecrypting);
 
@@ -197,12 +198,13 @@ namespace SAML2.Protocol
             return Serialization.DeserializeFromXmlString<Status>(statElem.OuterXml);
         }
 
-        /// <summary>
-        /// Checks for replay attack.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        /// <param name="element">The element.</param>
-        public static void CheckReplayAttack(XmlElement element, bool requireInResponseTo, IDictionary<string, object> session)
+	    /// <summary>
+	    /// Checks for replay attack.
+	    /// </summary>
+	    /// <param name="element">The element.</param>
+	    /// <param name="requireInResponseTo"></param>
+	    /// <param name="session"></param>
+	    public static void CheckReplayAttack(XmlElement element, bool requireInResponseTo, IDictionary<string, object> session)
         {
             logger.Debug(TraceMessages.ReplayAttackCheck);
 
@@ -248,12 +250,14 @@ namespace SAML2.Protocol
             }
         }
 
-        /// <summary>
-        /// Deserializes an assertion, verifies its signature and logs in the user if the assertion is valid.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        /// <param name="elem">The elem.</param>
-        public static Saml20Assertion HandleAssertion(XmlElement elem, Saml2Configuration config, Func<string, object> getFromCache, Action<string, object, DateTime> setInCache)
+	    /// <summary>
+	    /// Deserializes an assertion, verifies its signature and logs in the user if the assertion is valid.
+	    /// </summary>
+	    /// <param name="elem">The elem.</param>
+	    /// <param name="config"></param>
+	    /// <param name="getFromCache"></param>
+	    /// <param name="setInCache"></param>
+	    public static Saml20Assertion HandleAssertion(XmlElement elem, Saml2Configuration config, Func<string, object> getFromCache, Action<string, object, DateTime> setInCache)
         {
             logger.DebugFormat(TraceMessages.AssertionProcessing, elem.OuterXml);
 
@@ -298,22 +302,29 @@ namespace SAML2.Protocol
             return assertion;
         }
 
-        /// <summary>
-        /// Decrypts an encrypted assertion, and sends the result to the HandleAssertion method.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        /// <param name="elem">The elem.</param>
-        public static Saml20Assertion HandleEncryptedAssertion(XmlElement elem, Saml2Configuration config, Func<string, object> getFromCache, Action<string, object, DateTime> setInCache)
+	    /// <summary>
+	    /// Decrypts an encrypted assertion, and sends the result to the HandleAssertion method.
+	    /// </summary>
+	    /// <param name="elem">The elem.</param>
+	    /// <param name="config"></param>
+	    /// <param name="getFromCache"></param>
+	    /// <param name="setInCache"></param>
+	    public static Saml20Assertion HandleEncryptedAssertion(XmlElement elem, Saml2Configuration config, Func<string, object> getFromCache, Action<string, object, DateTime> setInCache)
         {
             return HandleAssertion(GetDecryptedAssertion(elem, config).Assertion.DocumentElement, config, getFromCache, setInCache);
         }
 
-        /// <summary>
-        /// Handles the SOAP.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        /// <param name="inputStream">The input stream.</param>
-        public static void HandleSoap(HttpArtifactBindingBuilder builder, Stream inputStream, Saml2Configuration config, Action<Saml20Assertion> signonCallback, Func<string, object> getFromCache, Action<string, object, DateTime> setInCache, IDictionary<string, object> session)
+	    /// <summary>
+	    /// Handles the SOAP.
+	    /// </summary>
+	    /// <param name="builder"></param>
+	    /// <param name="inputStream">The input stream.</param>
+	    /// <param name="config"></param>
+	    /// <param name="signonCallback"></param>
+	    /// <param name="getFromCache"></param>
+	    /// <param name="setInCache"></param>
+	    /// <param name="session"></param>
+	    public static void HandleSoap(HttpArtifactBindingBuilder builder, Stream inputStream, Saml2Configuration config, Action<Saml20Assertion> signonCallback, Func<string, object> getFromCache, Action<string, object, DateTime> setInCache, IDictionary<string, object> session)
         {
             var parser = new HttpArtifactBindingParser(inputStream);
             logger.DebugFormat(TraceMessages.SOAPMessageParse, parser.SamlMessage.OuterXml);
@@ -374,11 +385,15 @@ namespace SAML2.Protocol
         }
 
 
-        /// <summary>
-        /// Handle the authentication response from the IDP.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        public static Saml20Assertion HandleResponse(Saml2Configuration config, string samlResponse, IDictionary<string, object> session, Func<string, object> getFromCache, Action<string, object, DateTime> setInCache)
+	    /// <summary>
+	    /// Handle the authentication response from the IDP.
+	    /// </summary>
+	    /// <param name="config"></param>
+	    /// <param name="samlResponse"></param>
+	    /// <param name="session"></param>
+	    /// <param name="getFromCache"></param>
+	    /// <param name="setInCache"></param>
+	    public static Saml20Assertion HandleResponse(Saml2Configuration config, string samlResponse, IDictionary<string, object> session, Func<string, object> getFromCache, Action<string, object, DateTime> setInCache)
         {
             var defaultEncoding = Encoding.UTF8;
             var doc = Utility.GetDecodedSamlResponse(samlResponse, defaultEncoding);
