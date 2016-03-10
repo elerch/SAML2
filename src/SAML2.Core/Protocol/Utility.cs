@@ -9,6 +9,7 @@ using SAML2.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
@@ -153,14 +154,34 @@ namespace SAML2.Protocol
         /// </summary>
         /// <param name="samlResponse">This is base64 encoded SAML Response (usually SAMLResponse on query string)</param>
         /// <param name="encoding">The encoding.</param>
+        /// <param name="infateResponse">Wheater the response message should be inflated (decompressed).</param>
         /// <returns>The decoded SAML response XML.</returns>
-        public static XmlDocument GetDecodedSamlResponse(string samlResponse, Encoding encoding)
+        public static XmlDocument GetDecodedSamlResponse(string samlResponse, Encoding encoding, bool infateResponse)
         {
             logger.Debug(TraceMessages.SamlResponseDecoding);
 
+            var samlResponseBytes = Convert.FromBase64String(samlResponse);
+            if (infateResponse)
+            {
+                logger.Debug(TraceMessages.SamlResponseDecodingDeflating);
+
+                // The response message is compressed using the Deflate algorith. Need to decompress it first.
+                using (var decompressedStream = new MemoryStream())
+                {
+                    using (var compressedStream = new MemoryStream(samlResponseBytes))
+                    using (var decompressor = new DeflateStream(compressedStream, CompressionMode.Decompress))
+                    {
+                        decompressor.CopyTo(decompressedStream);
+                    }
+                    samlResponseBytes = decompressedStream.ToArray();
+                }
+
+                logger.Debug(TraceMessages.SamlResponseDecodingDeflated);
+            }
+
+            samlResponse = encoding.GetString(samlResponseBytes);
 
             var doc = new XmlDocument { PreserveWhitespace = true };
-            samlResponse = encoding.GetString(Convert.FromBase64String(samlResponse));
             doc.LoadXml(samlResponse);
 
             logger.DebugFormat(TraceMessages.SamlResponseDecoded, samlResponse);
@@ -381,7 +402,7 @@ namespace SAML2.Protocol
         public static Saml20Assertion HandleResponse(Saml2Configuration config, string samlResponse, IDictionary<string, object> session, Func<string, object> getFromCache, Action<string, object, DateTime> setInCache)
         {
             var defaultEncoding = Encoding.UTF8;
-            var doc = Utility.GetDecodedSamlResponse(samlResponse, defaultEncoding);
+            var doc = Utility.GetDecodedSamlResponse(samlResponse, defaultEncoding, config.InflateResponseMessage);
             logger.DebugFormat(TraceMessages.SamlResponseReceived, doc.OuterXml);
 
             // Determine whether the assertion should be decrypted before being validated.
@@ -419,7 +440,7 @@ namespace SAML2.Protocol
                 }
 
                 if (encodingOverride.CodePage != defaultEncoding.CodePage) {
-                    var doc1 = GetDecodedSamlResponse(samlResponse, encodingOverride);
+                    var doc1 = GetDecodedSamlResponse(samlResponse, encodingOverride, config.InflateResponseMessage);
                     assertion = GetAssertion(doc1.DocumentElement, out isEncrypted);
                 }
             }

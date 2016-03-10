@@ -73,7 +73,6 @@ namespace SAML2.Config
         /// <value>The response encoding.</value>
         public string ResponseEncoding { get; set; }
 
-
         /// <summary>
         /// Gets or sets the artifact resolution.
         /// </summary>
