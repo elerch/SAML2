@@ -12,7 +12,7 @@ namespace Owin.Security.Saml
         public static ClaimsIdentity ToClaimsIdentity(this Saml20Assertion value, string authenticationType, string nameType = null, string roleType = null)
         {
             if (value == null) throw new ArgumentNullException("value"); 
-            return new ClaimsIdentity(value.Attributes.Select(a => a.ToClaim(value.Issuer)).Concat(ClaimsFromSubject(value.Subject, value.Issuer)), authenticationType, nameType, roleType);
+            return new ClaimsIdentity(value.Attributes.SelectMany(a => a.ToClaims(value.Issuer)).Concat(ClaimsFromSubject(value.Subject, value.Issuer)), authenticationType, nameType, roleType);
         }
 
         private static IEnumerable<Claim> ClaimsFromSubject(NameId subject, string issuer)
