@@ -161,7 +161,7 @@ namespace Owin.Security.Saml
                     redirectBuilder.RelayState = context.Authentication.AuthenticationResponseChallenge.Properties.Dictionary.ToDelimitedString();
                 logger.DebugFormat(TraceMessages.AuthnRequestSent, redirectBuilder.Request);
 
-                var redirectLocation = request.Destination + "?" + redirectBuilder.ToQuery();
+                var redirectLocation = request.Destination + (request.Destination.Contains("?") ? "&" : "?") + redirectBuilder.ToQuery();
                 return redirectLocation;
             case BindingType.Post:
                 throw new NotImplementedException();

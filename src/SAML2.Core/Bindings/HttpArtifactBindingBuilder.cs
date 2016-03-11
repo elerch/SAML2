@@ -176,7 +176,7 @@ namespace SAML2.Bindings
             var artifact = ArtifactUtil.CreateArtifact(HttpArtifactBindingConstants.ArtifactTypeCode, localEndpointIndex, sourceIdHash, messageHandle);
             cacheInsert(artifact, signedSamlMessage);
 
-            var destinationUrl = destination.Url + "?" + HttpArtifactBindingConstants.ArtifactQueryStringName + "=" + Uri.EscapeDataString(artifact);
+            var destinationUrl = destination.Url + (destination.Url.Contains("?") ? "&" : "?") + HttpArtifactBindingConstants.ArtifactQueryStringName + "=" + Uri.EscapeDataString(artifact);
             if (!string.IsNullOrEmpty(relayState))
             {
                 destinationUrl += "&relayState=" + relayState;

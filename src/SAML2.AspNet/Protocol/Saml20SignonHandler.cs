@@ -189,7 +189,7 @@ namespace SAML2.Protocol
 
                 Logger.DebugFormat(TraceMessages.AuthnRequestSent, redirectBuilder.Request);
 
-                var redirectLocation = request.Destination + "?" + redirectBuilder.ToQuery();
+                var redirectLocation = request.Destination + (request.Destination.Contains("?") ? "&" : "?") + redirectBuilder.ToQuery();
                 context.Response.Redirect(redirectLocation, true);
                 break;
             case BindingType.Post:
