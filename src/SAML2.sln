@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SAML2.AspNet", "SAML2.AspNe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SelfHostOwinSPExample", "SelfHostOwinSPExample\SelfHostOwinSPExample.csproj", "{6A489386-AFB0-4172-ACF4-61F79DC340DC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Owin.Security.Saml.Test", "Owin.Security.Saml.Test\Owin.Security.Saml.Test.csproj", "{9577677C-0E39-45C5-945D-8B18B8A761E4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{6A489386-AFB0-4172-ACF4-61F79DC340DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6A489386-AFB0-4172-ACF4-61F79DC340DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6A489386-AFB0-4172-ACF4-61F79DC340DC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9577677C-0E39-45C5-945D-8B18B8A761E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9577677C-0E39-45C5-945D-8B18B8A761E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9577677C-0E39-45C5-945D-8B18B8A761E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9577677C-0E39-45C5-945D-8B18B8A761E4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

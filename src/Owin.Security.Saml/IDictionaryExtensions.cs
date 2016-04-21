@@ -21,7 +21,7 @@ namespace Owin.Security.Saml
         public static string ToDelimitedString<TKey, TValue>(this IDictionary<TKey, TValue> value)
         {
             if (value == null) throw new ArgumentNullException("value");
-            return string.Join("&", value.Select(kvp => string.Format("{0}={1}", kvp.Key, kvp.Value)));
+            return string.Join("&", value.Select(kvp => string.Format("{0}={1}", kvp.Key, Uri.EscapeDataString(kvp.Value.ToString()))));
         }
 
         public static IEnumerable<KeyValuePair<string,string>> FromDelimitedString(this string value)
@@ -29,7 +29,7 @@ namespace Owin.Security.Saml
             if (value == null) throw new ArgumentNullException("value");
             return value.Split('&').Select(kvp => {
                 var split = kvp.Split('=');
-                return new KeyValuePair<string, string>(split[0], split[1]);
+                return new KeyValuePair<string, string>(split[0], Uri.UnescapeDataString(split[1]));
             });
         }
     }

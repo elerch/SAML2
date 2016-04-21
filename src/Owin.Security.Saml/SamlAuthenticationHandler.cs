@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Owin.Logging;
@@ -109,14 +110,17 @@ namespace Owin.Security.Saml
             if (string.IsNullOrEmpty(properties.RedirectUri))
             {
                 properties.RedirectUri = currentUri;
+                if (_logger.IsEnabled(TraceEventType.Verbose))
+                {
+                    _logger.WriteVerbose(string.Format("Setting the RedirectUri to {0}.", properties.RedirectUri));
+                }
             }
 
-            SamlMessage SamlMessage = await SamlMessageFromRequest();
+            SamlMessage samlMessage = await SamlMessageFromRequest();
             
-
             var notification = new RedirectToIdentityProviderNotification<SamlMessage, SamlAuthenticationOptions>(Context, Options)
             {
-                ProtocolMessage = SamlMessage
+                ProtocolMessage = samlMessage
             };
             await Options.Notifications.RedirectToIdentityProvider(notification);
 
@@ -161,8 +165,16 @@ namespace Owin.Security.Saml
             // Redirect back to the original secured resource, if any.
             if (!string.IsNullOrWhiteSpace(ticket.Properties.RedirectUri))
             {
+                if (_logger.IsEnabled(TraceEventType.Verbose))
+                {
+                    _logger.WriteVerbose(string.Format("Redirecting to {0}.", ticket.Properties.RedirectUri));
+                }
                 Response.Redirect(ticket.Properties.RedirectUri);
                 return true;
+            }
+            else
+            {
+                _logger.WriteVerbose("No RedirectUri was present in the context.");
             }
 
             return false;
