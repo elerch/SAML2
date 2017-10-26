@@ -160,7 +160,7 @@ namespace Owin
             };
 
             var relayState = requestParams["RelayState"];
-            if (relayState != null) {
+            if (!string.IsNullOrEmpty(relayState)) {
                 var challengeProperties = new AuthenticationProperties(Compression.DeflateDecompress(relayState).FromDelimitedString().ToDictionary(k => k.Key, v => v.Value));
                 if (challengeProperties.RedirectUri != null) authenticationProperties.RedirectUri = challengeProperties.RedirectUri;
                 foreach (var kvp in challengeProperties.Dictionary.Except(authenticationProperties.Dictionary))
