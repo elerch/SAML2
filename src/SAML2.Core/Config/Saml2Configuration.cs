@@ -53,6 +53,15 @@ namespace SAML2.Config
         /// <value>The service provider.</value>
         public ServiceProvider ServiceProvider { get; set; }
 
+        /// <summary>
+        /// Gets or sets a value weather the response SAML message from IdP should be decompressed after it's BAse64 endoded.
+        /// Compression is used by some IdP providers for example PingFederate.
+        /// This perform these decode steps: https://www.samltool.com/decode.php (see Base64 Decode + Inflate page)
+        /// Default: false
+        /// </summary>
+        /// <value>The response encoding.</value>
+        public bool InflateResponseMessage { get; set; }
+
         public Saml2Configuration()
         {
             IdentityProviders = new IdentityProviders();

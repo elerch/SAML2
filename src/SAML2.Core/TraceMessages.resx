@@ -112,10 +112,10 @@
     <value>2.0</value>
   </resheader>
   <resheader name="reader">
-    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <resheader name="writer">
-    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="ArtifactCreated" xml:space="preserve">
     <value>Artifact created: {0}</value>
@@ -272,5 +272,11 @@
   </data>
   <data name="SignOnHandlerCalled" xml:space="preserve">
     <value>SignOn handler called</value>
+  </data>
+  <data name="SamlResponseDecodingDeflating" xml:space="preserve">
+    <value>Deflating the response SAML message</value>
+  </data>
+  <data name="SamlResponseDecodingDeflated" xml:space="preserve">
+    <value>The response SAML message was deflated</value>
   </data>
 </root>
