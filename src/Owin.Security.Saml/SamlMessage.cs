@@ -150,7 +150,7 @@ namespace Owin.Security.Saml
 
                 var redirectBuilder = new HttpRedirectBindingBuilder
                 {
-                    SigningKey = config.ServiceProvider.SigningCertificate.PrivateKey,
+                    SigningKey = config.ServiceProvider.SigningCertificate?.PrivateKey,
                     Request = request.GetXml().OuterXml
                 };
                 if (context.Authentication != null &&
