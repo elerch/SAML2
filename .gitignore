@@ -193,3 +193,5 @@ FakesAssemblies/
 *.dll
 
 Metadata-Test/
+/.vs
+/src/.vs/SAML2/v16/Server/sqlite3

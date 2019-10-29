@@ -1,0 +1,276 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="ArtifactCreated" xml:space="preserve">
+    <value>Artifact created: {0}</value>
+  </data>
+  <data name="ArtifactRedirectReceived" xml:space="preserve">
+    <value>Artifact redirect received: {0}</value>
+  </data>
+  <data name="ArtifactResolved" xml:space="preserve">
+    <value>Artifact resolved: {0}</value>
+  </data>
+  <data name="ArtifactResolveForKnownIdentityProvider" xml:space="preserve">
+    <value>Resolving artifact "{0}" from identity provider "{1}" endpoint "{2}"</value>
+  </data>
+  <data name="ArtifactResolveReceived" xml:space="preserve">
+    <value>Artifact resolve received: {0}</value>
+  </data>
+  <data name="ArtifactResolveResponseSent" xml:space="preserve">
+    <value>Sending response to artifact resolve request "{0}": {1}</value>
+  </data>
+  <data name="ArtifactResponseReceived" xml:space="preserve">
+    <value>Artifact response received: {0}</value>
+  </data>
+  <data name="AttrQueryAssertionReceived" xml:space="preserve">
+    <value>AttrQuery assertion received: {0}</value>
+  </data>
+  <data name="AttrQuerySent" xml:space="preserve">
+    <value>AttrQuery sent to "{0}": {1}</value>
+  </data>
+  <data name="AuthnRequestPrepared" xml:space="preserve">
+    <value>AuthRequest sent for identity provider "{0}" using binding "{1}"</value>
+  </data>
+  <data name="CommonDomainCookieReceived" xml:space="preserve">
+    <value>Common domain cookie received: {0}</value>
+  </data>
+  <data name="CommonDomainCookieRedirect" xml:space="preserve">
+    <value>Redirect to SignOn endpoint found in Common Domain Cookie</value>
+  </data>
+  <data name="CommonDomainCookieRedirectNotFound" xml:space="preserve">
+    <value>Redirect to SignOn endpoint "{0}"</value>
+  </data>
+  <data name="LogoutActionsExecuting" xml:space="preserve">
+    <value>Executing Logout Actions</value>
+  </data>
+  <data name="LogoutRequestReceived" xml:space="preserve">
+    <value>Logout request received: {0}</value>
+  </data>
+  <data name="LogoutRequestSent" xml:space="preserve">
+    <value>Logout request sent for identity provider "{0}" using "{1}" binding: {2}</value>
+  </data>
+  <data name="SignOnActionsExecuting" xml:space="preserve">
+    <value>Executing SignOn Actions</value>
+  </data>
+  <data name="SignOnProcessed" xml:space="preserve">
+    <value>Successfully processed signon request for "{1}" using NameIdFormat "{2}" for session "{0}"</value>
+  </data>
+  <data name="SOAPMessageParse" xml:space="preserve">
+    <value>Parsing SOAP message: {0}</value>
+  </data>
+  <data name="AssertionFound" xml:space="preserve">
+    <value>Assertion found: {0}</value>
+  </data>
+  <data name="AssertionParse" xml:space="preserve">
+    <value>Assertion being parsed</value>
+  </data>
+  <data name="AssertionParsed" xml:space="preserve">
+    <value>Successfully parsed Assertion: {0}</value>
+  </data>
+  <data name="AssertionPrehandlerCalled" xml:space="preserve">
+    <value>Assertion prehandler called</value>
+  </data>
+  <data name="AssertionProcessing" xml:space="preserve">
+    <value>Processing assertion: {0}</value>
+  </data>
+  <data name="AudienceRestrictionValidated" xml:space="preserve">
+    <value>Audience restriction validated for intended URIs {0} against allowed URIs {1}</value>
+  </data>
+  <data name="AuthnRequestSent" xml:space="preserve">
+    <value>AuthnRequest sent: {0}</value>
+  </data>
+  <data name="CommonDomainCookieRedirectForDiscovery" xml:space="preserve">
+    <value>Redirecting to Common Domain for identity provider discovery</value>
+  </data>
+  <data name="EncryptedAssertionDecrypted" xml:space="preserve">
+    <value>EncryptedAssertion Decrypted: {0}</value>
+  </data>
+  <data name="EncryptedAssertionDecrypting" xml:space="preserve">
+    <value>Decrypting EncryptedAssertion</value>
+  </data>
+  <data name="EncryptedAssertionFound" xml:space="preserve">
+    <value>EncryptedAssertion found: {0}</value>
+  </data>
+  <data name="IdentityProviderRedirect" xml:space="preserve">
+    <value>Identity provider not found. Redirecting for identity provider selection</value>
+  </data>
+  <data name="IdentityProviderRetreivedFromCommonDomainCookie" xml:space="preserve">
+    <value>Identity provider retreived from Common Domain Cookie: {0}</value>
+  </data>
+  <data name="IdentityProviderRetreivedFromDefault" xml:space="preserve">
+    <value>Identity provider retreived from known providers: {0}</value>
+  </data>
+  <data name="IdentityProviderRetreivedFromQueryString" xml:space="preserve">
+    <value>Identity provider retreived from IDPChoiceParamater: {0}</value>
+  </data>
+  <data name="IdentityProviderRetreivedFromSelection" xml:space="preserve">
+    <value>Redirecting to idpSelectionUrl for selection of identity provider: {0}</value>
+  </data>
+  <data name="LogoutHandlerCalled" xml:space="preserve">
+    <value>Logout handler called</value>
+  </data>
+  <data name="LogoutRequestParsed" xml:space="preserve">
+    <value>Successfully parsed Logout request: {0}</value>
+  </data>
+  <data name="LogoutRequestPostBindingParse" xml:space="preserve">
+    <value>Parsing Logout request POST binding message: {0}</value>
+  </data>
+  <data name="LogoutRequestRedirectBindingParse" xml:space="preserve">
+    <value>Parsing Logout request Redirect binding message with signature algorithm {1} and signature {2}: {0}</value>
+  </data>
+  <data name="LogoutResponseParsed" xml:space="preserve">
+    <value>Successfully parsed Logout response: {0}</value>
+  </data>
+  <data name="LogoutResponsePostBindingParse" xml:space="preserve">
+    <value>Parsing Logout response POST binding message: {0}</value>
+  </data>
+  <data name="LogoutResponseReceived" xml:space="preserve">
+    <value>Logout response received</value>
+  </data>
+  <data name="LogoutResponseRedirectBindingParse" xml:space="preserve">
+    <value>Parsing Logout response Redirect binding message with signature algorithm {1} and signature {2}: {0}</value>
+  </data>
+  <data name="LogoutResponseSent" xml:space="preserve">
+    <value>Logout response sent: {0}</value>
+  </data>
+  <data name="MetadataDocumentBeingCreated" xml:space="preserve">
+    <value>Metadata document being created</value>
+  </data>
+  <data name="MetadataDocumentCreated" xml:space="preserve">
+    <value>Metadata document successfully created</value>
+  </data>
+  <data name="ReplaceAttackCheckCleared" xml:space="preserve">
+    <value>No replay attack detected</value>
+  </data>
+  <data name="ReplayAttackCheck" xml:space="preserve">
+    <value>Checking for replay attack</value>
+  </data>
+  <data name="SamlResponseDecoded" xml:space="preserve">
+    <value>Successfully decoded SamlResponse: {0}</value>
+  </data>
+  <data name="SamlResponseDecoding" xml:space="preserve">
+    <value>SamlResponse decoding</value>
+  </data>
+  <data name="SamlResponseReceived" xml:space="preserve">
+    <value>SamlResponse received: {0}</value>
+  </data>
+  <data name="SignOnHandlerCalled" xml:space="preserve">
+    <value>SignOn handler called</value>
+  </data>
+</root>
