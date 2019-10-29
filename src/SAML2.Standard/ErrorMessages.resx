@@ -1,0 +1,252 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="ArtifactResolveIdentityProviderUnknown" xml:space="preserve">
+    <value>Artifact is not from a known identity provider</value>
+  </data>
+  <data name="ArtifactResolveSignatureInvalid" xml:space="preserve">
+    <value>Could not verify SAML SOAP binding message signature</value>
+  </data>
+  <data name="ArtifactResponseMissingAssertion" xml:space="preserve">
+    <value>ArtifactResponse did not contain an assertion</value>
+  </data>
+  <data name="ArtifactResponseMissingResponse" xml:space="preserve">
+    <value>Unsupported payload message in ArtifactResponse</value>
+  </data>
+  <data name="ArtifactResponseSignatureInvalid" xml:space="preserve">
+    <value>Could not verify artifact response message signature</value>
+  </data>
+  <data name="ArtifactResponseStatusCodeInvalid" xml:space="preserve">
+    <value>ArtifactResponse status code was invalid, expected {0}</value>
+  </data>
+  <data name="AssertionExpired" xml:space="preserve">
+    <value>Assertion expiration has been exceeded</value>
+  </data>
+  <data name="AssertionIdentityProviderUnknown" xml:space="preserve">
+    <value>Could not process assertion with an unknown identity provider</value>
+  </data>
+  <data name="AssertionNotFound" xml:space="preserve">
+    <value>Assertion not found</value>
+  </data>
+  <data name="AssertionOneTimeUseExceeded" xml:space="preserve">
+    <value>Assertion with OneTimeUse condition detected more than once</value>
+  </data>
+  <data name="AssertionSignatureInvalid" xml:space="preserve">
+    <value>Assertion signature is invalid</value>
+  </data>
+  <data name="AttrQueryNoLogin" xml:space="preserve">
+    <value>Attribute query can not be performed when user is not logged in with an identity provider</value>
+  </data>
+  <data name="AttrQueryStatusNotSuccessful" xml:space="preserve">
+    <value>AttrQuery response with status code "{0}" received when "Success" was expected</value>
+  </data>
+  <data name="CertificateIsNotRFC3280Valid" xml:space="preserve">
+    <value>Certificate with DN "{0}" and thumbprint "{1}" is not valid according to RFC3280</value>
+  </data>
+  <data name="CertificateNotFound" xml:space="preserve">
+    <value>Certificate {0} was not found</value>
+  </data>
+  <data name="CertificateNotUnique" xml:space="preserve">
+    <value>Found more than one certificate matching {0}</value>
+  </data>
+  <data name="CommonDomainCookieIdentityProviderInvalid" xml:space="preserve">
+    <value>Common Domain Cookie identity provider not found in list of known identity providers: {0}</value>
+  </data>
+  <data name="ConfigMissingIdentityProvidersElement" xml:space="preserve">
+    <value>Configuration element &lt;saml2&gt; does not contain an &lt;identityProviders&gt; element</value>
+  </data>
+  <data name="ConfigMissingMetadataLocation" xml:space="preserve">
+    <value>Configuration for &lt;identityProviders&gt; does not contain a "metadata" attribute</value>
+  </data>
+  <data name="ConfigMissingSaml2Element" xml:space="preserve">
+    <value>Configuration does not contain &lt;saml2&gt; element</value>
+  </data>
+  <data name="ConfigMissingServiceProviderElement" xml:space="preserve">
+    <value>Configuration element &lt;saml2&gt; does not contain a &lt;serviceProvider&gt; element</value>
+  </data>
+  <data name="ConfigMissingServiceProviderIdAttribute" xml:space="preserve">
+    <value>Configuration for &lt;serviceProvider&gt; does not contain an "id" attribute</value>
+  </data>
+  <data name="ConfigMissingSigningCertificateElement" xml:space="preserve">
+    <value>Configuration for &lt;serviceProvider&gt; does not contain a &lt;signingCertificate&gt; element</value>
+  </data>
+  <data name="ConfigServiceProviderMissingSignOnEndpoint" xml:space="preserve">
+    <value>Configuration for &lt;serviceProvider&gt; does not contain a SignOn endpoint</value>
+  </data>
+  <data name="ConfigSigningCertificateMissingPrivateKey" xml:space="preserve">
+    <value>Specified &lt;signingCertificate&gt; does not have a private key</value>
+  </data>
+  <data name="EndpointBindingInvalid" xml:space="preserve">
+    <value>The endpoint binding must be one of POST, Redirect, or Artifact</value>
+  </data>
+  <data name="ExpectedInResponseToEmpty" xml:space="preserve">
+    <value>Empty protocol message id is not allowed</value>
+  </data>
+  <data name="ExpectedInResponseToMissing" xml:space="preserve">
+    <value>Session ExpectedInResponseTo missing</value>
+  </data>
+  <data name="GenericError" xml:space="preserve">
+    <value>An error occurred</value>
+  </data>
+  <data name="MetadataLocationNotFound" xml:space="preserve">
+    <value>The specified metadata directory "{0}" could not be located</value>
+  </data>
+  <data name="MetadataSignQueryParameterInvalid" xml:space="preserve">
+    <value>The "sign"query string parameter could not be parsed</value>
+  </data>
+  <data name="ReplayAttack" xml:space="preserve">
+    <value>Possible replay attack detected, unexpected value {0} for InResponseTo, expected {1}</value>
+  </data>
+  <data name="RequestSignatureInvalid" xml:space="preserve">
+    <value>Request signature is invalid</value>
+  </data>
+  <data name="RequestSignatureMissing" xml:space="preserve">
+    <value>Request is not signed</value>
+  </data>
+  <data name="ResponseMissingInResponseToAttribute" xml:space="preserve">
+    <value>Received a response message that did not contain an InResponseTo attribute</value>
+  </data>
+  <data name="ResponseSignatureInvalid" xml:space="preserve">
+    <value>Response signature is invalid</value>
+  </data>
+  <data name="ResponseSignatureMissing" xml:space="preserve">
+    <value>Response is not signed</value>
+  </data>
+  <data name="ResponseStatusIsNoPassive" xml:space="preserve">
+    <value>Response with status code NoPassive received. A user cannot be signed in with the IsPassiveFlag set when the user does not have a session with the identity provider</value>
+  </data>
+  <data name="ResponseStatusNotSuccessful" xml:space="preserve">
+    <value>Response with status code "{0}" received when "Success"was expected</value>
+  </data>
+  <data name="SOAPMessageUnsupportedSamlMessage" xml:space="preserve">
+    <value>SOAP message did not contain a supported SamlMessage element</value>
+  </data>
+  <data name="UnauthenticatedAccess" xml:space="preserve">
+    <value>User accessing resource "{0}" without authentication</value>
+  </data>
+  <data name="UnknownEncoding" xml:space="preserve">
+    <value>Encoding "{0}" is not supported</value>
+  </data>
+  <data name="UnknownIdentityProvider" xml:space="preserve">
+    <value>Unknown identity provider "{0}"</value>
+  </data>
+  <data name="UnsupportedRequestType" xml:space="preserve">
+    <value>RequestType "{0}" is not supported.</value>
+  </data>
+</root>
