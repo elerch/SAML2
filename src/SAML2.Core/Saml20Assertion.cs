@@ -611,7 +611,14 @@ namespace SAML2
         /// <param name="trustedSigners">The trusted signers.</param>
         private void LoadXml(XmlElement element, IEnumerable<AsymmetricAlgorithm> trustedSigners, Saml2Configuration config)
         {
-            XmlAssertion = element;
+            //If the assertion element belongs to a larger document then it would be a hash of that document that would be used when checking the signature.
+            //Create a new, smaller document that contains only the assertion so that it is a hash of the assertion that is used.
+            var xmlDocument = new XmlDocument() { PreserveWhitespace = true };
+
+            xmlDocument.LoadXml(element.OuterXml);
+
+            XmlAssertion = xmlDocument.DocumentElement;
+
             if (trustedSigners != null)
             {
                 if (!CheckSignature(trustedSigners))
