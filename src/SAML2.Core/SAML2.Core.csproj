@@ -170,7 +170,9 @@
     <Compile Include="Schema\Metadata\PdpDescriptor.cs" />
     <Compile Include="Schema\Metadata\RequestedAttribute.cs" />
     <Compile Include="Schema\Metadata\RoleDescriptor.cs" />
+    <Compile Include="Schema\Metadata\ApplicationServiceType.cs" />
     <Compile Include="Schema\Metadata\SpSsoDescriptor.cs" />
+    <Compile Include="Schema\Metadata\SecurityTokenServiceType.cs" />
     <Compile Include="Schema\Metadata\SsoDescriptor.cs" />
     <Compile Include="Schema\Protocol\ArtifactResolve.cs" />
     <Compile Include="Schema\Protocol\ArtifactResponse.cs" />

@@ -1,19 +1,19 @@
 ﻿<?xml version="1.0"?>
 <package >
   <metadata>
-    <id>$id$</id>
+    <id>scott.munro.$id$</id>
     <version>$version$</version>
     <title>$title$</title>
     <authors>$author$</authors>
     <owners>$author$</owners>
-    <licenseUrl>https://github.com/elerch/SAML2/blob/master/LICENSE</licenseUrl>
-    <projectUrl>https://github.com/elerch/SAML2</projectUrl>
+    <licenseUrl>https://github.com/samunro/SAML2/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/samunro/SAML2</projectUrl>
     <description>$description$</description>
     <releaseNotes>Working SP-Initiated requests against testshib.org (redirect binding)</releaseNotes>
     <copyright>Copyright 2015</copyright>
     <tags>SAML2 Owin library</tags>
     <dependencies>
-      <dependency id="Saml2.Core" version="0.9.0.0" />
+      <dependency id="scott.munro.Saml2.Core" version="1.0.0.0" />
     </dependencies>
   </metadata>
 </package>

@@ -25,6 +25,8 @@ namespace SAML2
         /// </summary>
         public const string Metadata = "urn:oasis:names:tc:SAML:2.0:metadata";
 
+        public const string WsFederationNamespace = "http://docs.oasis-open.org/wsfed/federation/200706";
+
         /// <summary>
         /// The XML namespace of <c>XmlDSig</c>
         /// </summary>

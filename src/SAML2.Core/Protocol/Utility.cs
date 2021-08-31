@@ -4,6 +4,7 @@ using SAML2.Logging;
 using SAML2.Schema.Core;
 using SAML2.Schema.Metadata;
 using SAML2.Schema.Protocol;
+using SAML2.Schema.XmlDSig;
 using SAML2.Specification;
 using SAML2.Utils;
 using System;
@@ -44,18 +45,32 @@ namespace SAML2.Protocol
                 throw new ArgumentNullException("keys");
             }
 
-            foreach (var clause in keys.SelectMany(k => k.KeyInfo.Items.AsEnumerable().Cast<KeyInfoClause>())) {
-                // Check certificate specifications
-                if (clause is KeyInfoX509Data) {
-                    var cert = XmlSignatureUtils.GetCertificateFromKeyInfo((KeyInfoX509Data)clause);
-                    if (!CertificateSatisfiesSpecifications(identityProvider, cert)) {
-                        continue;
-                    }
-                }
+            foreach (var clause in keys.SelectMany(k => k.KeyInfo.Items.AsEnumerable().OfType<KeyInfoClause>())) {
+                var trustedSigner = GetTrustedSigner(clause, identityProvider);
 
-                var key = XmlSignatureUtils.ExtractKey(clause);
-                yield return key;
+                if(trustedSigner != null) yield return trustedSigner;
             }
+
+            foreach (var x509Data in keys.SelectMany(k => k.KeyInfo.Items.AsEnumerable().OfType<X509Data>())) {
+                var clause = new KeyInfoX509Data((byte[])x509Data.Items[0]);
+
+                var trustedSigner = GetTrustedSigner(clause, identityProvider);
+
+                if(trustedSigner != null) yield return trustedSigner;
+            }
+        }
+
+        private static AsymmetricAlgorithm GetTrustedSigner(KeyInfoClause clause, IdentityProvider identityProvider)
+        {
+            // Check certificate specifications
+            if (clause is KeyInfoX509Data)
+            {
+                var cert = XmlSignatureUtils.GetCertificateFromKeyInfo((KeyInfoX509Data)clause);
+
+                if (!CertificateSatisfiesSpecifications(identityProvider, cert)) return null;
+            }
+
+            return XmlSignatureUtils.ExtractKey(clause);
         }
 
         /// <summary>

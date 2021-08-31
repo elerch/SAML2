@@ -17,6 +17,8 @@ namespace SAML2.Schema.Metadata
     [XmlInclude(typeof(SsoDescriptor))]
     [XmlInclude(typeof(SpSsoDescriptor))]
     [XmlInclude(typeof(IdpSsoDescriptor))]    
+    [XmlInclude(typeof(SecurityTokenServiceType))]    
+    [XmlInclude(typeof(ApplicationServiceType))]    
     [Serializable]
     [XmlType(Namespace = Saml20Constants.Metadata)]
     [XmlRoot(ElementName, Namespace = Saml20Constants.Metadata, IsNullable = false)]
