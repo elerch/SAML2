@@ -109,7 +109,8 @@ namespace Owin.Security.Saml
             AuthenticationProperties properties = challenge.Properties;
             if (string.IsNullOrEmpty(properties.RedirectUri))
             {
-                properties.RedirectUri = currentUri;
+                properties.RedirectUri = !string.IsNullOrWhiteSpace(Options.RedirectAfterLogin) ? Options.RedirectAfterLogin : currentUri;
+
                 if (_logger.IsEnabled(TraceEventType.Verbose))
                 {
                     _logger.WriteVerbose(string.Format("Setting the RedirectUri to {0}.", properties.RedirectUri));

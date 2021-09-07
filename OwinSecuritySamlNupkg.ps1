@@ -7,7 +7,8 @@ param(
 
 # Tool locations
 $nuget = ".\tools\NuGet.exe"
-$msbuild = "C:\Windows\Microsoft.NET\Framework64\v4.0.30319\MSBuild.exe"
+#$msbuild = "C:\Windows\Microsoft.NET\Framework64\v4.0.30319\MSBuild.exe"
+$msbuild = "& 'C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\MSBuild\Current\Bin\MSBuild.exe'";
 
 # RegEx strings
 $assemblyVersionPattern = '^\[assembly: AssemblyVersion\("[0-9]+(\.([0-9]+|\*)){1,3}"\)\]$'
@@ -57,7 +58,7 @@ Invoke-Expression "$msbuild $solution /p:Configuration=Debug /p:Platform=`"Any C
 Invoke-Expression "$msbuild $solution /p:Configuration=Release /p:Platform=`"Any CPU`" /t:Clean"
 
 # Optional: Build
-# Invoke-Expression "$msbuild $solution /p:Configuration=Release /p:Platform=`"Any CPU`" /t:Build"
+Invoke-Expression "$msbuild $solution /p:Configuration=Release /p:Platform=`"Any CPU`" /t:Build"
 
 # Optional: Run unit tests
 # Invoke-Expression ".\src\packages\NUnit.Runners\tools\nunit.exe"
